@@ -28,12 +28,19 @@
 #define ICON_MIN_SIZE 50
 
 KxSvgCanvas::KxSvgCanvas(QWidget* parent)
-	:QGraphicsView(parent)
+	:QWidget(parent)
 {
+	m_currentType = ShapeType::TypeSelect;
 	setObjectName(QStringLiteral("svgGraphicsView"));
-	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);//隐藏水平条
-	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);//隐藏竖条
-	//setGeometry(QRect(0, 0, 600, 600));
+	setAttribute(Qt::WA_StyledBackground, true);
+	setStyleSheet(QStringLiteral("background-color: rgb(255, 255, 255);"));
+	setGeometry(QRect(0, 0, 500, 500));
+}
+
+KxSvgCanvas::KxSvgCanvas(QWidget* parent, qreal x, qreal y, qreal w, qreal h)
+	:QWidget(parent)
+{
+	setGeometry(x, y, w, h);
 }
 
 KxSvgCanvas::~KxSvgCanvas()
@@ -41,58 +48,99 @@ KxSvgCanvas::~KxSvgCanvas()
 
 }
 
-void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
+void KxSvgCanvas::paintEvent(QPaintEvent* event)
 {
-	//if (event->button() == Qt::LeftButton)
-	//{
-	//	QPoint poin = event->pos();
-	//	QPointF pointScene = mapToScene(poin);
-	//	QGraphicsItem* item = nullptr;
-	//	qDebug() << "全局坐标" << poin;
-	//	qDebug() << "场景坐标" << pointScene;
-	//	item = tmppScene->itemAt(pointScene, transform());
-	//	if (item == nullptr)
-	//		qDebug() << "无图形";
-	//	else
-	//	{
-	//		qDebug() << "item局部坐标" << item->mapFromScene(pointScene);
-	//		item->setSelected(true);
-	//		scale(1.1, 1.1);
-	//		setGeometry(-200, -200, width() * 1.1, height() * 1.1);
-	//	}
-	//}
-	//if (event->button() == Qt::RightButton)
-	//{
-	//	QPoint poin = event->pos();
-	//	QPointF pointScene = mapToScene(poin);
-	//	QGraphicsItem* item = nullptr;
-	//	item = tmppScene->itemAt(pointScene, transform());
-	//	if (item == nullptr)
-	//		qDebug() << "无图形";
-	//	else
-	//	{
-	//		item->setSelected(true);
-	//		scale(0.9, 0.9);
-	//		setGeometry(-200, -200, width() * 0.9, height() * 0.9);
-	//	}
-	//}
-	QGraphicsView::mousePressEvent(event);
+	QPainter painter(this);
+	for each (Shape* i in m_shapeList)
+	{
+		if(i != nullptr)
+			i->drawShape(painter);
+	}
 }
 
-//void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
-//{
-//	QPoint poin = event->pos();
-//	QPointF pointScene = mapToScene(poin);
-//	QGraphicsItem* item = nullptr;
-//	qDebug() << "全局坐标" << poin;
-//	qDebug() << "场景坐标" << pointScene;
-//	item = tmppScene->itemAt(pointScene, transform());
-//	if (item)
-//		item->setPos(pointScene*0.1);
-//}
+void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
+{
+	if (Qt::LeftButton == event->button())
+	{	
+		Shape* tmpShape = nullptr;
+		ShapeFactory* tmpShapeFactory = ShapeFactory::getShapeFactory();
+		tmpShape = tmpShapeFactory->getShape(m_currentType);
+		if(tmpShape)
+		{
+			m_shapeList.append(tmpShape);
+			m_pCurrentShape = tmpShape;
+			tmpShape->setStar(event->pos());
+		}
+	}
+	/*if (event->button() == Qt::LeftButton)
+	{
+		QPoint poin = event->pos();
+		QPointF pointScene = mapToScene(poin);
+		QGraphicsItem* item = nullptr;
+		qDebug() << "全局坐标" << poin;
+		qDebug() << "场景坐标" << pointScene;
+		item = tmppScene->itemAt(pointScene, transform());
+		if (item == nullptr)
+			qDebug() << "无图形";
+		else
+		{
+			qDebug() << "item局部坐标" << item->mapFromScene(pointScene);
+			item->setSelected(true);
+			scale(1.1, 1.1);
+			setGeometry(0, 0, width() * 1.1, height() * 1.1);
+		}
+	}
+	if (event->button() == Qt::RightButton)
+	{
+		QPoint poin = event->pos();
+		QPointF pointScene = mapToScene(poin);
+		QGraphicsItem* item = nullptr;
+		item = tmppScene->itemAt(pointScene, transform());
+		if (item == nullptr)
+			qDebug() << "无图形";
+		else
+		{
+			item->setSelected(true);
+			scale(0.9, 0.9);
+			setGeometry(-200, -200, width() * 0.9, height() * 0.9);
+		}
+	}*/
+}
 
-KxLeftToolBarBtn::KxLeftToolBarBtn(QWidget* parent)
-	:QRadioButton(parent)
+void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
+{
+	//QPoint poin = event->pos();
+	//QPointF pointScene = mapToScene(poin);
+	//QGraphicsItem* item = nullptr;
+	//qDebug() << "全局坐标" << poin;
+	//qDebug() << "场景坐标" << pointScene;
+	//item = tmppScene->itemAt(pointScene, transform());
+	//if (item)
+	//	item->setPos(pointScene * 0.1);
+	if (m_pCurrentShape)
+	{
+		m_pCurrentShape->setEnd(event->pos());
+	}
+	update();
+}
+
+void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
+{
+	if (m_pCurrentShape && m_pCurrentShape->getEnd().isNull())
+	{
+		delete m_pCurrentShape;
+		m_shapeList.removeLast();
+	}
+	m_pCurrentShape = nullptr;
+}
+
+void KxSvgCanvas::setCurrentType(ShapeType type)
+{
+	m_currentType = type;
+}
+
+KxLeftToolBarBtn::KxLeftToolBarBtn(QWidget* parent, ShapeType type /*= shapeType::tmp*/)
+	:QRadioButton(parent), m_shapeType(type)
 {
 	setGeometry(0, 0, 50, 50);
 	if (nullptr == m_pSvg)
@@ -120,6 +168,7 @@ void KxLeftToolBarBtn::leaveEvent(QEvent* event)
 void KxLeftToolBarBtn::mousePressEvent(QMouseEvent* event)
 {
 	setChecked(true);
+	setShapeType(m_shapeType);
 	update();
 }
 
@@ -164,6 +213,7 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	m_pCentralLayout->setContentsMargins(11, 11, 11, 11);
 	m_pCentralLayout->setObjectName(QStringLiteral("centralLayout"));
 
+
 	//设置左边工具栏
 	m_pToolBarLeftWidget = new QWidget(m_pCentralWidget);
 	m_pToolBarLeftWidget->setObjectName(QStringLiteral("toolBarWidget"));
@@ -181,9 +231,6 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	m_pToolBarLayout->setObjectName(QStringLiteral("toolBarLayout"));
 	m_pToolBarLayout->setAlignment(Qt::AlignTop);
 
-	//设置左边工具栏布局
-	setToolBar();
-
 	m_pToolBarLeftWidget->setLayout(m_pToolBarLayout);
 	m_pCentralLayout->addWidget(m_pToolBarLeftWidget);
 
@@ -193,11 +240,10 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	//设置画布
 	m_pCanvasWidget = new QWidget(m_pCentralWidget);
 	m_pCanvasWidget->setObjectName(QStringLiteral("canvasWidget"));
-	m_pCanvasWidget->setStyleSheet(QLatin1String("background-color: rgb(63,63,60);\n"
+	m_pCanvasWidget->setStyleSheet(QLatin1String("background-color: rgb(63, 63, 60);\n"
 												"border-color: rgb(255, 255, 255);\n"));
 
 	m_pSvgCanvas = new KxSvgCanvas(m_pCanvasWidget);
-	m_pSvgCanvas->setStyleSheet(QStringLiteral("background-color: rgb(255, 255, 255);"));
 
 	m_pMainHoriLayout->addWidget(m_pCanvasWidget);
 
@@ -230,6 +276,9 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	m_pActionSave = new QAction("保存");
 	m_pToolBarTop->addAction(m_pActionSave);
 
+	//设置左边工具栏布局
+	setToolBar();
+
 	//读取svg图片测试版本，直接在构造函数读取了
 	//QString svg_dir = "D:\\icon\\click.svg";
 	//QGraphicsScene* pScene = new QGraphicsScene;
@@ -244,36 +293,35 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	//m_pSvgCanvas->setScene(pScene);
 	//m_pSvgCanvas->show();
 
-	m_pSvgCanvas->tmppScene = new QGraphicsScene(QRectF(-200, -200, 400, 400));
-	m_pSvgCanvas->setScene(m_pSvgCanvas->tmppScene);
-	//pScene->setSceneRect(0, 0, 500, 500);
-	//pScene->setBackgroundBrush(Qt::blue);
-	m_pSvgCanvas->rectItem = new QGraphicsRectItem(QRectF(-200, -200, 400, 400));
+	//m_pSvgCanvas->tmppScene = new QGraphicsScene(QRectF(-200, -200, 400, 400));
+	//m_pSvgCanvas->setScene(m_pSvgCanvas->tmppScene);
+	////pScene->setSceneRect(0, 0, 500, 500);
+	////pScene->setBackgroundBrush(Qt::blue);
+	//m_pSvgCanvas->rectItem = new QGraphicsRectItem(QRectF(-200, -200, 400, 400));
 
-	QPen pen = m_pSvgCanvas->rectItem->pen();
-	pen.setWidth(2);
-	pen.setColor(QColor(111, 111, 111));
-	m_pSvgCanvas->rectItem->setPen(pen);
-	m_pSvgCanvas->rectItem->setPos(0, 0);
-	//m_pSvgCanvas->rectItem->setBrush(QColor(111, 111, 111, 100));
-	//m_pSvgCanvas->tmppScene->addItem(m_pSvgCanvas->rectItem);
+	//QPen pen = m_pSvgCanvas->rectItem->pen();
+	//pen.setWidth(2);
+	//pen.setColor(QColor(111, 111, 111));
+	//m_pSvgCanvas->rectItem->setPen(pen);
+	//m_pSvgCanvas->rectItem->setPos(0, 0);
+	////m_pSvgCanvas->rectItem->setBrush(QColor(111, 111, 111, 100));
+	////m_pSvgCanvas->tmppScene->addItem(m_pSvgCanvas->rectItem);
 
-	m_pSvgCanvas->rectItem1 = new QGraphicsRectItem(50, 50, 200, 100);
-	m_pSvgCanvas->rectItem1->setBrush(Qt::blue);
-	m_pSvgCanvas->tmppScene->addItem(m_pSvgCanvas->rectItem1);
+	//m_pSvgCanvas->rectItem1 = new QGraphicsRectItem(50, 50, 200, 100);
+	//m_pSvgCanvas->rectItem1->setBrush(Qt::blue);
+	//m_pSvgCanvas->tmppScene->addItem(m_pSvgCanvas->rectItem1);
 
-	m_pSvgCanvas->rectItem2= new QGraphicsRectItem(50, 50, 100, 50);
-	m_pSvgCanvas->rectItem2->setBrush(Qt::red);
-	m_pSvgCanvas->rectItem2->setPos(0, 0);
-	m_pSvgCanvas->tmppScene->addItem(m_pSvgCanvas->rectItem2);
+	//m_pSvgCanvas->rectItem2= new QGraphicsRectItem(50, 50, 100, 50);
+	//m_pSvgCanvas->rectItem2->setBrush(Qt::red);
+	//m_pSvgCanvas->rectItem2->setPos(0, 0);
+	//m_pSvgCanvas->tmppScene->addItem(m_pSvgCanvas->rectItem2);
 
-	//m_pSvgCanvas->rectItem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable);
-	m_pSvgCanvas->rectItem1->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable);
-	m_pSvgCanvas->rectItem2->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable);
+	////m_pSvgCanvas->rectItem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable);
+	//m_pSvgCanvas->rectItem1->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable);
+	//m_pSvgCanvas->rectItem2->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable);
 
-	qDebug() << m_pSvgCanvas->tmppScene->width()<< m_pSvgCanvas->tmppScene->height();
+	//qDebug() << m_pSvgCanvas->tmppScene->width()<< m_pSvgCanvas->tmppScene->height();
 
-	setCanvasCenter();
 }
 
 void SVGMainWIndow::paintEvent(QPaintEvent* event)
@@ -307,7 +355,7 @@ void SVGMainWIndow::setToolBar()
 	m_pToolBarGroup->setObjectName(QStringLiteral("toolBarGroup"));
 	m_pToolBarGroup->setExclusive(true);
 
-	m_pSelectButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget);
+	m_pSelectButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget, ShapeType::TypeSelect);
 	m_pSelectButton->setObjectName(QStringLiteral("select"));
 	m_pSelectButton->setMinimumSize(ICON_MIN_SIZE, ICON_MIN_SIZE);
 	m_pSelectButton->setImageDir();
@@ -317,12 +365,12 @@ void SVGMainWIndow::setToolBar()
 	m_pPencilButton->setMinimumSize(ICON_MIN_SIZE, ICON_MIN_SIZE);
 	m_pPencilButton->setImageDir();
 
-	m_pLineButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget);
-	m_pLineButton->setObjectName(QStringLiteral("line"));
+	m_pLineButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget, ShapeType::TypeLine);
+	m_pLineButton->setObjectName(QStringLiteral("Line"));
 	m_pLineButton->setMinimumSize(ICON_MIN_SIZE, ICON_MIN_SIZE);
 	m_pLineButton->setImageDir();
 
-	m_pRectButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget);
+	m_pRectButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget, ShapeType::TypeSquare);
 	m_pRectButton->setObjectName(QStringLiteral("rect"));
 	m_pRectButton->setMinimumSize(ICON_MIN_SIZE, ICON_MIN_SIZE);
 	m_pRectButton->setImageDir();
@@ -358,4 +406,11 @@ void SVGMainWIndow::setToolBar()
 	m_pToolBarLayout->addWidget(m_pPathButton);
 	m_pToolBarLayout->addWidget(m_pShapeButton);
 
+	connect(m_pSelectButton, SIGNAL(setShapeType(ShapeType)),m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
+	connect(m_pPencilButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
+	connect(m_pLineButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
+	connect(m_pRectButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
+	connect(m_pCircleButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
+	connect(m_pPathButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
+	connect(m_pShapeButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
 }

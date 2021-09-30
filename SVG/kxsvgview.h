@@ -9,18 +9,32 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QRadioButton>
 #include <QList>
-class KxSvgCanvas :public QGraphicsView
+
+#include "shape.h"
+class Line;
+class Shape;
+class KxSvgCanvas :public QWidget
 {
+	Q_OBJECT
+
 public:
 	KxSvgCanvas(QWidget* parent);
+	KxSvgCanvas(QWidget* parent, qreal x, qreal y, qreal w, qreal h);
 	~KxSvgCanvas();
-	void mousePressEvent(QMouseEvent* event) override;
-	//void mouseMoveEvent(QMouseEvent* event) override;
 
-	QGraphicsRectItem* rectItem = nullptr;
-	QGraphicsRectItem* rectItem1 = nullptr;
-	QGraphicsRectItem* rectItem2 = nullptr;
-	QGraphicsScene* tmppScene = nullptr;
+	void paintEvent(QPaintEvent* event) override;
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent* event) override;
+
+public slots:
+	void setCurrentType(ShapeType);
+
+private:
+	ShapeType m_currentType;
+	QList<Shape*> m_shapeList;
+	Shape* m_pCurrentShape = nullptr;
+
 };
 	
 class KxLeftToolBarBtn :public QRadioButton
@@ -28,7 +42,7 @@ class KxLeftToolBarBtn :public QRadioButton
 	Q_OBJECT
 
 public:
-	KxLeftToolBarBtn(QWidget* parent);
+	KxLeftToolBarBtn(QWidget* parent, ShapeType type = ShapeType::tmp);
 	~KxLeftToolBarBtn();
 	void paintEvent(QPaintEvent*) override;
 	void enterEvent(QEvent* event) override;
@@ -36,10 +50,15 @@ public:
 	void mousePressEvent(QMouseEvent* e) override;
 	
 	void setImageDir();
+
+signals:
+	void setShapeType(ShapeType type);
+
 private:
 	QStringList m_imageDir;
 	bool m_isClickIcon = false;
 	QSvgRenderer* m_pSvg = nullptr;
+	ShapeType m_shapeType;
 };
 
 class SVGMainWIndow : public QMainWindow
