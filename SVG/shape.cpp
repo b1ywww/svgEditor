@@ -38,7 +38,7 @@ void Line::setEnd(QPoint end)
 
 void Line::drawShape(QPainter& painter)
 {
-	if (m_star.isNull() && m_end.isNull())
+	if (m_star.isNull() || m_end.isNull())
 		return;
 	painter.drawLine(m_star, m_end);
 }
@@ -89,7 +89,7 @@ void Square::setEnd(QPoint end)
 
 void Square::drawShape(QPainter& painter)
 {
-	if (m_star.isNull() && m_end.isNull())
+	if (m_star.isNull() || m_end.isNull())
 		return;
 	QBrush brush(QColor(255, 255, 255));
 	painter.setBrush(brush);

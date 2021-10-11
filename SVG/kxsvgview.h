@@ -1,6 +1,5 @@
 #pragma once
 #pragma execution_character_set("utf-8")
-#include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QMainWindow>
 #include <QtSvg/qsvgrenderer.h>
 #include <QtWidgets/QMenuBar>
@@ -158,7 +157,6 @@ private:
 
 	QSvgRenderer* m_pSvgRender = nullptr;
 	KxSvgCanvas* m_pSvgCanvas = nullptr;
-	QWidget* tmpWidget = nullptr;
 
 	int m_canvasWidth = 500;
 	int m_canvasHeight = 500;
