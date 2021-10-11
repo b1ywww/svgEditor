@@ -393,8 +393,8 @@ bool KxSvgCanvas::isInRect(QPoint point, Shape* shape)
 	if (shape == nullptr)
 		return nullptr;
 
-	qreal x = shape->getEnd().x() - shape->getStar().x();
-	qreal y = shape->getEnd().y() - shape->getStar().y();
+	qreal x = shape->getEnd().x() - shape->getStar().x() + 0.1; /*加0.1是为了防止出现 分母为0的情况，因为点是为整数的，所以加上0.1 不影响x的符号*/
+	qreal y = shape->getEnd().y() - shape->getStar().y() + 0.1;
 
 	qreal point_x = point.x() - shape->getStar().x();
 	qreal point_y = point.y() - shape->getStar().y();
