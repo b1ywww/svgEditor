@@ -19,10 +19,11 @@ public:
 	virtual void setStar(QPoint star) = 0;
 	virtual void setEnd(QPoint end) = 0;
 	virtual void setDepth(qreal depth) = 0;
+	virtual void scale(qreal width, qreal height) = 0;
 	virtual QPoint& getStar() = 0;
 	virtual QPoint& getEnd() = 0;
 
-
+	void move(QPoint offset);
 protected:
 	QPoint m_star;
 	QPoint m_end;
@@ -40,6 +41,7 @@ public:
 	void setStar(QPoint star) override;
 	void setEnd(QPoint end) override;
 	void setDepth(qreal depth) override;
+	void scale(qreal width, qreal height) override;
 	QPoint& getStar() override;
 	QPoint& getEnd() override;
 };
@@ -55,6 +57,8 @@ public:
 	void setStar(QPoint star) override;
 	void setEnd(QPoint end) override;
 	void setDepth(qreal depth) override;
+	void scale(qreal width, qreal height) override;
+
 	QPoint& getStar() override;
 	QPoint& getEnd() override;
 };
@@ -64,7 +68,7 @@ class ShapeFactory
 public:
 	static ShapeFactory* getShapeFactory();
 	Shape* getShape(ShapeType);
-
+		
 protected:
 	ShapeFactory();
 };

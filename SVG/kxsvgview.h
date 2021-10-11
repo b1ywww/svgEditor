@@ -13,6 +13,7 @@
 #include "shape.h"
 class Line;
 class Shape;
+class QLineEdit;
 class KxSvgCanvas :public QWidget
 {
 	Q_OBJECT
@@ -26,15 +27,51 @@ public:
 	void mousePressEvent(QMouseEvent* event) override;
 	void mouseMoveEvent(QMouseEvent* event) override;
 	void mouseReleaseEvent(QMouseEvent* event) override;
+	void keyPressEvent(QKeyEvent* event) override;
+	void wheelEvent(QWheelEvent* event) override;
+
+	bool deleteShapeList();
+	void loadSvgRenderer(QString);
+	void unloadSvgRenderer();
+	bool isSvgValid();
+	int getShapeCount();
 
 public slots:
 	void setCurrentType(ShapeType);
 
 private:
+	Shape* getClickShape(QPoint point);
+	bool isInRect(QPoint point, Shape* shape);
+	void setOffset(qreal, qreal);
+	void setPositionType(QPoint point);
+
 	ShapeType m_currentType;
 	QList<Shape*> m_shapeList;
+	QSvgRenderer* m_pSvgRenderer = nullptr;
+	QPoint m_currentPoint;
 	Shape* m_pCurrentShape = nullptr;
+	Shape* m_pClickShape = nullptr;
+	bool isMove = false;
+	qreal m_offset = 0.0;
 
+	enum class mousePosition
+	{
+		dafeult = 0,
+		top,
+		left,
+		right,
+		bottom,
+		upperLeft,
+		lowerLeft,
+		upperRight,
+		lowerRight
+	};
+	mousePosition m_positionType = mousePosition::dafeult;
+
+	static int s_offsetStartX;
+	static int s_offsetStartY;
+	static int s_offsetWidth;
+	static int s_offsetHeight;
 };
 	
 class KxLeftToolBarBtn :public QRadioButton
@@ -70,21 +107,38 @@ public:
 
 	void paintEvent(QPaintEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
+	bool eventFilter(QObject* watched, QEvent* event) override;
+public slots:
+	void newCanvas();
+	void openSvg();
+	void setCanvasSize();
+	void setCanvasWidth(QString);
+	void setCanvasHeight(QString);
+	void setColor();
 
 private:
 	void setCanvasCenter();
 	void setToolBar();
+	void setSettingPane();
 
 private:
 
 	QHBoxLayout* m_pMainHoriLayout = nullptr;
 	QHBoxLayout* m_pCentralLayout = nullptr;
 	QVBoxLayout* m_pToolBarLayout = nullptr;
-	
+	QGridLayout* m_pGridLayout = nullptr;
+
+	QWidget* m_pEditCanvasWidth = nullptr;
+	QWidget* m_pEditCanvasHeight = nullptr;
+	QWidget* m_pEditCanvasColor = nullptr;
+
 	QWidget* m_pCentralWidget = nullptr;
 	QWidget* m_pToolBarLeftWidget = nullptr;
 	QWidget* m_pCanvasWidget = nullptr;
 	QWidget* m_pSettingWidget = nullptr;
+	QLineEdit* m_pWidthLineEdit = nullptr;
+	QLineEdit* m_pHeightLineEdit = nullptr;
+	QPushButton* m_pColorChoose = nullptr;
 
 	KxLeftToolBarBtn* m_pSelectButton = nullptr; //选择工具
 	KxLeftToolBarBtn* m_pPencilButton = nullptr; //画笔工具
@@ -104,5 +158,8 @@ private:
 
 	QSvgRenderer* m_pSvgRender = nullptr;
 	KxSvgCanvas* m_pSvgCanvas = nullptr;
-};
+	QWidget* tmpWidget = nullptr;
 
+	int m_canvasWidth = 500;
+	int m_canvasHeight = 500;
+};
