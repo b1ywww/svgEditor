@@ -1,5 +1,6 @@
 #include "kxsvgview.h"
 
+#include <qgraphicsview.h>
 #include <QtSvg/QGraphicsSvgItem>
 #include <QtWidgets/QToolBar>
 #include <QDebug>
@@ -58,9 +59,8 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	setObjectName(QStringLiteral("svgCanvas"));
 	setAttribute(Qt::WA_StyledBackground, true);
 	setStyleSheet(QStringLiteral("background-color: rgb(255, 255, 255);"));
-	setGeometry(QRect(0, 0, 500, 500));
 	setFocusPolicy(Qt::ClickFocus);
-
+	setCanvasSize();
 }
 
 KxSvgCanvas::KxSvgCanvas(QWidget* parent, qreal x, qreal y, qreal w, qreal h)
@@ -77,12 +77,14 @@ KxSvgCanvas::~KxSvgCanvas()
 void KxSvgCanvas::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
+	QTransform transform;
+	transform.translate(250, 250);
+	painter.setTransform(transform);
 	for each (Shape* i in m_shapeList)
 	{
 		if (i != nullptr)
 		{
 			i->drawShape(painter);
-			qDebug() << "draw";
 		}
 	}
 
@@ -109,6 +111,8 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 
 void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 {
+	QPoint transfromPoint = event->pos() - m_transfrom;
+	qDebug() << transfromPoint;
 	if (Qt::LeftButton == event->button())
 	{	
 		Shape* tmpShape = nullptr;
@@ -117,30 +121,28 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 		{
 			m_shapeList.append(tmpShape);
 			m_pCurrentShape = tmpShape;
-			m_pCurrentShape->setStar(event->pos());
-			qDebug() << "event->pos()" << event->pos();
+			m_pCurrentShape->setStar(transfromPoint);
 		}
 
 		if (false == isMove && m_currentType == ShapeType::TypeSelect)
 		{
-			m_pClickShape = getClickShape(event->pos());
+			m_pClickShape = getClickShape(transfromPoint);
 			isMove = true;
 		}
 		else
 		{
 			isMove = false;
 		}
-		m_currentPoint = event->pos();
+		m_currentPoint = transfromPoint;
 	}
 }
 
 void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 {
+	QPoint transfromPoint = event->pos() - m_transfrom;
 	if (m_pCurrentShape)
 	{
-		qDebug() << "mouseMove";
-		m_pCurrentShape->setEnd(event->pos());
-		qDebug() << m_pCurrentShape->getStar();
+		m_pCurrentShape->setEnd(transfromPoint);
 	}
 
 	if (m_pClickShape && isMove)
@@ -149,57 +151,50 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 		{
 		case KxSvgCanvas::mousePosition::dafeult:
 		{
-			m_pClickShape->move(event->pos() - m_currentPoint);
-			m_currentPoint = event->pos();
+			m_pClickShape->move(transfromPoint - m_currentPoint);
 			break;
 		}
 		case KxSvgCanvas::mousePosition::top:
 		{
 			QPoint point = m_pClickShape->getStar();
-			point.setY(point.y() + event->pos().y() - m_currentPoint.y());
+			point.setY(point.y() + transfromPoint.y() - m_currentPoint.y());
 			m_pClickShape->setStar(point);
-			m_currentPoint = event->pos();
-			break;
+			break;	
 		}
 		case KxSvgCanvas::mousePosition::left:
 		{
 			QPoint point = m_pClickShape->getStar();
-			point.setX(point.x() + event->pos().x() - m_currentPoint.x());
+			point.setX(point.x() + transfromPoint.x() - m_currentPoint.x());
 			m_pClickShape->setStar(point);
-			m_currentPoint = event->pos();
 			break;
 		}
 		case KxSvgCanvas::mousePosition::right:
 		{
 			QPoint point = m_pClickShape->getEnd();
-			point.setX(point.x() + event->pos().x() - m_currentPoint.x());
+			point.setX(point.x() + transfromPoint.x() - m_currentPoint.x());
 			m_pClickShape->setEnd(point);
-			m_currentPoint = event->pos();
 			break;
 		}
 		case KxSvgCanvas::mousePosition::bottom:
 		{
 			QPoint point = m_pClickShape->getEnd();
-			point.setY(point.y() + event->pos().y() - m_currentPoint.y());
+			point.setY(point.y() + transfromPoint.y() - m_currentPoint.y());
 			m_pClickShape->setEnd(point);
-			m_currentPoint = event->pos();
 			break;
 		}
 		case KxSvgCanvas::mousePosition::upperLeft:
 		{
 			QPoint point = m_pClickShape->getStar();
-			point = point + event->pos() - m_currentPoint;
+			point = point + transfromPoint - m_currentPoint;
 			m_pClickShape->setStar(point);
-			m_currentPoint = event->pos();
 			break;
 		}
 		case KxSvgCanvas::mousePosition::lowerLeft:
 		{
 			QPoint pointStart = m_pClickShape->getStar();
 			QPoint pointEnd = m_pClickShape->getEnd();
-			m_pClickShape->setStar(QPoint(pointStart.x() + event->pos().x() - m_currentPoint.x(), pointStart.y()));
-			m_pClickShape->setEnd(QPoint(pointEnd.x(), pointEnd.y() + event->pos().y() - m_currentPoint.y()));
-			m_currentPoint = event->pos();
+			m_pClickShape->setStar(QPoint(pointStart.x() + transfromPoint.x() - m_currentPoint.x(), pointStart.y()));
+			m_pClickShape->setEnd(QPoint(pointEnd.x(), pointEnd.y() + transfromPoint.y() - m_currentPoint.y()));
 			break;
 		}
 		case KxSvgCanvas::mousePosition::upperRight:
@@ -207,26 +202,25 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 			QPoint pointStart = m_pClickShape->getStar();
 			QPoint pointEnd = m_pClickShape->getEnd();
 
-			m_pClickShape->setStar(QPoint(pointStart.x(), pointStart.y() + event->pos().y() - m_currentPoint.y()));
-			m_pClickShape->setEnd(QPoint(pointEnd.x() + event->pos().x() - m_currentPoint.x(), pointEnd.y()));
-			m_currentPoint = event->pos();
+			m_pClickShape->setStar(QPoint(pointStart.x(), pointStart.y() + transfromPoint.y() - m_currentPoint.y()));
+			m_pClickShape->setEnd(QPoint(pointEnd.x() + transfromPoint.x() - m_currentPoint.x(), pointEnd.y()));
 			break;
 		}
 		case KxSvgCanvas::mousePosition::lowerRight:
 		{
 			QPoint point = m_pClickShape->getEnd();
-			point = point + event->pos() - m_currentPoint;
+			point = point + transfromPoint - m_currentPoint;
 			m_pClickShape->setEnd(point);
-			m_currentPoint = event->pos();
 			break;
 		}
 		default:
 			break;
 		}
+		m_currentPoint = transfromPoint;
 	}
 	else if (m_pClickShape && m_currentType == ShapeType::TypeSelect)
 	{
-		setPositionType(event->pos());
+		setPositionType(transfromPoint);
 	}
 	update();
 }
@@ -254,6 +248,23 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 void KxSvgCanvas::setCurrentType(ShapeType type)
 {
 	m_currentType = type;
+}
+
+void KxSvgCanvas::setCanvasSize()
+{
+	setGeometry(QRect(0, 0, m_canvasWidth, m_canvasHeight));
+	m_transfrom.setX(m_canvasWidth / 2);
+	m_transfrom.setY(m_canvasHeight / 2);
+}
+
+void KxSvgCanvas::setCanvasWidth(QString width)
+{
+	m_canvasWidth = width.toInt();
+}
+
+void KxSvgCanvas::setCanvasHeight(QString height)
+{
+	m_canvasHeight = height.toInt();
 }
 
 void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
@@ -288,14 +299,16 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 	if (event->delta() > 0)
 	{
 		m_offset += 0.05;
-		setGeometry(0, 0, 500 * (1 + m_offset) , 500 * (1 + m_offset));
+		setGeometry(0, 0, m_canvasWidth * (1 + m_offset) , m_canvasHeight * (1 + m_offset));
 		for each (Shape * i in m_shapeList)
 		{
 			if (i != nullptr)
 			{
-				i->scale(m_offset, m_offset);
+				i->scale((m_canvasWidth * (1 + m_offset)) / 2 - m_transfrom.x(), (m_canvasHeight * (1 + m_offset)) / 2 - m_transfrom.y());
 			}
 		}
+		m_transfrom.setX((m_canvasWidth * (1 + m_offset)) / 2);
+		m_transfrom.setY((m_canvasHeight * (1 + m_offset)) / 2);
 	}
 	else if (event->delta() < 0)
 	{
@@ -305,9 +318,11 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 		{
 			if (i != nullptr)
 			{
-				i->scale(m_offset, m_offset);
+				i->scale((m_canvasWidth * (1 + m_offset)) / 2 - m_transfrom.x(), (m_canvasHeight * (1 + m_offset)) / 2 - m_transfrom.y());
 			}
 		}
+		m_transfrom.setX(m_canvasWidth * (1 + m_offset) / 2);
+		m_transfrom.setY(m_canvasHeight * (1 + m_offset) / 2);
 	}
 	update();
 }
@@ -709,24 +724,6 @@ void SVGMainWIndow::openSvg()
 	m_pSvgCanvas->loadSvgRenderer(file_path);
 }
 
-void SVGMainWIndow::setCanvasSize()
-{
-	if (m_pSvgCanvas)
-	{
-		m_pSvgCanvas->setGeometry(QRect(0, 0, m_canvasWidth, m_canvasHeight));
-	}
-}
-
-void SVGMainWIndow::setCanvasWidth(QString width)
-{
-	m_canvasWidth = width.toInt();
-}
-
-void SVGMainWIndow::setCanvasHeight(QString height)
-{
-	m_canvasHeight = height.toInt();
-}
-
 void SVGMainWIndow::setColor()
 {
 	QColorDialog color;
@@ -857,8 +854,8 @@ void SVGMainWIndow::setSettingPane()
 	QValidator* validatorWidth = new QRegExpValidator(regx, m_pWidthLineEdit);
 	m_pWidthLineEdit->setValidator(validatorWidth);
 
-	connect(m_pWidthLineEdit, SIGNAL(editingFinished()), this, SLOT(setCanvasSize()));
-	connect(m_pWidthLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCanvasWidth(QString)));
+	connect(m_pWidthLineEdit, SIGNAL(textChanged(QString)), m_pSvgCanvas, SLOT(setCanvasWidth(QString)));
+	connect(m_pWidthLineEdit, SIGNAL(editingFinished()), m_pSvgCanvas, SLOT(setCanvasSize()));
 
 	m_pEditCanvasHeight = new QWidget(m_pSettingWidget);
 	m_pEditCanvasHeight->setObjectName(QStringLiteral("widget_5"));
@@ -885,8 +882,8 @@ void SVGMainWIndow::setSettingPane()
 	QValidator* validatorHeight = new QRegExpValidator(regx, m_pHeightLineEdit);
 	m_pHeightLineEdit->setValidator(validatorHeight);
 
-	connect(m_pHeightLineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCanvasHeight(QString)));
-	connect(m_pHeightLineEdit, SIGNAL(editingFinished()), this, SLOT(setCanvasSize()));
+	connect(m_pHeightLineEdit, SIGNAL(textChanged(QString)), m_pSvgCanvas, SLOT(setCanvasHeight(QString)));
+	connect(m_pHeightLineEdit, SIGNAL(editingFinished()), m_pSvgCanvas, SLOT(setCanvasSize()));
 
 	m_pEditCanvasColor = new QWidget(m_pSettingWidget);
 	m_pEditCanvasColor->setObjectName(QStringLiteral("widget_5"));

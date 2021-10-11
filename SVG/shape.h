@@ -27,6 +27,8 @@ public:
 protected:
 	QPoint m_star;
 	QPoint m_end;
+	QPoint m_drawStar;
+	QPoint m_drawEnd;
 	qreal m_depth;
 };
 

@@ -37,6 +37,9 @@ public:
 
 public slots:
 	void setCurrentType(ShapeType);
+	void setCanvasSize();
+	void setCanvasWidth(QString);
+	void setCanvasHeight(QString);
 
 private:
 	Shape* getClickShape(QPoint point);
@@ -48,10 +51,13 @@ private:
 	QList<Shape*> m_shapeList;
 	QSvgRenderer* m_pSvgRenderer = nullptr;
 	QPoint m_currentPoint;
+	QPoint m_transfrom;
 	Shape* m_pCurrentShape = nullptr;
 	Shape* m_pClickShape = nullptr;
-	bool isMove = false;
 	qreal m_offset = 0.0;
+	bool isMove = false;
+	int m_canvasWidth = 500;
+	int m_canvasHeight = 500;
 
 	enum class mousePosition
 	{
@@ -110,9 +116,6 @@ public:
 public slots:
 	void newCanvas();
 	void openSvg();
-	void setCanvasSize();
-	void setCanvasWidth(QString);
-	void setCanvasHeight(QString);
 	void setColor();
 
 private:
@@ -157,7 +160,4 @@ private:
 
 	QSvgRenderer* m_pSvgRender = nullptr;
 	KxSvgCanvas* m_pSvgCanvas = nullptr;
-
-	int m_canvasWidth = 500;
-	int m_canvasHeight = 500;
 };

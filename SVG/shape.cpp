@@ -14,6 +14,9 @@ void Shape::move(QPoint offset)
 {
 	m_star = m_star + offset;
 	m_end = m_end + offset;
+
+	m_drawStar = m_drawStar + offset;
+	m_drawEnd = m_drawEnd + offset;
 }
 
 Line::Line()
@@ -29,18 +32,20 @@ Line::~Line()
 void Line::setStar(QPoint star)
 {
 	m_star = star;
+	m_drawStar = m_star;
 }
 
 void Line::setEnd(QPoint end)
 {
 	m_end = end;
+	m_drawEnd = m_end;
 }
 
 void Line::drawShape(QPainter& painter)
 {
-	if (m_star.isNull() || m_end.isNull())
+	if (m_drawStar.isNull() || m_drawEnd.isNull())
 		return;
-	painter.drawLine(m_star, m_end);
+	painter.drawLine(m_drawStar, m_drawEnd);
 }
 
 void Line::setDepth(qreal depth)
@@ -50,11 +55,11 @@ void Line::setDepth(qreal depth)
 
 void Line::scale(qreal width, qreal height)
 {
-	m_star.setX(m_star.x() * (1 + width));
-	m_end.setX(m_end.x() * (1 + width));
+	m_drawStar.setX(m_star.x() + width);
+	m_drawEnd.setX(m_end.x() + width);
 
-	m_star.setY(m_star.y() * (1 + height));
-	m_end.setY(m_end.y() * (1 + height));
+	m_drawStar.setY(m_star.y() + height);
+	m_drawEnd.setY(m_end.y() + height);
 }
 
 QPoint& Line::getStar()
@@ -80,11 +85,13 @@ Square::~Square()
 void Square::setStar(QPoint star)
 {
 	m_star = star;
+	m_drawStar = m_star;
 }
 
 void Square::setEnd(QPoint end)
 {
 	m_end = end;
+	m_drawEnd = m_end;
 }
 
 void Square::drawShape(QPainter& painter)
@@ -93,7 +100,7 @@ void Square::drawShape(QPainter& painter)
 		return;
 	QBrush brush(QColor(255, 255, 255));
 	painter.setBrush(brush);
-	painter.drawRect(m_star.x(), m_star.y(), m_end.x() - m_star.x(), m_end.y() - m_star.y());
+	painter.drawRect(m_drawStar.x(), m_drawStar.y(), m_drawEnd.x() - m_drawStar.x(), m_drawEnd.y() - m_drawStar.y());
 	painter.setBrush(Qt::NoBrush);
 }
 
@@ -104,21 +111,21 @@ void Square::setDepth(qreal depth)
 
 void Square::scale(qreal width, qreal height)
 {
-	m_star.setX(m_star.x() * (1 + width));
-	m_end.setX(m_end.x() * (1 + width));
+	m_drawStar.setX(m_drawStar.x() + width);
+	m_drawEnd.setX(m_drawEnd.x() + width);
 
-	m_star.setY(m_star.y() * (1 + height));
-	m_end.setY(m_end.y() * (1 + height));
+	m_drawStar.setY(m_drawStar.y() + height);
+	m_drawEnd.setY(m_drawEnd.y() + height);
 }
 
 QPoint& Square::getStar()
 {
-	return m_star;
+	return m_drawStar;
 }
 
 QPoint& Square::getEnd()
 {
-	return m_end;
+	return m_drawEnd;
 }
 
 ShapeFactory* ShapeFactory::getShapeFactory()
