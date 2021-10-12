@@ -55,21 +55,21 @@ void Line::setDepth(qreal depth)
 
 void Line::scale(qreal width, qreal height)
 {
-	m_drawStar.setX(m_star.x() + width);
-	m_drawEnd.setX(m_end.x() + width);
+	m_drawStar.setX((m_star.x()) * (1 + width));
+	m_drawEnd.setX((m_end.x()) * (1 + width));
 
-	m_drawStar.setY(m_star.y() + height);
-	m_drawEnd.setY(m_end.y() + height);
+	m_drawStar.setY((m_star.y()) * (1 + height));
+	m_drawEnd.setY((m_end.y()) * (1 + height));
 }
 
 QPoint& Line::getStar()
 {
-	return m_star;
+	return m_drawStar;
 }
 
 QPoint& Line::getEnd()
 {
-	return m_end;
+	return m_drawEnd;
 }
 
 Square::Square()
@@ -111,11 +111,11 @@ void Square::setDepth(qreal depth)
 
 void Square::scale(qreal width, qreal height)
 {
-	m_drawStar.setX(m_drawStar.x() + width);
-	m_drawEnd.setX(m_drawEnd.x() + width);
+	m_drawStar.setX((m_star.x()) * (1 + width));
+	m_drawEnd.setX((m_end.x()) * (1 + width));
 
-	m_drawStar.setY(m_drawStar.y() + height);
-	m_drawEnd.setY(m_drawEnd.y() + height);
+	m_drawStar.setY((m_star.y()) * (1 + height));
+	m_drawEnd.setY((m_end.y()) * (1 + height));
 }
 
 QPoint& Square::getStar()

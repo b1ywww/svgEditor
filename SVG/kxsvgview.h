@@ -50,8 +50,8 @@ private:
 	ShapeType m_currentType;
 	QList<Shape*> m_shapeList;
 	QSvgRenderer* m_pSvgRenderer = nullptr;
-	QPoint m_currentPoint;
 	QPoint m_transfrom;
+	QPoint m_currentPoint;
 	Shape* m_pCurrentShape = nullptr;
 	Shape* m_pClickShape = nullptr;
 	qreal m_offset = 0.0;
@@ -138,7 +138,8 @@ private:
 	QWidget* m_pToolBarLeftWidget = nullptr;
 	QWidget* m_pCanvasWidget = nullptr;
 	QWidget* m_pSettingWidget = nullptr;
-	QLineEdit* m_pWidthLineEdit = nullptr;
+
+	QLineEdit* m_pWidthLineEdit = nullptr;		 //设置面板的编辑工具
 	QLineEdit* m_pHeightLineEdit = nullptr;
 	QPushButton* m_pColorChoose = nullptr;
 

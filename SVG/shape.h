@@ -25,9 +25,9 @@ public:
 
 	void move(QPoint offset);
 protected:
-	QPoint m_star;
+	QPoint m_star;      //物理坐标
 	QPoint m_end;
-	QPoint m_drawStar;
+	QPoint m_drawStar;  //逻辑坐标
 	QPoint m_drawEnd;
 	qreal m_depth;
 };

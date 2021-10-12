@@ -78,7 +78,7 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
 	QTransform transform;
-	transform.translate(250, 250);
+	transform.translate(m_transfrom.x(), m_transfrom.y());
 	painter.setTransform(transform);
 	for each (Shape* i in m_shapeList)
 	{
@@ -112,7 +112,6 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 {
 	QPoint transfromPoint = event->pos() - m_transfrom;
-	qDebug() << transfromPoint;
 	if (Qt::LeftButton == event->button())
 	{	
 		Shape* tmpShape = nullptr;
@@ -121,7 +120,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 		{
 			m_shapeList.append(tmpShape);
 			m_pCurrentShape = tmpShape;
-			m_pCurrentShape->setStar(transfromPoint);
+			m_pCurrentShape->setStar(transfromPoint / (1 + m_offset));
 		}
 
 		if (false == isMove && m_currentType == ShapeType::TypeSelect)
@@ -142,7 +141,8 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 	QPoint transfromPoint = event->pos() - m_transfrom;
 	if (m_pCurrentShape)
 	{
-		m_pCurrentShape->setEnd(transfromPoint);
+		m_pCurrentShape->setEnd(transfromPoint / (1 + m_offset));
+		m_pCurrentShape->scale(m_offset, m_offset);
 	}
 
 	if (m_pClickShape && isMove)
@@ -233,6 +233,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 		{
 			delete m_pCurrentShape;
 			m_shapeList.removeLast();
+			m_pCurrentShape = nullptr;
 		}
 		else
 		{
@@ -294,36 +295,37 @@ void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 
 void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 {
-	static bool isEnlarge = false;
-	qDebug() << event->delta();
+	QPoint transfromOffset; 
 	if (event->delta() > 0)
 	{
 		m_offset += 0.05;
 		setGeometry(0, 0, m_canvasWidth * (1 + m_offset) , m_canvasHeight * (1 + m_offset));
-		for each (Shape * i in m_shapeList)
+		transfromOffset = QPoint((m_canvasWidth * (1 + m_offset)) / 2, (m_canvasHeight * (1 + m_offset)) / 2);
+		for each (Shape* i in m_shapeList)
 		{
 			if (i != nullptr)
 			{
-				i->scale((m_canvasWidth * (1 + m_offset)) / 2 - m_transfrom.x(), (m_canvasHeight * (1 + m_offset)) / 2 - m_transfrom.y());
+				i->scale(m_offset, m_offset);
 			}
 		}
-		m_transfrom.setX((m_canvasWidth * (1 + m_offset)) / 2);
-		m_transfrom.setY((m_canvasHeight * (1 + m_offset)) / 2);
 	}
 	else if (event->delta() < 0)
 	{
 		m_offset -= 0.05;
-		setGeometry(0, 0, 500 * (1 + m_offset), 500 * (1 + m_offset));
-		for each (Shape * i in m_shapeList)
+		if (qAbs(m_offset + 1.0) < 0.1)
+			m_offset = -0.95;
+		setGeometry(0, 0, m_canvasWidth * (1 + m_offset), m_canvasWidth * (1 + m_offset));
+		transfromOffset = QPoint((m_canvasWidth * (1 + m_offset)) / 2, (m_canvasHeight * (1 + m_offset)) / 2);
+		for each (Shape* i in m_shapeList)
 		{
 			if (i != nullptr)
 			{
-				i->scale((m_canvasWidth * (1 + m_offset)) / 2 - m_transfrom.x(), (m_canvasHeight * (1 + m_offset)) / 2 - m_transfrom.y());
+				i->scale(m_offset, m_offset);
 			}
 		}
-		m_transfrom.setX(m_canvasWidth * (1 + m_offset) / 2);
-		m_transfrom.setY(m_canvasHeight * (1 + m_offset) / 2);
+
 	}
+	m_transfrom = transfromOffset;
 	update();
 }
 
