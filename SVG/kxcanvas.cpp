@@ -439,54 +439,37 @@ void KxSvgCanvas::editShape(QPoint transformPoint)
 	}
 	case KxSvgCanvas::mousePosition::left:
 	{
-		QPoint point = m_pClickShape->getDrawStar();
-		point.setX(point.x() + (transformPoint.x() - m_currentPoint.x()));
-		m_pClickShape->setDrawStar(point);
+		m_pClickShape->moveLeft(QPoint(transformPoint.x() - m_currentPoint.x(), 0));
 		break;
 	}
 	case KxSvgCanvas::mousePosition::right:
 	{
-		QPoint point = m_pClickShape->getDrawEnd();
-		point.setX(point.x() + transformPoint.x() - m_currentPoint.x());
-		m_pClickShape->setDrawEnd(point);
+		m_pClickShape->moveRight(QPoint(transformPoint.x() - m_currentPoint.x(), 0));
 		break;
 	}
 	case KxSvgCanvas::mousePosition::bottom:
 	{
-		QPoint point = m_pClickShape->getDrawEnd();
-		point.setY(point.y() + transformPoint.y() - m_currentPoint.y());
-		m_pClickShape->setDrawEnd(point);
+		m_pClickShape->moveBottom(QPoint(0, transformPoint.y() - m_currentPoint.y()));
 		break;
 	}
 	case KxSvgCanvas::mousePosition::upperLeft:
 	{
-		QPoint point = m_pClickShape->getDrawStar();
-		point = point + transformPoint - m_currentPoint;
-		m_pClickShape->setDrawStar(point);
+		m_pClickShape->moveUpperLeft(transformPoint - m_currentPoint);
 		break;
 	}
 	case KxSvgCanvas::mousePosition::lowerLeft:
 	{
-		QPoint pointStart = m_pClickShape->getDrawStar();
-		QPoint pointEnd = m_pClickShape->getDrawEnd();
-		m_pClickShape->setDrawStar(QPoint(pointStart.x() + transformPoint.x() - m_currentPoint.x(), pointStart.y()));
-		m_pClickShape->setDrawEnd(QPoint(pointEnd.x(), pointEnd.y() + transformPoint.y() - m_currentPoint.y()));
+		m_pClickShape->moveLowerLeft(transformPoint - m_currentPoint);
 		break;
 	}
 	case KxSvgCanvas::mousePosition::upperRight:
 	{
-		QPoint pointStart = m_pClickShape->getDrawStar();
-		QPoint pointEnd = m_pClickShape->getDrawEnd();
-
-		m_pClickShape->setDrawStar(QPoint(pointStart.x(), pointStart.y() + transformPoint.y() - m_currentPoint.y()));
-		m_pClickShape->setDrawEnd(QPoint(pointEnd.x() + transformPoint.x() - m_currentPoint.x(), pointEnd.y()));
+		m_pClickShape->moveUpperRight(transformPoint - m_currentPoint);
 		break;
 	}
 	case KxSvgCanvas::mousePosition::lowerRight:
 	{
-		QPoint point = m_pClickShape->getDrawEnd();
-		point = point + (transformPoint - m_currentPoint);
-		m_pClickShape->setDrawEnd(point);
+		m_pClickShape->moveLowerRight(transformPoint - m_currentPoint);
 		break;
 	}
 	default:

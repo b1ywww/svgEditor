@@ -88,47 +88,50 @@ void Line::scale(qreal width, qreal height)
 
 void Line::move(QPoint offset)
 {
-
+	m_drawStar = m_drawStar + offset;
+	m_drawEnd = m_drawEnd + offset;
 }
 
 void Line::moveTop(QPoint offset)
 {
-
+	m_drawStar.setY(m_drawStar.y() + offset.y());
 }
 
 void Line::moveBottom(QPoint offset)
 {
-
+	m_drawEnd.setY(m_drawEnd.y() + offset.y());
 }
 
 void Line::moveLeft(QPoint offset)
 {
-
+	m_drawStar.setX(m_drawStar.x() + offset.x());
 }
 
 void Line::moveRight(QPoint offset)
 {
-
+	m_drawEnd.setX(m_drawEnd.x() + offset.x());
 }
 
 void Line::moveUpperLeft(QPoint offset)
 {
-
+	m_drawStar = m_drawStar + offset;
 }
 
 void Line::moveUpperRight(QPoint offset)
 {
-
+	m_drawStar.setY(m_drawStar.y() + offset.y());
+	m_drawEnd.setX(m_drawEnd.x() + offset.x());
 }
 
 void Line::moveLowerLeft(QPoint offset)
 {
-
+	m_drawStar.setX(m_drawStar.x() + offset.x());
+	m_drawEnd.setY(m_drawEnd.y() + offset.y());
 }
 
 void Line::moveLowerRight(QPoint offset)
 {
-
+	m_drawEnd = m_drawEnd + offset;
 }
 
 Square::Square()
@@ -190,37 +193,39 @@ void Square::moveTop(QPoint offset)
 
 void Square::moveBottom(QPoint offset)
 {
-
+	m_drawEnd.setY(m_drawEnd.y() + offset.y());
 }
 
 void Square::moveLeft(QPoint offset)
 {
-
+	m_drawStar.setX(m_drawStar.x() + offset.x());
 }
 
 void Square::moveRight(QPoint offset)
 {
-
+	m_drawEnd.setX(m_drawEnd.x() + offset.x());
 }
 
 void Square::moveUpperLeft(QPoint offset)
 {
-
+	m_drawStar = m_drawStar + offset;
 }
 
 void Square::moveUpperRight(QPoint offset)
 {
-
+	m_drawStar.setY(m_drawStar.y() + offset.y());
+	m_drawEnd.setX(m_drawEnd.x() + offset.x());
 }
 
 void Square::moveLowerLeft(QPoint offset)
 {
-
+	m_drawStar.setX(m_drawStar.x() + offset.x());
+	m_drawEnd.setY(m_drawEnd.y() + offset.y());
 }
 
 void Square::moveLowerRight(QPoint offset)
 {
-
+	m_drawEnd = m_drawEnd + offset;
 }
 
 Pancil::Pancil()
