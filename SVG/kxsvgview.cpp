@@ -304,7 +304,7 @@ void SVGMainWIndow::setToolBar()
 	m_pPathButton->setMinimumSize(ICON_MIN_SIZE, ICON_MIN_SIZE);
 	m_pPathButton->setImageDir();
 
-	m_pShapeButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget);
+	m_pShapeButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget, ShapeType::TypeHexagon);
 	m_pShapeButton->setObjectName(QStringLiteral("shape"));
 	m_pShapeButton->setMinimumSize(ICON_MIN_SIZE, ICON_MIN_SIZE);
 	m_pShapeButton->setImageDir();

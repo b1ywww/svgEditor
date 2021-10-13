@@ -250,10 +250,10 @@ void Pancil::drawShape(QPainter& painter)
 
 	QList<QPointF>::iterator i = m_drawPoint.begin();
 	QPainterPath path;
-	path.moveTo((*i).x(), (*i).y());
+	path.moveTo((*i));
 	for (; i != m_drawPoint.end();)
 	{
-		path.lineTo((*i).x(),(*i).y());
+		path.lineTo((*i));
 		i++;
 	}
 	painter.drawPath(path);
@@ -418,7 +418,10 @@ Shape* ShapeFactory::getShape(ShapeType type)
 		break;
 	case ShapeType::TypeCircle:
 		inShape = new Circle();
-		break;;
+		break;
+	case ShapeType::TypeHexagon:
+		inShape = new Hexagon();
+		break;
 	case ShapeType::tmp:
 		break;
 	default:
@@ -522,4 +525,113 @@ void Circle::moveLowerLeft(QPointF offset)
 void Circle::moveLowerRight(QPointF offset)
 {
 	m_drawEnd = m_drawEnd + offset;
+}
+
+Hexagon::Hexagon()
+{
+	m_vertex.resize(7);
+	qDebug() << m_vertex[6];
+}
+
+Hexagon::~Hexagon()
+{
+}
+
+void Hexagon::drawShape(QPainter& painter)
+{
+	QPolygonF myPolygon(m_vertex);
+	QPainterPath path;
+	path.addPolygon(myPolygon);
+	painter.drawPath(path);
+}
+
+void Hexagon::setDrawStar(QPointF star)
+{
+	m_drawStar = star;
+	m_star = m_drawStar;
+}
+
+void Hexagon::setDrawEnd(QPointF end)
+{
+	m_drawEnd = end;
+	m_end = m_drawEnd;
+	setVertex();
+}
+
+void Hexagon::setDepth(qreal depth)
+{
+
+}
+
+void Hexagon::scale(qreal width, qreal height)
+{
+
+}
+
+void Hexagon::move(QPointF offset)
+{
+	m_drawStar = m_drawStar + offset;
+	m_drawEnd = m_drawEnd + offset;
+	setVertex();
+}
+
+void Hexagon::moveTop(QPointF offset)
+{
+	m_drawStar.setY(m_drawStar.y() + offset.y());
+	setVertex();
+}
+
+void Hexagon::moveBottom(QPointF offset)
+{
+	m_drawEnd.setY(m_drawEnd.y() + offset.y());
+	setVertex();
+}
+
+void Hexagon::moveLeft(QPointF offset)
+{
+	m_drawStar.setX(m_drawStar.x() + offset.x());
+	setVertex();
+}
+
+void Hexagon::moveRight(QPointF offset)
+{
+	m_drawEnd.setX(m_drawEnd.x() + offset.x());
+	setVertex();
+}
+
+void Hexagon::moveUpperLeft(QPointF offset)
+{
+	m_drawStar = m_drawStar + offset;
+	setVertex();
+}
+
+void Hexagon::moveUpperRight(QPointF offset)
+{
+	m_drawStar.setY(m_drawStar.y() + offset.y());
+	m_drawEnd.setX(m_drawEnd.x() + offset.x());
+	setVertex();
+}
+
+void Hexagon::moveLowerLeft(QPointF offset)
+{
+	m_drawStar.setX(m_drawStar.x() + offset.x());
+	m_drawEnd.setY(m_drawEnd.y() + offset.y());
+	setVertex();
+}
+
+void Hexagon::moveLowerRight(QPointF offset)
+{
+	m_drawEnd = m_drawEnd + offset;
+	setVertex();
+}
+
+void Hexagon::setVertex()
+{
+	m_vertex[0] = QPointF(m_drawStar.x() + (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawStar.y());
+	m_vertex[1] = QPointF(m_drawStar.x() + 4 * (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawStar.y());
+	m_vertex[2] = QPointF(m_drawEnd.x(), (m_drawStar.y() + m_drawEnd.y()) / 2);
+	m_vertex[3] = QPointF(m_drawStar.x() + 4 * (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawEnd.y());
+	m_vertex[4] = QPointF(m_drawStar.x() + (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawEnd.y());
+	m_vertex[5] = QPointF(m_drawStar.x(), (m_drawStar.y() + m_drawEnd.y()) / 2);
+	m_vertex[6] = QPointF(m_drawStar.x() + (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawStar.y());
 }

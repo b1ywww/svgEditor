@@ -8,6 +8,7 @@ enum class ShapeType
 	TypeSquare,
 	TypePencil,
 	TypeCircle,
+	TypeHexagon,
 	tmp
 };
 
@@ -150,6 +151,33 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
+};
+
+class Hexagon : public Shape
+{
+public:
+	Hexagon();
+	~Hexagon();
+
+	void drawShape(QPainter& painter) override;
+	void setDrawStar(QPointF star) override;
+	void setDrawEnd(QPointF end) override;
+	void setDepth(qreal depth) override;
+	void scale(qreal width, qreal height) override;
+
+	void move(QPointF offset) override;
+	void moveTop(QPointF offset) override;
+	void moveBottom(QPointF offset) override;
+	void moveLeft(QPointF offset) override;
+	void moveRight(QPointF offset) override;
+	void moveUpperLeft(QPointF offset) override;
+	void moveUpperRight(QPointF offset) override;
+	void moveLowerLeft(QPointF offset) override;
+	void moveLowerRight(QPointF offset) override;
+
+	void setVertex();
+private:
+	QVector<QPointF> m_vertex;
 };
 
 class ShapeFactory
