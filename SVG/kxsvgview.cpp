@@ -93,10 +93,10 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 		QPen pen(Qt::DashLine);
 		pen.setColor(QColor(255, 192, 203));
 		painter.setPen(pen);
-		painter.drawRect( m_pClickShape->getStar().x() + KxSvgCanvas::s_offsetStartX
-						 ,m_pClickShape->getStar().y() + KxSvgCanvas::s_offsetStartY
-						 ,m_pClickShape->getEnd().x() - m_pClickShape->getStar().x() + s_offsetWidth
-						 ,m_pClickShape->getEnd().y() - m_pClickShape->getStar().y() + s_offsetHeight);
+		painter.drawRect( m_pClickShape->getDrawStar().x() + KxSvgCanvas::s_offsetStartX
+						 ,m_pClickShape->getDrawStar().y() + KxSvgCanvas::s_offsetStartY
+						 ,m_pClickShape->getDrawEnd().x() - m_pClickShape->getDrawStar().x() + s_offsetWidth
+						 ,m_pClickShape->getDrawEnd().y() - m_pClickShape->getDrawStar().y() + s_offsetHeight);
 		painter.setPen(Qt::NoPen);
 	}
 	else
@@ -120,7 +120,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 		{
 			m_shapeList.append(tmpShape);
 			m_pCurrentShape = tmpShape;
-			m_pCurrentShape->setStar(transfromPoint / (1 + m_offset));
+			m_pCurrentShape->setDrawStar(transfromPoint / (1 + m_offset));
 		}
 
 		if (false == isMove && m_currentType == ShapeType::TypeSelect)
@@ -138,90 +138,23 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 
 void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 {
-	QPoint transfromPoint = event->pos() - m_transfrom;
+	QPoint transformPoint = event->pos() - m_transfrom;
 	if (m_pCurrentShape)
 	{
-		m_pCurrentShape->setEnd(transfromPoint / (1 + m_offset));
-		m_pCurrentShape->scale(m_offset, m_offset);
+		m_pCurrentShape->setDrawEnd(transformPoint / (1 + m_offset));
+		m_pCurrentShape->scale(m_offset, m_offset); //更新drawPoint坐标
 	}
 
 	if (m_pClickShape && isMove)
 	{
-		switch (m_positionType)
-		{
-		case KxSvgCanvas::mousePosition::dafeult:
-		{
-			m_pClickShape->move(transfromPoint - m_currentPoint);
-			break;
-		}
-		case KxSvgCanvas::mousePosition::top:
-		{
-			QPoint point = m_pClickShape->getStar();
-			point.setY(point.y() + transfromPoint.y() - m_currentPoint.y());
-			m_pClickShape->setStar(point);
-			break;	
-		}
-		case KxSvgCanvas::mousePosition::left:
-		{
-			QPoint point = m_pClickShape->getStar();
-			point.setX(point.x() + transfromPoint.x() - m_currentPoint.x());
-			m_pClickShape->setStar(point);
-			break;
-		}
-		case KxSvgCanvas::mousePosition::right:
-		{
-			QPoint point = m_pClickShape->getEnd();
-			point.setX(point.x() + transfromPoint.x() - m_currentPoint.x());
-			m_pClickShape->setEnd(point);
-			break;
-		}
-		case KxSvgCanvas::mousePosition::bottom:
-		{
-			QPoint point = m_pClickShape->getEnd();
-			point.setY(point.y() + transfromPoint.y() - m_currentPoint.y());
-			m_pClickShape->setEnd(point);
-			break;
-		}
-		case KxSvgCanvas::mousePosition::upperLeft:
-		{
-			QPoint point = m_pClickShape->getStar();
-			point = point + transfromPoint - m_currentPoint;
-			m_pClickShape->setStar(point);
-			break;
-		}
-		case KxSvgCanvas::mousePosition::lowerLeft:
-		{
-			QPoint pointStart = m_pClickShape->getStar();
-			QPoint pointEnd = m_pClickShape->getEnd();
-			m_pClickShape->setStar(QPoint(pointStart.x() + transfromPoint.x() - m_currentPoint.x(), pointStart.y()));
-			m_pClickShape->setEnd(QPoint(pointEnd.x(), pointEnd.y() + transfromPoint.y() - m_currentPoint.y()));
-			break;
-		}
-		case KxSvgCanvas::mousePosition::upperRight:
-		{
-			QPoint pointStart = m_pClickShape->getStar();
-			QPoint pointEnd = m_pClickShape->getEnd();
-
-			m_pClickShape->setStar(QPoint(pointStart.x(), pointStart.y() + transfromPoint.y() - m_currentPoint.y()));
-			m_pClickShape->setEnd(QPoint(pointEnd.x() + transfromPoint.x() - m_currentPoint.x(), pointEnd.y()));
-			break;
-		}
-		case KxSvgCanvas::mousePosition::lowerRight:
-		{
-			QPoint point = m_pClickShape->getEnd();
-			point = point + transfromPoint - m_currentPoint;
-			m_pClickShape->setEnd(point);
-			break;
-		}
-		default:
-			break;
-		}
-		m_currentPoint = transfromPoint;
+		editShape(transformPoint);
+		m_currentPoint = transformPoint;
 	}
 	else if (m_pClickShape && m_currentType == ShapeType::TypeSelect)
 	{
-		setPositionType(transfromPoint);
+		setPositionType(transformPoint);
 	}
+
 	update();
 }
 
@@ -229,7 +162,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 {
 	if (m_pCurrentShape)
 	{
-		if(m_pCurrentShape->getEnd().isNull())
+		if(m_pCurrentShape->getDrawEnd().isNull())
 		{
 			delete m_pCurrentShape;
 			m_shapeList.removeLast();
@@ -238,9 +171,10 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 		else
 		{
 			m_pClickShape = m_pCurrentShape;
-			setOffset(event->pos().x() - m_pClickShape->getStar().x(), event->pos().y() - m_pClickShape->getStar().y());
+			setOffset(event->pos().x() - m_pClickShape->getDrawStar().x(), event->pos().y() - m_pClickShape->getDrawStar().y());
 		}
 	}
+	updatePhysicalPoint();
 	isMove = false;
 	m_pCurrentShape = nullptr;
 	update();
@@ -395,11 +329,11 @@ bool KxSvgCanvas::isInRect(QPoint point, Shape* shape)
 	if (shape == nullptr)
 		return nullptr;
 
-	qreal x = shape->getEnd().x() - shape->getStar().x() + 0.1; /*加0.1是为了防止出现 分母为0的情况，因为点是为整数的，所以加上0.1 不影响x的符号*/
-	qreal y = shape->getEnd().y() - shape->getStar().y() + 0.1;
+	qreal x = shape->getDrawEnd().x() - shape->getDrawStar().x() + 0.1; /*加0.1是为了防止出现 分母为0的情况，因为点是为整数的，所以加上0.1 不影响x的符号*/
+	qreal y = shape->getDrawEnd().y() - shape->getDrawStar().y() + 0.1;
 
-	qreal point_x = point.x() - shape->getStar().x();
-	qreal point_y = point.y() - shape->getStar().y();
+	qreal point_x = point.x() - shape->getDrawStar().x();
+	qreal point_y = point.y() - shape->getDrawStar().y();
 
 	setOffset(x, y);
 
@@ -472,19 +406,19 @@ void KxSvgCanvas::setPositionType(QPoint point)
 		return;
 	}
 
-	if (qAbs(point.x() - m_pClickShape->getStar().x()) < 5)
+	if (qAbs(point.x() - m_pClickShape->getDrawStar().x()) < 5)
 	{
 		flag = flag ^ 1;
 	}
-	if (qAbs(point.y() - m_pClickShape->getStar().y()) < 5)
+	if (qAbs(point.y() - m_pClickShape->getDrawStar().y()) < 5)
 	{
 		flag = flag ^ 2;
 	}
-	if (qAbs(point.x() - m_pClickShape->getEnd().x()) < 5)
+	if (qAbs(point.x() - m_pClickShape->getDrawEnd().x()) < 5)
 	{
 		flag = flag ^ 4;
 	}
-	if (qAbs(point.y() - m_pClickShape->getEnd().y()) < 5)
+	if (qAbs(point.y() - m_pClickShape->getDrawEnd().y()) < 5)
 	{
 		flag = flag ^ 8;
 	}
@@ -501,7 +435,7 @@ void KxSvgCanvas::setPositionType(QPoint point)
 	}
 
 	/*下面这么写的原因是对角线存在两种情况，加个if else 来区分，没有其他好点的办法QAQ*/
-	if ((m_pClickShape->getEnd().x() - m_pClickShape->getStar().x()) * (m_pClickShape->getEnd().y() - m_pClickShape->getStar().y()) >= 0)
+	if ((m_pClickShape->getDrawEnd().x() - m_pClickShape->getDrawStar().x()) * (m_pClickShape->getDrawEnd().y() - m_pClickShape->getDrawStar().y()) >= 0)
 	{
 		switch (flag)
 		{
@@ -520,6 +454,88 @@ void KxSvgCanvas::setPositionType(QPoint point)
 		case POSITION_LOWER_LETF:setCursor(Qt::SizeFDiagCursor); m_positionType = mousePosition::lowerLeft; break;
 		case POSITION_LOWER_RIGHT:setCursor(Qt::SizeBDiagCursor); m_positionType = mousePosition::lowerRight; break;
 		}
+	}
+}
+
+void KxSvgCanvas::editShape(QPoint transformPoint)
+{
+	switch (m_positionType)
+	{
+	case KxSvgCanvas::mousePosition::dafeult:
+	{
+		m_pClickShape->move((transformPoint - m_currentPoint));
+		break;
+	}
+	case KxSvgCanvas::mousePosition::top:
+	{
+		QPoint point = m_pClickShape->getDrawStar();
+		point.setY(point.y() + (transformPoint.y() - m_currentPoint.y()));
+		qDebug() << point;
+		m_pClickShape->setDrawStar(point);
+		break;
+	}
+	case KxSvgCanvas::mousePosition::left:
+	{
+		QPoint point = m_pClickShape->getDrawStar();
+		point.setX(point.x() + (transformPoint.x() - m_currentPoint.x()));
+		m_pClickShape->setDrawStar(point);
+		break;
+	}
+	case KxSvgCanvas::mousePosition::right:
+	{
+		QPoint point = m_pClickShape->getDrawEnd();
+		point.setX(point.x() + transformPoint.x() - m_currentPoint.x());
+		m_pClickShape->setDrawEnd(point);
+		break;
+	}
+	case KxSvgCanvas::mousePosition::bottom:
+	{
+		QPoint point = m_pClickShape->getDrawEnd();
+		point.setY(point.y() + transformPoint.y() - m_currentPoint.y());
+		m_pClickShape->setDrawEnd(point);
+		break;
+	}
+	case KxSvgCanvas::mousePosition::upperLeft:
+	{
+		QPoint point = m_pClickShape->getDrawStar();
+		point = point + transformPoint - m_currentPoint;
+		m_pClickShape->setDrawStar(point);
+		break;
+	}
+	case KxSvgCanvas::mousePosition::lowerLeft:
+	{
+		QPoint pointStart = m_pClickShape->getDrawStar();
+		QPoint pointEnd = m_pClickShape->getDrawEnd();
+		m_pClickShape->setDrawStar(QPoint(pointStart.x() + transformPoint.x() - m_currentPoint.x(), pointStart.y()));
+		m_pClickShape->setDrawEnd(QPoint(pointEnd.x(), pointEnd.y() + transformPoint.y() - m_currentPoint.y()));
+		break;
+	}
+	case KxSvgCanvas::mousePosition::upperRight:
+	{
+		QPoint pointStart = m_pClickShape->getDrawStar();
+		QPoint pointEnd = m_pClickShape->getDrawEnd();
+
+		m_pClickShape->setDrawStar(QPoint(pointStart.x(), pointStart.y() + transformPoint.y() - m_currentPoint.y()));
+		m_pClickShape->setDrawEnd(QPoint(pointEnd.x() + transformPoint.x() - m_currentPoint.x(), pointEnd.y()));
+		break;
+	}
+	case KxSvgCanvas::mousePosition::lowerRight:
+	{
+		QPoint point = m_pClickShape->getDrawEnd();
+		point = point + (transformPoint - m_currentPoint);
+		m_pClickShape->setDrawEnd(point);
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void KxSvgCanvas::updatePhysicalPoint()
+{
+	if (m_pClickShape)
+	{
+		m_pClickShape->drawPointToPhysicalPoint(m_offset);
 	}
 }
 

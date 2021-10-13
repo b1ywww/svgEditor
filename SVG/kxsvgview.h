@@ -77,6 +77,9 @@ private:
 	static int s_offsetStartY;
 	static int s_offsetWidth;
 	static int s_offsetHeight;
+
+	void editShape(QPoint transformPoint);
+	void updatePhysicalPoint();
 };
 	
 class KxLeftToolBarBtn :public QRadioButton

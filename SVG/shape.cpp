@@ -1,5 +1,6 @@
 #include "shape.h"
 #include <QPainter>
+#include <QDebug>
 Shape::Shape()
 {
 
@@ -10,11 +11,34 @@ Shape::~Shape()
 
 }
 
+QPoint& Shape::getPhysicalStar()
+{
+	return m_star;
+}
+
+QPoint& Shape::getPhysicalEnd()
+{
+	return m_end;
+}
+
+QPoint& Shape::getDrawStar()
+{
+	return m_drawStar;
+}
+
+QPoint& Shape::getDrawEnd()
+{
+	return m_drawEnd;
+}
+
+void Shape::drawPointToPhysicalPoint(qreal ratio)
+{
+	m_star = m_drawStar / (1 + ratio);
+	m_end = m_drawEnd / (1 + ratio);
+}
+
 void Shape::move(QPoint offset)
 {
-	m_star = m_star + offset;
-	m_end = m_end + offset;
-
 	m_drawStar = m_drawStar + offset;
 	m_drawEnd = m_drawEnd + offset;
 }
@@ -29,16 +53,16 @@ Line::~Line()
 
 }
 
-void Line::setStar(QPoint star)
+void Line::setDrawStar(QPoint star)
 {
-	m_star = star;
-	m_drawStar = m_star;
+	m_drawStar = star;
+	m_star = m_drawStar;
 }
 
-void Line::setEnd(QPoint end)
+void Line::setDrawEnd(QPoint end)
 {
-	m_end = end;
-	m_drawEnd = m_end;
+	m_drawEnd = end;
+	m_end = m_drawEnd;
 }
 
 void Line::drawShape(QPainter& painter)
@@ -62,16 +86,6 @@ void Line::scale(qreal width, qreal height)
 	m_drawEnd.setY((m_end.y()) * (1 + height));
 }
 
-QPoint& Line::getStar()
-{
-	return m_drawStar;
-}
-
-QPoint& Line::getEnd()
-{
-	return m_drawEnd;
-}
-
 Square::Square()
 {
 
@@ -82,21 +96,21 @@ Square::~Square()
 
 }
 
-void Square::setStar(QPoint star)
+void Square::setDrawStar(QPoint star)
 {
-	m_star = star;
-	m_drawStar = m_star;
+	m_drawStar = star;
+	m_star = m_drawStar;
 }
 
-void Square::setEnd(QPoint end)
+void Square::setDrawEnd(QPoint end)
 {
-	m_end = end;
-	m_drawEnd = m_end;
+	m_drawEnd = end;
+	m_end = m_drawEnd;
 }
 
 void Square::drawShape(QPainter& painter)
 {
-	if (m_star.isNull() || m_end.isNull())
+	if (m_drawStar.isNull() || m_drawEnd.isNull())
 		return;
 	QBrush brush(QColor(255, 255, 255));
 	painter.setBrush(brush);
@@ -116,16 +130,6 @@ void Square::scale(qreal width, qreal height)
 
 	m_drawStar.setY((m_star.y()) * (1 + height));
 	m_drawEnd.setY((m_end.y()) * (1 + height));
-}
-
-QPoint& Square::getStar()
-{
-	return m_drawStar;
-}
-
-QPoint& Square::getEnd()
-{
-	return m_drawEnd;
 }
 
 ShapeFactory* ShapeFactory::getShapeFactory()

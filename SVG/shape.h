@@ -16,12 +16,15 @@ public:
 	~Shape();
 
 	virtual void drawShape(QPainter& painter) = 0;
-	virtual void setStar(QPoint star) = 0;
-	virtual void setEnd(QPoint end) = 0;
+	virtual void setDrawStar(QPoint star) = 0;
+	virtual void setDrawEnd(QPoint end) = 0;
 	virtual void setDepth(qreal depth) = 0;
-	virtual void scale(qreal width, qreal height) = 0;
-	virtual QPoint& getStar() = 0;
-	virtual QPoint& getEnd() = 0;
+	virtual void scale(qreal ratioW, qreal ratioH) = 0;
+	QPoint& getPhysicalStar();
+	QPoint& getPhysicalEnd();
+	QPoint& getDrawStar();
+	QPoint& getDrawEnd();
+	void drawPointToPhysicalPoint(qreal ratio);
 
 	void move(QPoint offset);
 protected:
@@ -40,12 +43,10 @@ public:
 	~Line();
 
 	void drawShape(QPainter& painter) override;
-	void setStar(QPoint star) override;
-	void setEnd(QPoint end) override;
+	void setDrawStar(QPoint star) override;
+	void setDrawEnd(QPoint end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal width, qreal height) override;
-	QPoint& getStar() override;
-	QPoint& getEnd() override;
 };
 
 class Square : public Shape
@@ -56,13 +57,11 @@ public:
 	~Square();
 
 	void drawShape(QPainter& painter) override;
-	void setStar(QPoint star) override;
-	void setEnd(QPoint end) override;
+	void setDrawStar(QPoint star) override;
+	void setDrawEnd(QPoint end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal width, qreal height) override;
 
-	QPoint& getStar() override;
-	QPoint& getEnd() override;
 };
 
 class ShapeFactory
