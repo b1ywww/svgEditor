@@ -86,6 +86,51 @@ void Line::scale(qreal width, qreal height)
 	m_drawEnd.setY((m_end.y()) * (1 + height));
 }
 
+void Line::move(QPoint offset)
+{
+
+}
+
+void Line::moveTop(QPoint offset)
+{
+
+}
+
+void Line::moveBottom(QPoint offset)
+{
+
+}
+
+void Line::moveLeft(QPoint offset)
+{
+
+}
+
+void Line::moveRight(QPoint offset)
+{
+
+}
+
+void Line::moveUpperLeft(QPoint offset)
+{
+
+}
+
+void Line::moveUpperRight(QPoint offset)
+{
+
+}
+
+void Line::moveLowerLeft(QPoint offset)
+{
+
+}
+
+void Line::moveLowerRight(QPoint offset)
+{
+
+}
+
 Square::Square()
 {
 
@@ -132,6 +177,198 @@ void Square::scale(qreal width, qreal height)
 	m_drawEnd.setY((m_end.y()) * (1 + height));
 }
 
+void Square::move(QPoint offset)
+{
+	m_drawStar = m_drawStar + offset;
+	m_drawEnd = m_drawEnd + offset;
+}
+
+void Square::moveTop(QPoint offset)
+{
+	m_drawStar.setY(m_drawStar.y() + offset.y());
+}
+
+void Square::moveBottom(QPoint offset)
+{
+
+}
+
+void Square::moveLeft(QPoint offset)
+{
+
+}
+
+void Square::moveRight(QPoint offset)
+{
+
+}
+
+void Square::moveUpperLeft(QPoint offset)
+{
+
+}
+
+void Square::moveUpperRight(QPoint offset)
+{
+
+}
+
+void Square::moveLowerLeft(QPoint offset)
+{
+
+}
+
+void Square::moveLowerRight(QPoint offset)
+{
+
+}
+
+Pancil::Pancil()
+{
+
+}
+
+Pancil::~Pancil()
+{
+
+}
+
+void Pancil::drawShape(QPainter& painter)
+{
+	if (m_drawPoint.size() < 2)
+		return;
+
+	QList<QPoint>::iterator i = m_drawPoint.begin();
+	QList<QPoint>::iterator j = i + 1;
+	for (; j != m_drawPoint.end();)
+	{
+		painter.drawLine(*i, *j);
+		i++;
+		j++;
+	}
+}
+
+void Pancil::setDrawStar(QPoint star)
+{
+	m_drawPoint.append(star);
+	m_PhysicalPoint.append(star);
+	updateClickRect(star);
+}
+
+void Pancil::setDrawEnd(QPoint end)
+{
+	m_drawPoint.append(end);
+	m_PhysicalPoint.append(end);
+	updateClickRect(end);
+}
+
+void Pancil::updateClickRect(QPoint point)
+{
+	point.x() < m_Left ? m_Left = point.x() : m_Left;
+	point.x() > m_right ? m_right = point.x() : m_right;
+	point.y() < m_top ? m_top = point.y() : m_top;
+	point.y() > m_bottom ? m_bottom = point.y(): m_bottom;
+
+	m_drawStar.setX(m_Left);
+	m_drawStar.setY(m_top);
+
+	m_drawEnd.setX(m_right);
+	m_drawEnd.setY(m_bottom);
+
+	m_star = m_drawStar;
+	m_end = m_drawEnd;
+}
+
+void Pancil::setDepth(qreal depth)
+{
+}
+
+void Pancil::scale(qreal ratioW, qreal ratioH)
+{
+	QList<QPoint>::iterator i = m_drawPoint.begin();
+	QList<QPoint>::iterator j = m_PhysicalPoint.begin();
+
+	for (; i != m_drawPoint.end() && j != m_PhysicalPoint.end(); )
+	{
+		(*i).setX((*j).x() * (1 + ratioW));
+		(*i).setY((*j).y() * (1 + ratioH));
+		i++;
+		j++;
+	}
+	
+	m_drawStar.setX((m_star.x()) * (1 + ratioW));
+	m_drawEnd.setX((m_end.x()) * (1 + ratioW));
+
+	m_drawStar.setY((m_star.y()) * (1 + ratioH));
+	m_drawEnd.setY((m_end.y()) * (1 + ratioH));
+}
+
+void Pancil::move(QPoint offset)
+{
+	QList<QPoint>::iterator i = m_drawPoint.begin();
+	for (; i != m_drawPoint.end(); i++)
+	{
+		*i = *i + offset;
+	}
+	m_drawStar += offset;
+	m_drawEnd += offset;
+}
+
+void Pancil::moveTop(QPoint offset)
+{
+
+}
+
+void Pancil::moveBottom(QPoint offset)
+{
+
+}
+
+void Pancil::moveLeft(QPoint offset)
+{
+
+}
+
+void Pancil::moveRight(QPoint offset)
+{
+
+}
+
+void Pancil::moveUpperLeft(QPoint offset)
+{
+
+}
+
+void Pancil::moveUpperRight(QPoint offset)
+{
+
+}
+
+void Pancil::moveLowerLeft(QPoint offset)
+{
+
+}
+
+void Pancil::moveLowerRight(QPoint offset)
+{
+
+}
+
+void Pancil::drawPointToPhysicalPoint(qreal ratio)
+{
+	QList<QPoint>::iterator i = m_drawPoint.begin();
+	QList<QPoint>::iterator j = m_PhysicalPoint.begin();
+
+	for (; i != m_drawPoint.end() && j != m_PhysicalPoint.end(); )
+	{
+		(*j) = (*i) / (1 + ratio);
+		j++;
+		i++;
+	}
+
+	Shape::drawPointToPhysicalPoint(ratio);
+}
+
 ShapeFactory* ShapeFactory::getShapeFactory()
 {
 	static ShapeFactory* m_pShapeFactory = nullptr;
@@ -155,6 +392,9 @@ Shape* ShapeFactory::getShape(ShapeType type)
 		break;
 	case ShapeType::TypeSquare:
 		inShape = new Square();
+		break;
+	case ShapeType::TypePencil:
+		inShape = new Pancil();
 		break;
 	case ShapeType::tmp:
 		break;
