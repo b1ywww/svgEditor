@@ -7,6 +7,7 @@ enum class ShapeType
 	TypeLine,
 	TypeSquare,
 	TypePencil,
+	TypeCircle,
 	tmp
 };
 
@@ -17,31 +18,31 @@ public:
 	~Shape();
 
 	virtual void drawShape(QPainter& painter) = 0;
-	virtual void setDrawStar(QPoint star) = 0;
-	virtual void setDrawEnd(QPoint end) = 0;
+	virtual void setDrawStar(QPointF star) = 0;
+	virtual void setDrawEnd(QPointF end) = 0;
 	virtual void setDepth(qreal depth) = 0;
 	virtual void scale(qreal ratioW, qreal ratioH) = 0;
-	virtual QPoint& getPhysicalStar();
-	virtual QPoint& getPhysicalEnd();
-	virtual QPoint& getDrawStar();
-	virtual QPoint& getDrawEnd();
+	virtual QPointF& getPhysicalStar();
+	virtual QPointF& getPhysicalEnd();
+	virtual QPointF& getDrawStar();
+	virtual QPointF& getDrawEnd();
 	virtual void drawPointToPhysicalPoint(qreal ratio);
 
-	virtual void move(QPoint offset);
-	virtual void moveTop(QPoint offset) = 0;
-	virtual void moveBottom(QPoint offset) = 0;
-	virtual void moveLeft(QPoint offset) = 0;
-	virtual void moveRight(QPoint offset) = 0;
-	virtual void moveUpperLeft(QPoint offset) = 0;
-	virtual void moveUpperRight(QPoint offset) = 0;
-	virtual void moveLowerLeft(QPoint offset) = 0;
-	virtual void moveLowerRight(QPoint offset) = 0;
+	virtual void move(QPointF offset);
+	virtual void moveTop(QPointF offset) = 0;
+	virtual void moveBottom(QPointF offset) = 0;
+	virtual void moveLeft(QPointF offset) = 0;
+	virtual void moveRight(QPointF offset) = 0;
+	virtual void moveUpperLeft(QPointF offset) = 0;
+	virtual void moveUpperRight(QPointF offset) = 0;
+	virtual void moveLowerLeft(QPointF offset) = 0;
+	virtual void moveLowerRight(QPointF offset) = 0;
 
 protected:
-	QPoint m_star;      //物理坐标
-	QPoint m_end;
-	QPoint m_drawStar;  //逻辑坐标
-	QPoint m_drawEnd;
+	QPointF m_star;      //物理坐标
+	QPointF m_end;
+	QPointF m_drawStar;  //逻辑坐标
+	QPointF m_drawEnd;
 	qreal m_depth;
 };
 
@@ -49,48 +50,48 @@ class Line : public Shape
 {
 public:
 	Line();
-	Line(QPoint star, QPoint end);
+	Line(QPointF star, QPointF end);
 	~Line();
 
 	void drawShape(QPainter& painter) override;
-	void setDrawStar(QPoint star) override;
-	void setDrawEnd(QPoint end) override;
+	void setDrawStar(QPointF star) override;
+	void setDrawEnd(QPointF end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal width, qreal height) override;
 
-	void move(QPoint offset) override;
-	void moveTop(QPoint offset) override;
-	void moveBottom(QPoint offset) override;
-	void moveLeft(QPoint offset) override;
-	void moveRight(QPoint offset) override;
-	void moveUpperLeft(QPoint offset) override;
-	void moveUpperRight(QPoint offset) override;
-	void moveLowerLeft(QPoint offset) override;
-	void moveLowerRight(QPoint offset) override;
+	void move(QPointF offset) override;
+	void moveTop(QPointF offset) override;
+	void moveBottom(QPointF offset) override;
+	void moveLeft(QPointF offset) override;
+	void moveRight(QPointF offset) override;
+	void moveUpperLeft(QPointF offset) override;
+	void moveUpperRight(QPointF offset) override;
+	void moveLowerLeft(QPointF offset) override;
+	void moveLowerRight(QPointF offset) override;
 };
 
 class Square : public Shape
 {
 public:
 	Square();
-	Square(QPoint star, QPoint end);
+	Square(QPointF star, QPointF end);
 	~Square();
 
 	void drawShape(QPainter& painter) override;
-	void setDrawStar(QPoint star) override;
-	void setDrawEnd(QPoint end) override;
+	void setDrawStar(QPointF star) override;
+	void setDrawEnd(QPointF end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal width, qreal height) override;
 
-	void move(QPoint offset) override;
-	void moveTop(QPoint offset) override;
-	void moveBottom(QPoint offset) override;
-	void moveLeft(QPoint offset) override;
-	void moveRight(QPoint offset) override;
-	void moveUpperLeft(QPoint offset) override;
-	void moveUpperRight(QPoint offset) override;
-	void moveLowerLeft(QPoint offset) override;
-	void moveLowerRight(QPoint offset) override;
+	void move(QPointF offset) override;
+	void moveTop(QPointF offset) override;
+	void moveBottom(QPointF offset) override;
+	void moveLeft(QPointF offset) override;
+	void moveRight(QPointF offset) override;
+	void moveUpperLeft(QPointF offset) override;
+	void moveUpperRight(QPointF offset) override;
+	void moveLowerLeft(QPointF offset) override;
+	void moveLowerRight(QPointF offset) override;
 
 };
 
@@ -101,31 +102,54 @@ public:
 	~Pancil();
 
 	void drawShape(QPainter& painter) override;
-	void setDrawStar(QPoint star) override;
-	void setDrawEnd(QPoint end) override;
+	void setDrawStar(QPointF star) override;
+	void setDrawEnd(QPointF end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal ratioW, qreal ratioH) override;
 	void drawPointToPhysicalPoint(qreal ratio) override;
 
-	void move(QPoint offset) override;
-	void moveTop(QPoint offset) override;
-	void moveBottom(QPoint offset) override;
-	void moveLeft(QPoint offset) override;
-	void moveRight(QPoint offset) override;
-	void moveUpperLeft(QPoint offset) override;
-	void moveUpperRight(QPoint offset) override;
-	void moveLowerLeft(QPoint offset) override;
-	void moveLowerRight(QPoint offset) override;
+	void move(QPointF offset) override;
+	void moveTop(QPointF offset) override;
+	void moveBottom(QPointF offset) override;
+	void moveLeft(QPointF offset) override;
+	void moveRight(QPointF offset) override;
+	void moveUpperLeft(QPointF offset) override;
+	void moveUpperRight(QPointF offset) override;
+	void moveLowerLeft(QPointF offset) override;
+	void moveLowerRight(QPointF offset) override;
 
-	void updateClickRect(QPoint point);
+	void updateClickRect(QPointF point);
 
 private:
-	QList<QPoint> m_drawPoint;
-	QList<QPoint> m_PhysicalPoint;
-	int m_Left = 10000;  //让画笔抽象出一个矩形，这个矩形包含了整个画笔内容
-	int m_right = -10000;
-	int m_top = 10000;
-	int m_bottom = -10000;
+	QList<QPointF> m_drawPoint;
+	QList<QPointF> m_PhysicalPoint;
+	qreal m_Left = 10000.0;  //让画笔抽象出一个矩形，这个矩形包含了整个画笔内容
+	qreal m_right = -10000.0;
+	qreal m_top = 10000.0;
+	qreal m_bottom = -10000.0;
+};
+
+class Circle : public Shape
+{
+public:
+	Circle();
+	~Circle();
+
+	void drawShape(QPainter& painter) override;
+	void setDrawStar(QPointF star) override;
+	void setDrawEnd(QPointF end) override;
+	void setDepth(qreal depth) override;
+	void scale(qreal width, qreal height) override;
+
+	void move(QPointF offset) override;
+	void moveTop(QPointF offset) override;
+	void moveBottom(QPointF offset) override;
+	void moveLeft(QPointF offset) override;
+	void moveRight(QPointF offset) override;
+	void moveUpperLeft(QPointF offset) override;
+	void moveUpperRight(QPointF offset) override;
+	void moveLowerLeft(QPointF offset) override;
+	void moveLowerRight(QPointF offset) override;
 };
 
 class ShapeFactory

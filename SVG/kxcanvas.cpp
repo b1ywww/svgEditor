@@ -58,11 +58,15 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 	{
 		QPen pen(Qt::DashLine);
 		pen.setColor(QColor(255, 192, 203));
+		QPainterPath path;
+
 		painter.setPen(pen);
-		painter.drawRect(m_pClickShape->getDrawStar().x() + KxSvgCanvas::s_offsetStartX
+		path.addRect(m_pClickShape->getDrawStar().x() + KxSvgCanvas::s_offsetStartX
 			, m_pClickShape->getDrawStar().y() + KxSvgCanvas::s_offsetStartY
 			, m_pClickShape->getDrawEnd().x() - m_pClickShape->getDrawStar().x() + s_offsetWidth
 			, m_pClickShape->getDrawEnd().y() - m_pClickShape->getDrawStar().y() + s_offsetHeight);
+
+		painter.drawPath(path);
 		painter.setPen(Qt::NoPen);
 	}
 	else

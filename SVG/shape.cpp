@@ -11,22 +11,22 @@ Shape::~Shape()
 
 }
 
-QPoint& Shape::getPhysicalStar()
+QPointF& Shape::getPhysicalStar()
 {
 	return m_star;
 }
 
-QPoint& Shape::getPhysicalEnd()
+QPointF& Shape::getPhysicalEnd()
 {
 	return m_end;
 }
 
-QPoint& Shape::getDrawStar()
+QPointF& Shape::getDrawStar()
 {
 	return m_drawStar;
 }
 
-QPoint& Shape::getDrawEnd()
+QPointF& Shape::getDrawEnd()
 {
 	return m_drawEnd;
 }
@@ -37,7 +37,7 @@ void Shape::drawPointToPhysicalPoint(qreal ratio)
 	m_end = m_drawEnd / (1 + ratio);
 }
 
-void Shape::move(QPoint offset)
+void Shape::move(QPointF offset)
 {
 	m_drawStar = m_drawStar + offset;
 	m_drawEnd = m_drawEnd + offset;
@@ -53,13 +53,13 @@ Line::~Line()
 
 }
 
-void Line::setDrawStar(QPoint star)
+void Line::setDrawStar(QPointF star)
 {
 	m_drawStar = star;
 	m_star = m_drawStar;
 }
 
-void Line::setDrawEnd(QPoint end)
+void Line::setDrawEnd(QPointF end)
 {
 	m_drawEnd = end;
 	m_end = m_drawEnd;
@@ -69,7 +69,10 @@ void Line::drawShape(QPainter& painter)
 {
 	if (m_drawStar.isNull() || m_drawEnd.isNull())
 		return;
-	painter.drawLine(m_drawStar, m_drawEnd);
+	QPainterPath path;
+	path.moveTo(m_drawStar);
+	path.lineTo(m_drawEnd);
+	painter.drawPath(path);
 }
 
 void Line::setDepth(qreal depth)
@@ -86,50 +89,50 @@ void Line::scale(qreal width, qreal height)
 	m_drawEnd.setY((m_end.y()) * (1 + height));
 }
 
-void Line::move(QPoint offset)
+void Line::move(QPointF offset)
 {
 	m_drawStar = m_drawStar + offset;
 	m_drawEnd = m_drawEnd + offset;
 }
 
-void Line::moveTop(QPoint offset)
+void Line::moveTop(QPointF offset)
 {
 	m_drawStar.setY(m_drawStar.y() + offset.y());
 }
 
-void Line::moveBottom(QPoint offset)
+void Line::moveBottom(QPointF offset)
 {
 	m_drawEnd.setY(m_drawEnd.y() + offset.y());
 }
 
-void Line::moveLeft(QPoint offset)
+void Line::moveLeft(QPointF offset)
 {
 	m_drawStar.setX(m_drawStar.x() + offset.x());
 }
 
-void Line::moveRight(QPoint offset)
+void Line::moveRight(QPointF offset)
 {
 	m_drawEnd.setX(m_drawEnd.x() + offset.x());
 }
 
-void Line::moveUpperLeft(QPoint offset)
+void Line::moveUpperLeft(QPointF offset)
 {
 	m_drawStar = m_drawStar + offset;
 }
 
-void Line::moveUpperRight(QPoint offset)
+void Line::moveUpperRight(QPointF offset)
 {
 	m_drawStar.setY(m_drawStar.y() + offset.y());
 	m_drawEnd.setX(m_drawEnd.x() + offset.x());
 }
 
-void Line::moveLowerLeft(QPoint offset)
+void Line::moveLowerLeft(QPointF offset)
 {
 	m_drawStar.setX(m_drawStar.x() + offset.x());
 	m_drawEnd.setY(m_drawEnd.y() + offset.y());
 }
 
-void Line::moveLowerRight(QPoint offset)
+void Line::moveLowerRight(QPointF offset)
 {
 	m_drawEnd = m_drawEnd + offset;
 }
@@ -144,13 +147,13 @@ Square::~Square()
 
 }
 
-void Square::setDrawStar(QPoint star)
+void Square::setDrawStar(QPointF star)
 {
 	m_drawStar = star;
 	m_star = m_drawStar;
 }
 
-void Square::setDrawEnd(QPoint end)
+void Square::setDrawEnd(QPointF end)
 {
 	m_drawEnd = end;
 	m_end = m_drawEnd;
@@ -162,7 +165,9 @@ void Square::drawShape(QPainter& painter)
 		return;
 	QBrush brush(QColor(255, 255, 255));
 	painter.setBrush(brush);
-	painter.drawRect(m_drawStar.x(), m_drawStar.y(), m_drawEnd.x() - m_drawStar.x(), m_drawEnd.y() - m_drawStar.y());
+	QPainterPath path;
+	path.addRect(m_drawStar.x(), m_drawStar.y(), m_drawEnd.x() - m_drawStar.x(), m_drawEnd.y() - m_drawStar.y());
+	painter.drawPath(path);
 	painter.setBrush(Qt::NoBrush);
 }
 
@@ -180,50 +185,50 @@ void Square::scale(qreal width, qreal height)
 	m_drawEnd.setY((m_end.y()) * (1 + height));
 }
 
-void Square::move(QPoint offset)
+void Square::move(QPointF offset)
 {
 	m_drawStar = m_drawStar + offset;
 	m_drawEnd = m_drawEnd + offset;
 }
 
-void Square::moveTop(QPoint offset)
+void Square::moveTop(QPointF offset)
 {
 	m_drawStar.setY(m_drawStar.y() + offset.y());
 }
 
-void Square::moveBottom(QPoint offset)
+void Square::moveBottom(QPointF offset)
 {
 	m_drawEnd.setY(m_drawEnd.y() + offset.y());
 }
 
-void Square::moveLeft(QPoint offset)
+void Square::moveLeft(QPointF offset)
 {
 	m_drawStar.setX(m_drawStar.x() + offset.x());
 }
 
-void Square::moveRight(QPoint offset)
+void Square::moveRight(QPointF offset)
 {
 	m_drawEnd.setX(m_drawEnd.x() + offset.x());
 }
 
-void Square::moveUpperLeft(QPoint offset)
+void Square::moveUpperLeft(QPointF offset)
 {
 	m_drawStar = m_drawStar + offset;
 }
 
-void Square::moveUpperRight(QPoint offset)
+void Square::moveUpperRight(QPointF offset)
 {
 	m_drawStar.setY(m_drawStar.y() + offset.y());
 	m_drawEnd.setX(m_drawEnd.x() + offset.x());
 }
 
-void Square::moveLowerLeft(QPoint offset)
+void Square::moveLowerLeft(QPointF offset)
 {
 	m_drawStar.setX(m_drawStar.x() + offset.x());
 	m_drawEnd.setY(m_drawEnd.y() + offset.y());
 }
 
-void Square::moveLowerRight(QPoint offset)
+void Square::moveLowerRight(QPointF offset)
 {
 	m_drawEnd = m_drawEnd + offset;
 }
@@ -243,31 +248,32 @@ void Pancil::drawShape(QPainter& painter)
 	if (m_drawPoint.size() < 2)
 		return;
 
-	QList<QPoint>::iterator i = m_drawPoint.begin();
-	QList<QPoint>::iterator j = i + 1;
-	for (; j != m_drawPoint.end();)
+	QList<QPointF>::iterator i = m_drawPoint.begin();
+	QPainterPath path;
+	path.moveTo((*i).x(), (*i).y());
+	for (; i != m_drawPoint.end();)
 	{
-		painter.drawLine(*i, *j);
+		path.lineTo((*i).x(),(*i).y());
 		i++;
-		j++;
 	}
+	painter.drawPath(path);
 }
 
-void Pancil::setDrawStar(QPoint star)
+void Pancil::setDrawStar(QPointF star)
 {
 	m_drawPoint.append(star);
 	m_PhysicalPoint.append(star);
 	updateClickRect(star);
 }
 
-void Pancil::setDrawEnd(QPoint end)
+void Pancil::setDrawEnd(QPointF end)
 {
 	m_drawPoint.append(end);
 	m_PhysicalPoint.append(end);
 	updateClickRect(end);
 }
 
-void Pancil::updateClickRect(QPoint point)
+void Pancil::updateClickRect(QPointF point)
 {
 	point.x() < m_Left ? m_Left = point.x() : m_Left;
 	point.x() > m_right ? m_right = point.x() : m_right;
@@ -290,8 +296,8 @@ void Pancil::setDepth(qreal depth)
 
 void Pancil::scale(qreal ratioW, qreal ratioH)
 {
-	QList<QPoint>::iterator i = m_drawPoint.begin();
-	QList<QPoint>::iterator j = m_PhysicalPoint.begin();
+	QList<QPointF>::iterator i = m_drawPoint.begin();
+	QList<QPointF>::iterator j = m_PhysicalPoint.begin();
 
 	for (; i != m_drawPoint.end() && j != m_PhysicalPoint.end(); )
 	{
@@ -308,9 +314,9 @@ void Pancil::scale(qreal ratioW, qreal ratioH)
 	m_drawEnd.setY((m_end.y()) * (1 + ratioH));
 }
 
-void Pancil::move(QPoint offset)
+void Pancil::move(QPointF offset)
 {
-	QList<QPoint>::iterator i = m_drawPoint.begin();
+	QList<QPointF>::iterator i = m_drawPoint.begin();
 	for (; i != m_drawPoint.end(); i++)
 	{
 		*i = *i + offset;
@@ -319,50 +325,59 @@ void Pancil::move(QPoint offset)
 	m_drawEnd += offset;
 }
 
-void Pancil::moveTop(QPoint offset)
+void Pancil::moveTop(QPointF offset)
+{
+	//QList<QPointF>::iterator i = m_drawPoint.begin();
+	//for (; i != m_drawPoint.end(); i++)
+	//{
+	//	qreal ratio = ((*i).y() - m_bottom) * 1.0 / (m_top - m_bottom);
+	//	qreal offsetY = offset.y() * ratio;
+	//	(*i).setY((*i).y() + offsetY);
+	//	qDebug() << *i;
+	//}
+	//m_top = m_drawStar.y() + offset.y();
+	//m_drawStar.setY(m_top);
+}
+
+void Pancil::moveBottom(QPointF offset)
 {
 
 }
 
-void Pancil::moveBottom(QPoint offset)
+void Pancil::moveLeft(QPointF offset)
 {
 
 }
 
-void Pancil::moveLeft(QPoint offset)
+void Pancil::moveRight(QPointF offset)
 {
 
 }
 
-void Pancil::moveRight(QPoint offset)
+void Pancil::moveUpperLeft(QPointF offset)
 {
 
 }
 
-void Pancil::moveUpperLeft(QPoint offset)
+void Pancil::moveUpperRight(QPointF offset)
 {
 
 }
 
-void Pancil::moveUpperRight(QPoint offset)
+void Pancil::moveLowerLeft(QPointF offset)
 {
 
 }
 
-void Pancil::moveLowerLeft(QPoint offset)
-{
-
-}
-
-void Pancil::moveLowerRight(QPoint offset)
+void Pancil::moveLowerRight(QPointF offset)
 {
 
 }
 
 void Pancil::drawPointToPhysicalPoint(qreal ratio)
 {
-	QList<QPoint>::iterator i = m_drawPoint.begin();
-	QList<QPoint>::iterator j = m_PhysicalPoint.begin();
+	QList<QPointF>::iterator i = m_drawPoint.begin();
+	QList<QPointF>::iterator j = m_PhysicalPoint.begin();
 
 	for (; i != m_drawPoint.end() && j != m_PhysicalPoint.end(); )
 	{
@@ -401,6 +416,9 @@ Shape* ShapeFactory::getShape(ShapeType type)
 	case ShapeType::TypePencil:
 		inShape = new Pancil();
 		break;
+	case ShapeType::TypeCircle:
+		inShape = new Circle();
+		break;;
 	case ShapeType::tmp:
 		break;
 	default:
@@ -412,4 +430,96 @@ Shape* ShapeFactory::getShape(ShapeType type)
 ShapeFactory::ShapeFactory()
 {
 
+}
+
+Circle::Circle()
+{
+}
+
+Circle::~Circle()
+{
+}
+
+void Circle::setDrawStar(QPointF star)
+{
+	m_drawStar = star;
+	m_star = m_drawStar;
+}
+
+void Circle::setDrawEnd(QPointF end)
+{
+	m_drawEnd = end;
+	m_end = m_drawEnd;
+}
+
+void Circle::drawShape(QPainter& painter)
+{
+	if (m_drawStar.isNull() || m_drawEnd.isNull())
+		return;
+	QBrush brush(QColor(255, 255, 255));
+	painter.setBrush(brush);
+	painter.drawEllipse(m_drawStar.x(), m_drawStar.y(), m_drawEnd.x() - m_drawStar.x(), m_drawEnd.y() - m_drawStar.y());
+	painter.setBrush(Qt::NoBrush);
+}
+
+void Circle::setDepth(qreal depth)
+{
+
+}
+
+void Circle::scale(qreal width, qreal height)
+{
+	m_drawStar.setX((m_star.x()) * (1 + width));
+	m_drawEnd.setX((m_end.x()) * (1 + width));
+
+	m_drawStar.setY((m_star.y()) * (1 + height));
+	m_drawEnd.setY((m_end.y()) * (1 + height));
+}
+
+void Circle::move(QPointF offset)
+{
+	m_drawStar = m_drawStar + offset;
+	m_drawEnd = m_drawEnd + offset;
+}
+
+void Circle::moveTop(QPointF offset)
+{
+	m_drawStar.setY(m_drawStar.y() + offset.y());
+}
+
+void Circle::moveBottom(QPointF offset)
+{
+	m_drawEnd.setY(m_drawEnd.y() + offset.y());
+}
+
+void Circle::moveLeft(QPointF offset)
+{
+	m_drawStar.setX(m_drawStar.x() + offset.x());
+}
+
+void Circle::moveRight(QPointF offset)
+{
+	m_drawEnd.setX(m_drawEnd.x() + offset.x());
+}
+
+void Circle::moveUpperLeft(QPointF offset)
+{
+	m_drawStar = m_drawStar + offset;
+}
+
+void Circle::moveUpperRight(QPointF offset)
+{
+	m_drawStar.setY(m_drawStar.y() + offset.y());
+	m_drawEnd.setX(m_drawEnd.x() + offset.x());
+}
+
+void Circle::moveLowerLeft(QPointF offset)
+{
+	m_drawStar.setX(m_drawStar.x() + offset.x());
+	m_drawEnd.setY(m_drawEnd.y() + offset.y());
+}
+
+void Circle::moveLowerRight(QPointF offset)
+{
+	m_drawEnd = m_drawEnd + offset;
 }

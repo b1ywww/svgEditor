@@ -294,7 +294,7 @@ void SVGMainWIndow::setToolBar()
 	m_pRectButton->setMinimumSize(ICON_MIN_SIZE, ICON_MIN_SIZE);
 	m_pRectButton->setImageDir();
 
-	m_pCircleButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget);
+	m_pCircleButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget, ShapeType::TypeCircle);
 	m_pCircleButton->setObjectName(QStringLiteral("circle"));
 	m_pCircleButton->setMinimumSize(ICON_MIN_SIZE, ICON_MIN_SIZE);
 	m_pCircleButton->setImageDir();
