@@ -51,7 +51,7 @@ private:
 
 	enum class mousePosition
 	{
-		dafeult = 0,
+		move = 0,
 		top,
 		left,
 		right,
@@ -59,9 +59,10 @@ private:
 		upperLeft,
 		lowerLeft,
 		upperRight,
-		lowerRight
+		lowerRight,
+		noClick
 	};
-	mousePosition m_positionType = mousePosition::dafeult;
+	mousePosition m_positionType = mousePosition::noClick;
 
 	static int s_offsetStartX;
 	static int s_offsetStartY;

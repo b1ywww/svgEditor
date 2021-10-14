@@ -72,7 +72,7 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 	else
 	{
 		setCursor(Qt::ArrowCursor);
-		m_positionType = mousePosition::dafeult;
+		m_positionType = mousePosition::move;
 	}
 
 	if (m_pSvgRenderer && m_pSvgRenderer->isValid())
@@ -81,7 +81,7 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 
 void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 {
-	QPoint transfromPoint = event->pos() - m_transfrom;
+	QPoint transformPoint = event->pos() - m_transfrom;
 	if (Qt::LeftButton == event->button())
 	{
 		Shape* tmpShape = nullptr;
@@ -90,19 +90,25 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 		{
 			m_shapeList.append(tmpShape);
 			m_pCurrentShape = tmpShape;
-			m_pCurrentShape->setDrawStar(transfromPoint / (1 + m_offset));
+			m_pCurrentShape->setDrawStar(transformPoint / (1 + m_offset));
 		}
+
+		if (nullptr == m_pClickShape)
+			m_positionType = mousePosition::noClick;
 
 		if (false == isMove && m_currentType == ShapeType::TypeSelect)
 		{
-			m_pClickShape = getClickShape(transfromPoint);
+			if(m_positionType == mousePosition::noClick)
+			if(m_positionType == mousePosition::noClick || m_positionType == mousePosition::move)
+				m_pClickShape = getClickShape(transformPoint);
+
 			isMove = true;
 		}
 		else
 		{
 			isMove = false;
 		}
-		m_currentPoint = transfromPoint;
+		m_currentPoint = transformPoint;
 	}
 }
 
@@ -115,12 +121,18 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 		m_pCurrentShape->scale(m_offset, m_offset); //¸üÐÂdrawPoint×ø±ê
 	}
 
-	if (m_pClickShape && isMove)
+	if (nullptr == m_pClickShape)
+	{		
+		update();
+		return;
+	}
+
+	if (isMove)
 	{
 		editShape(transformPoint);
 		m_currentPoint = transformPoint;
 	}
-	else if (m_pClickShape && m_currentType == ShapeType::TypeSelect)
+	else if (m_currentType == ShapeType::TypeSelect)
 	{
 		setPositionType(transformPoint);
 	}
@@ -372,7 +384,7 @@ void KxSvgCanvas::setPositionType(QPoint point)
 	if (false == isInRect(point, m_pClickShape))
 	{
 		setCursor(Qt::ArrowCursor);
-		m_positionType = mousePosition::dafeult;
+		m_positionType = mousePosition::noClick;
 		return;
 	}
 
@@ -395,7 +407,7 @@ void KxSvgCanvas::setPositionType(QPoint point)
 
 	switch (flag)
 	{
-	case POSITION_DEFAULT:setCursor(Qt::ArrowCursor); m_positionType = mousePosition::dafeult; break;
+	case POSITION_DEFAULT:setCursor(Qt::ArrowCursor); m_positionType = mousePosition::move; break;
 	case POSITION_LEFT:setCursor(Qt::SizeHorCursor); m_positionType = mousePosition::left; break;
 	case POSITION_TOP:setCursor(Qt::SizeVerCursor); m_positionType = mousePosition::top; break;
 	case POSITION_RIGHT:setCursor(Qt::SizeHorCursor); m_positionType = mousePosition::right; break;
@@ -431,7 +443,12 @@ void KxSvgCanvas::editShape(QPoint transformPoint)
 {
 	switch (m_positionType)
 	{
-	case KxSvgCanvas::mousePosition::dafeult:
+	case KxSvgCanvas::mousePosition::move:
+	{
+		m_pClickShape->move((transformPoint - m_currentPoint));
+		break;
+	}
+	case KxSvgCanvas::mousePosition::noClick:
 	{
 		m_pClickShape->move((transformPoint - m_currentPoint));
 		break;
