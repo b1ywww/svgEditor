@@ -539,10 +539,13 @@ Hexagon::~Hexagon()
 
 void Hexagon::drawShape(QPainter& painter)
 {
+	QBrush brush(QColor(255, 255, 255));
+	painter.setBrush(brush);
 	QPolygonF myPolygon(m_vertex);
 	QPainterPath path;
 	path.addPolygon(myPolygon);
 	painter.drawPath(path);
+	painter.setBrush(Qt::NoBrush);
 }
 
 void Hexagon::setDrawStar(QPointF star)
