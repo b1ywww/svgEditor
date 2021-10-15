@@ -17,6 +17,7 @@ public:
 	void mouseMoveEvent(QMouseEvent* event) override;
 	void mouseReleaseEvent(QMouseEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
+	void inputMethodEvent(QInputMethodEvent* event) override;
 	void wheelEvent(QWheelEvent* event) override;
 
 	bool deleteShapeList();
@@ -25,11 +26,14 @@ public:
 	bool isSvgValid();
 	int getShapeCount();
 
+	void init();
 public slots:
 	void setCurrentType(ShapeType);
 	void setCanvasSize();
 	void setCanvasWidth(QString);
 	void setCanvasHeight(QString);
+	void opensvg();
+	void saveSvg();
 
 private:
 	Shape* getClickShape(QPoint point);

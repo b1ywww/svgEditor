@@ -1,6 +1,8 @@
 #include "shape.h"
 #include <QPainter>
 #include <QDebug>
+#include <QTextDocument>
+
 Shape::Shape()
 {
 
@@ -43,9 +45,14 @@ void Shape::move(QPointF offset)
 	m_drawEnd = m_drawEnd + offset;
 }
 
+ShapeType Shape::getShapeType()
+{
+	return m_type;
+}
+
 Line::Line()
 {
-
+	m_type = ShapeType::TypeLine;
 }
 
 Line::~Line()
@@ -139,7 +146,7 @@ void Line::moveLowerRight(QPointF offset)
 
 Square::Square()
 {
-
+	m_type = ShapeType::TypeSquare;
 }
 
 Square::~Square()
@@ -235,7 +242,7 @@ void Square::moveLowerRight(QPointF offset)
 
 Pancil::Pancil()
 {
-
+	m_type = ShapeType::TypePencil;
 }
 
 Pancil::~Pancil()
@@ -288,6 +295,11 @@ void Pancil::updateClickRect(QPointF point)
 
 	m_star = m_drawStar;
 	m_end = m_drawEnd;
+}
+
+const QList<QPointF>& Pancil::getPhysicalPoint()
+{
+	return m_PhysicalPoint;
 }
 
 void Pancil::setDepth(qreal depth)
@@ -422,7 +434,8 @@ Shape* ShapeFactory::getShape(ShapeType type)
 	case ShapeType::TypeHexagon:
 		inShape = new Hexagon();
 		break;
-	case ShapeType::tmp:
+	case ShapeType::TypeText:
+		inShape = new TextEdit();
 		break;
 	default:
 		break;
@@ -437,6 +450,7 @@ ShapeFactory::ShapeFactory()
 
 Circle::Circle()
 {
+	m_type = ShapeType::TypeCircle;
 }
 
 Circle::~Circle()
@@ -530,7 +544,7 @@ void Circle::moveLowerRight(QPointF offset)
 Hexagon::Hexagon()
 {
 	m_vertex.resize(7);
-	qDebug() << m_vertex[6];
+	m_type = ShapeType::TypeHexagon;
 }
 
 Hexagon::~Hexagon()
@@ -637,4 +651,96 @@ void Hexagon::setVertex()
 	m_vertex[4] = QPointF(m_drawStar.x() + (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawEnd.y());
 	m_vertex[5] = QPointF(m_drawStar.x(), (m_drawStar.y() + m_drawEnd.y()) / 2);
 	m_vertex[6] = QPointF(m_drawStar.x() + (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawStar.y());
+}
+
+const QVector<QPointF>& Hexagon::getVertex()
+{
+	return m_vertex;
+}
+
+TextEdit::TextEdit()
+{
+	setText(QStringLiteral("«Î ‰»Î"));
+	m_type = ShapeType::TypeText;
+}
+
+TextEdit::~TextEdit()
+{
+}
+
+void TextEdit::drawShape(QPainter& painter)
+{
+	painter.drawText(QRect(m_drawStar.toPoint(), m_drawEnd.toPoint()), Qt::AlignCenter, m_text);
+}
+
+void TextEdit::setDrawStar(QPointF star)
+{
+	m_drawStar = star;
+}
+
+void TextEdit::setDrawEnd(QPointF end)
+{
+	m_drawEnd = end;
+}
+
+void TextEdit::setDepth(qreal depth)
+{
+
+}
+
+void TextEdit::scale(qreal width, qreal height)
+{
+}
+
+void TextEdit::move(QPointF offset)
+{
+	m_drawStar = m_drawStar + offset;
+	m_drawEnd = m_drawEnd + offset;
+}
+
+void TextEdit::moveTop(QPointF offset)
+{
+	m_drawStar.setY(m_drawStar.y() + offset.y());
+}
+
+void TextEdit::moveBottom(QPointF offset)
+{
+	m_drawEnd.setY(m_drawEnd.y() + offset.y());
+}
+
+void TextEdit::moveLeft(QPointF offset)
+{
+	m_drawStar.setX(m_drawStar.x() + offset.x());
+}
+
+void TextEdit::moveRight(QPointF offset)
+{
+	m_drawEnd.setX(m_drawEnd.x() + offset.x());
+}
+
+void TextEdit::moveUpperLeft(QPointF offset)
+{
+	m_drawStar = m_drawStar + offset;
+}
+
+void TextEdit::moveUpperRight(QPointF offset)
+{
+	m_drawStar.setY(m_drawStar.y() + offset.y());
+	m_drawEnd.setX(m_drawEnd.x() + offset.x());
+}
+
+void TextEdit::moveLowerLeft(QPointF offset)
+{
+	m_drawStar.setX(m_drawStar.x() + offset.x());
+	m_drawEnd.setY(m_drawEnd.y() + offset.y());
+}
+
+void TextEdit::moveLowerRight(QPointF offset)
+{
+	m_drawEnd = m_drawEnd + offset;
+}
+
+void TextEdit::setText(QString text)
+{
+	m_text = text;
 }

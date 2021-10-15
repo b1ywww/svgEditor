@@ -11,7 +11,6 @@
 #include <QPen>
 #include <QRect>
 #include <QMessageBox>
-#include <QFileDialog>
 #include <QLabel>
 #include <QLineEdit>
 #include <QRegExpValidator>
@@ -65,7 +64,7 @@ void KxLeftToolBarBtn::leaveEvent(QEvent* event)
 void KxLeftToolBarBtn::mousePressEvent(QMouseEvent* event)
 {
 	setChecked(true);
-	setShapeType(m_shapeType);
+	emit setShapeType(m_shapeType);
 	update();
 }
 
@@ -179,6 +178,7 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 
 	m_pActionSave = new QAction("保存");
 	m_pToolBarTop->addAction(m_pActionSave);
+	connect(m_pActionSave, SIGNAL(triggered()), m_pSvgCanvas, SLOT(saveSvg()));
 
 	//设置左边工具栏布局
 	setToolBar();
@@ -230,13 +230,13 @@ void SVGMainWIndow::newCanvas()
 
 void SVGMainWIndow::openSvg()
 {
-	QString file_path = QFileDialog::getOpenFileName(this, tr("打开文件"),"./", tr("Exe files(*.svg);;All files(*.*)"));
-	if (file_path.isEmpty())
-	{
-		return;
-	}
-	newCanvas();
-	m_pSvgCanvas->loadSvgRenderer(file_path);
+	//QString file_path = QFileDialog::getOpenFileName(this, tr("打开文件"),"./", tr("Exe files(*.svg);;All files(*.*)"));
+	//if (file_path.isEmpty())
+	//{
+	//	return;
+	//}
+	//newCanvas();
+	//m_pSvgCanvas->loadSvgRenderer(file_path);
 }
 
 void SVGMainWIndow::setColor()
@@ -299,7 +299,7 @@ void SVGMainWIndow::setToolBar()
 	m_pCircleButton->setMinimumSize(ICON_MIN_SIZE, ICON_MIN_SIZE);
 	m_pCircleButton->setImageDir();
 
-	m_pPathButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget);
+	m_pPathButton = new KxLeftToolBarBtn(m_pToolBarLeftWidget, ShapeType::TypeText);
 	m_pPathButton->setObjectName(QStringLiteral("path"));
 	m_pPathButton->setMinimumSize(ICON_MIN_SIZE, ICON_MIN_SIZE);
 	m_pPathButton->setImageDir();

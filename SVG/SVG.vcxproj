@@ -31,12 +31,12 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>5.9.3_msvc2017_64</QtInstall>
-    <QtModules>core;gui;svg;widgets</QtModules>
+    <QtModules>core;gui;svg;widgets;xml</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>5.9.3_msvc2017_64</QtInstall>
-    <QtModules>core;gui;svg;widgets</QtModules>
+    <QtModules>core;gui;svg;widgets;xml</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClCompile Include="kxcanvas.cpp" />
     <ClCompile Include="shape.cpp" />
+    <ClCompile Include="svgwrite.cpp" />
     <QtRcc Include="SVG.qrc" />
     <QtUic Include="SVG.ui" />
     <ClCompile Include="kxsvgview.cpp" />
@@ -100,8 +101,8 @@
     <QtMoc Include="kxcanvas.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="transaction.h" />
-    <ClInclude Include="xmlread.h" />
-    <ClInclude Include="xmlwrite.h" />
+    <ClInclude Include="svgread.h" />
+    <ClInclude Include="svgwrite.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

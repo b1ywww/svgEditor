@@ -1,5 +1,6 @@
 #pragma once
 #include <QList>
+#include <QTextDocument>
 
 enum class ShapeType
 {
@@ -9,6 +10,7 @@ enum class ShapeType
 	TypePencil,
 	TypeCircle,
 	TypeHexagon,
+	TypeText,
 	tmp
 };
 
@@ -39,12 +41,14 @@ public:
 	virtual void moveLowerLeft(QPointF offset) = 0;
 	virtual void moveLowerRight(QPointF offset) = 0;
 
+	ShapeType getShapeType();
 protected:
 	QPointF m_star;      //物理坐标
 	QPointF m_end;
 	QPointF m_drawStar;  //逻辑坐标
 	QPointF m_drawEnd;
 	qreal m_depth;
+	ShapeType m_type;
 };
 
 class Line : public Shape
@@ -120,6 +124,7 @@ public:
 	void moveLowerRight(QPointF offset) override;
 
 	void updateClickRect(QPointF point);
+	const QList<QPointF>& getPhysicalPoint();
 
 private:
 	QList<QPointF> m_drawPoint;
@@ -176,8 +181,37 @@ public:
 	void moveLowerRight(QPointF offset) override;
 
 	void setVertex();
+	const QVector<QPointF>& getVertex();
 private:
 	QVector<QPointF> m_vertex;
+};
+
+class TextEdit : public Shape
+{
+public:
+	TextEdit();
+	~TextEdit();
+
+	void drawShape(QPainter& painter) override;
+	void setDrawStar(QPointF star) override;
+	void setDrawEnd(QPointF end) override;
+	void setDepth(qreal depth) override;
+	void scale(qreal width, qreal height) override;
+
+	void move(QPointF offset) override;
+	void moveTop(QPointF offset) override;
+	void moveBottom(QPointF offset) override;
+	void moveLeft(QPointF offset) override;
+	void moveRight(QPointF offset) override;
+	void moveUpperLeft(QPointF offset) override;
+	void moveUpperRight(QPointF offset) override;
+	void moveLowerLeft(QPointF offset) override;
+	void moveLowerRight(QPointF offset) override;
+
+	void setText(QString text);
+
+private:
+	QString m_text;
 };
 
 class ShapeFactory

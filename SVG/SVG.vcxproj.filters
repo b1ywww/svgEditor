@@ -43,6 +43,9 @@
     <ClCompile Include="kxcanvas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="svgwrite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="kxsvgview.h">
@@ -56,13 +59,13 @@
     <ClInclude Include="shape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="xmlread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="xmlwrite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="transaction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="svgwrite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="svgread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

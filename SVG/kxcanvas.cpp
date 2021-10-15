@@ -1,6 +1,11 @@
 #include "kxcanvas.h"
 #include "QPainter"
 #include "QDebug"
+#include <QTextCursor>
+#include<cstdlib>
+#include "svgwrite.h"
+#include <QMessageBox>
+#include <QFileDialog>
 
 int KxSvgCanvas::s_offsetStartX = -4;
 int KxSvgCanvas::s_offsetStartY = -4;
@@ -26,6 +31,7 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	setAttribute(Qt::WA_StyledBackground, true);
 	setStyleSheet(QStringLiteral("background-color: rgb(255, 255, 255);"));
 	setFocusPolicy(Qt::ClickFocus);
+	setAttribute(Qt::WA_InputMethodEnabled, true);
 	setCanvasSize();
 }
 
@@ -54,6 +60,7 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 		}
 	}
 
+	//绘制选中框
 	if (m_pClickShape)
 	{
 		QPen pen(Qt::DashLine);
@@ -98,7 +105,6 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 
 		if (false == isMove && m_currentType == ShapeType::TypeSelect)
 		{
-			if(m_positionType == mousePosition::noClick)
 			if(m_positionType == mousePosition::noClick || m_positionType == mousePosition::move)
 				m_pClickShape = getClickShape(transformPoint);
 
@@ -184,6 +190,29 @@ void KxSvgCanvas::setCanvasHeight(QString height)
 	m_canvasHeight = height.toInt();
 }
 
+void KxSvgCanvas::opensvg()
+{
+	QString file_path = QFileDialog::getOpenFileName(this, tr("打开文件"), "./", tr("Exe files(*.svg);;All files(*.*)"));
+	if (file_path.isEmpty())
+	{
+		return;
+	}
+	//newCanvas();
+	loadSvgRenderer(file_path);
+}
+
+void KxSvgCanvas::saveSvg()
+{
+	QString file_path = QFileDialog::getSaveFileName(this,tr("保存svg"),"",tr("(*.svg)"));
+	if (file_path.isEmpty())
+		return;
+
+	if(SvgWrite::svgWrite()->write(m_shapeList, file_path, m_canvasWidth, m_canvasHeight))
+		QMessageBox::information(NULL, "svg", QStringLiteral("保存成功"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+	else
+		QMessageBox::information(NULL, "svg", QStringLiteral("保存失败"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+}
+
 void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 {
 	switch (event->key())
@@ -207,6 +236,21 @@ void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 		update();
 		break;
 	}
+}
+
+void KxSvgCanvas::inputMethodEvent(QInputMethodEvent* event)
+{
+	qDebug() << event->commitString();
+	QString a = "";
+	if (m_pClickShape)
+	{
+		if(event->commitString().isEmpty())
+			dynamic_cast<TextEdit*>(m_pClickShape)->setText(event->preeditString());
+		else
+			dynamic_cast<TextEdit*>(m_pClickShape)->setText(event->commitString());
+	}
+
+	update();
 }
 
 void KxSvgCanvas::wheelEvent(QWheelEvent* event)
@@ -293,6 +337,20 @@ int KxSvgCanvas::getShapeCount()
 		return m_shapeList.count();
 	}
 	return 0;
+}
+
+void KxSvgCanvas::init()
+{
+	qDebug() << "点击";
+
+	deleteShapeList();
+	unloadSvgRenderer();
+
+	m_canvasWidth = 500;
+	m_canvasHeight = 500;
+	setCanvasSize();
+
+	update();
 }
 
 Shape* KxSvgCanvas::getClickShape(QPoint point)
