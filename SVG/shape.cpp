@@ -335,20 +335,24 @@ void Pancil::move(QPointF offset)
 	}
 	m_drawStar += offset;
 	m_drawEnd += offset;
+
+	m_bottom = m_bottom + offset.y();
+	m_top = m_top + offset.y();
+	m_Left = m_Left + offset.x();
+	m_right = m_right + offset.x();
 }
 
 void Pancil::moveTop(QPointF offset)
 {
-	//QList<QPointF>::iterator i = m_drawPoint.begin();
-	//for (; i != m_drawPoint.end(); i++)
-	//{
-	//	qreal ratio = ((*i).y() - m_bottom) * 1.0 / (m_top - m_bottom);
-	//	qreal offsetY = offset.y() * ratio;
-	//	(*i).setY((*i).y() + offsetY);
-	//	qDebug() << *i;
-	//}
-	//m_top = m_drawStar.y() + offset.y();
-	//m_drawStar.setY(m_top);
+	QList<QPointF>::iterator i = m_drawPoint.begin();
+	for (; i != m_drawPoint.end(); i++)
+	{
+		qreal ratio = ((*i).y() - m_bottom) * 1.0 / (m_top - m_bottom);
+		qreal offsetY = offset.y() * ratio;
+		(*i).setY((*i).y() + offsetY);
+	}
+	m_top = m_drawStar.y() + offset.y();
+	m_drawStar.setY(m_top);
 }
 
 void Pancil::moveBottom(QPointF offset)
@@ -670,7 +674,40 @@ TextEdit::~TextEdit()
 
 void TextEdit::drawShape(QPainter& painter)
 {
+
+	QPen pen;
+
+	QFont font("Microsoft YaHei", 20);//这里设置字体大小
+
+	static int x =300;
+	font.setStretch(x);
+	//font.setPointSize(x);
+	painter.setFont(font);
 	painter.drawText(QRect(m_drawStar.toPoint(), m_drawEnd.toPoint()), Qt::AlignCenter, m_text);
+
+	//static QSize size(qAbs(m_drawEnd.toPoint().x() - m_drawStar.toPoint().x()), qAbs(m_drawEnd.toPoint().y() - m_drawStar.toPoint().y())); //指定图片大小;
+	//QImage image(size, QImage::Format_ARGB32);
+	////以ARGB32格式构造一个QImage
+	////image.fill(qRgba(0,0,0,100));//填充图片背景,120/250为透明度
+	//QPainter painterI(&image); //为这个QImage构造一个QPainter
+	//painterI.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+	////设置画刷的组合模式CompositionMode_SourceOut这个模式为目标图像在上。
+	////改变组合模式和上面的填充方式可以画出透明的图片。
+
+	////改变画笔和字体
+	//QPen pen = painterI.pen();
+	//pen.setColor(Qt::red);
+	//QFont font = painterI.font();
+	//font.setBold(true);//加粗
+	//font.setPixelSize(50);//改变字体大小
+
+	//painterI.setPen(pen);
+	//painterI.setFont(font);
+
+	//painterI.drawText(image.rect(), Qt::AlignCenter, QStringLiteral("你好"));
+	////将Hello写在Image的中心
+
+	//painter.drawImage(QRect(m_drawStar.toPoint(), m_drawEnd.toPoint()),image);
 }
 
 void TextEdit::setDrawStar(QPointF star)

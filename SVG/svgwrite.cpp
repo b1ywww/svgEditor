@@ -162,12 +162,13 @@ void SvgWrite::writeLine(Shape* shape)
 void SvgWrite::writeSquare(Shape* shape)
 {
 	QDomElement rect = m_doc.createElement("rect");
-	QPointF pos = shape->getPhysicalStar() + m_transfrom;
+	QPointF posStar = shape->getPhysicalStar() + m_transfrom;
+	QPointF posEnd = shape->getPhysicalEnd() + m_transfrom;
 	qreal width = qAbs(shape->getPhysicalEnd().x() - shape->getPhysicalStar().x());
 	qreal height = qAbs(shape->getPhysicalEnd().y() - shape->getPhysicalStar().y());
 	rect.setAttribute("id", "1");
-	rect.setAttribute("x", pos.x());
-	rect.setAttribute("y", pos.y());
+	posStar.x() > posEnd.x()? rect.setAttribute("x", posEnd.x()) : rect.setAttribute("x", posStar.x());
+	posStar.y() > posEnd.y() ? rect.setAttribute("y", posEnd.y()) : rect.setAttribute("y", posStar.y());
 	rect.setAttribute("width", width);
 	rect.setAttribute("height", height);
 	rect.setAttribute("fill-opacity", "null");
@@ -193,8 +194,6 @@ void SvgWrite::writePencil(Shape* shape)
 	{
 		d = d + L.arg(i.x() + m_transfrom.x()).arg(i.y() + m_transfrom.y());
 	}
-
-	qDebug() << d;
 
 	pencil.setAttribute("d", d);
 	pencil.setAttribute("fill-opacity", "null");

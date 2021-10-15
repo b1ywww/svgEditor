@@ -212,6 +212,7 @@ public:
 
 private:
 	QString m_text;
+
 };
 
 class ShapeFactory

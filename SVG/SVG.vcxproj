@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClCompile Include="kxcanvas.cpp" />
     <ClCompile Include="shape.cpp" />
+    <ClCompile Include="svgread.cpp" />
     <ClCompile Include="svgwrite.cpp" />
     <QtRcc Include="SVG.qrc" />
     <QtUic Include="SVG.ui" />
