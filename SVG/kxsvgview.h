@@ -1,5 +1,4 @@
 #pragma once
-#pragma execution_character_set("utf-8")
 #include <QtWidgets/QMainWindow>
 #include <QtSvg/qsvgrenderer.h>
 #include <QtWidgets/QMenuBar>
@@ -51,9 +50,7 @@ public:
 	void resizeEvent(QResizeEvent* event) override;
 	bool eventFilter(QObject* watched, QEvent* event) override;
 public slots:
-	void newCanvas();
-	void openSvg();
-	void setColor();
+	void setCanvasColor();
 
 private:
 	void setCanvasCenter();

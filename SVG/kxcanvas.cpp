@@ -190,14 +190,15 @@ void KxSvgCanvas::setCanvasHeight(QString height)
 	m_canvasHeight = height.toInt();
 }
 
-void KxSvgCanvas::opensvg()
+void KxSvgCanvas::openSvg()
 {
+	qDebug() << "opensvg";
 	QString file_path = QFileDialog::getOpenFileName(this, tr("打开文件"), "./", tr("Exe files(*.svg);;All files(*.*)"));
 	if (file_path.isEmpty())
 	{
 		return;
 	}
-	//newCanvas();
+	init();
 	loadSvgRenderer(file_path);
 }
 
@@ -208,9 +209,49 @@ void KxSvgCanvas::saveSvg()
 		return;
 
 	if(SvgWrite::svgWrite()->write(m_shapeList, file_path, m_canvasWidth, m_canvasHeight))
-		QMessageBox::information(NULL, "svg", QStringLiteral("保存成功"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+		QMessageBox::information(NULL, "svg", tr("保存成功"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
 	else
-		QMessageBox::information(NULL, "svg", QStringLiteral("保存失败"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+		QMessageBox::information(NULL, "svg", tr("保存失败"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+}
+
+void KxSvgCanvas::init()
+{
+	if (getShapeCount() > 0 || isSvgValid())
+	{
+		QMessageBox msg(this);
+		msg.setText("是否保存画布");
+		msg.setIcon(QMessageBox::Warning);
+		msg.setStandardButtons(QMessageBox::Ok | QMessageBox::No | QMessageBox::Cancel);
+
+		int res = msg.exec();
+		switch (res)
+		{
+		case QMessageBox::Ok:
+		{
+			saveSvg();
+			deleteShapeList();
+			unloadSvgRenderer();
+			break;
+		}
+		case QMessageBox::No:
+		{
+			deleteShapeList();
+			unloadSvgRenderer();
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	update();
+}
+
+void KxSvgCanvas::setColor(QRgb rgb)
+{
+	m_rgb = rgb;
+	QString s = QString("background: #%1;").arg(QString::number(m_rgb, 16));
+	setStyleSheet(s);
 }
 
 void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
@@ -337,20 +378,6 @@ int KxSvgCanvas::getShapeCount()
 		return m_shapeList.count();
 	}
 	return 0;
-}
-
-void KxSvgCanvas::init()
-{
-	qDebug() << "点击";
-
-	deleteShapeList();
-	unloadSvgRenderer();
-
-	m_canvasWidth = 500;
-	m_canvasHeight = 500;
-	setCanvasSize();
-
-	update();
 }
 
 Shape* KxSvgCanvas::getClickShape(QPoint point)

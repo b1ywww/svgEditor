@@ -170,11 +170,11 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 
 	m_pActionNew = new QAction("新建");
 	m_pToolBarTop->addAction(m_pActionNew);
-	connect(m_pActionNew, SIGNAL(triggered()), this, SLOT(newCanvas()));
+	connect(m_pActionNew, SIGNAL(triggered()), m_pSvgCanvas, SLOT(init()));
 
 	m_pActionOpen = new QAction("打开");
 	m_pToolBarTop->addAction(m_pActionOpen);
-	connect(m_pActionOpen, SIGNAL(triggered()), this, SLOT(openSvg()));
+	connect(m_pActionOpen, SIGNAL(triggered()), m_pSvgCanvas, SLOT(openSvg()));
 
 	m_pActionSave = new QAction("保存");
 	m_pToolBarTop->addAction(m_pActionSave);
@@ -195,62 +195,18 @@ void SVGMainWIndow::resizeEvent(QResizeEvent* event)
 	setCanvasCenter();
 }
 
-void SVGMainWIndow::newCanvas()
-{
-	qDebug() << "点击";
-
-	if(m_pSvgCanvas->getShapeCount() > 0 || m_pSvgCanvas->isSvgValid())
-	{
-		QMessageBox msg(this);
-		msg.setText("是否保存画布");
-		msg.setIcon(QMessageBox::Warning);
-		msg.setStandardButtons(QMessageBox::Ok | QMessageBox::No | QMessageBox::Cancel);
-
-		int res = msg.exec();
-		switch (res)
-		{
-		case QMessageBox::Ok:
-		{
-			m_pSvgCanvas->deleteShapeList();
-			m_pSvgCanvas->unloadSvgRenderer();
-			break;
-		}
-		case QMessageBox::No:
-		{
-			m_pSvgCanvas->deleteShapeList();
-			m_pSvgCanvas->unloadSvgRenderer();
-			break;
-		}
-		default:
-			update();
-			break;
-		}
-	}
-}
-
-void SVGMainWIndow::openSvg()
-{
-	//QString file_path = QFileDialog::getOpenFileName(this, tr("打开文件"),"./", tr("Exe files(*.svg);;All files(*.*)"));
-	//if (file_path.isEmpty())
-	//{
-	//	return;
-	//}
-	//newCanvas();
-	//m_pSvgCanvas->loadSvgRenderer(file_path);
-}
-
-void SVGMainWIndow::setColor()
+void SVGMainWIndow::setCanvasColor()
 {
 	QColorDialog color;
 	QColor c = color.getRgba();
-	
-	QString s = QString("background: rgb(%1, %2, %3);border:none").arg(c.red()).arg(c.green()).arg(c.blue());
+	QRgb mRgb = qRgb(c.red(), c.green(), c.blue());
+
+	QString s = QString("background: #%1;border:none").arg(QString::number(mRgb, 16));
 	if(m_pColorChoose)
 		m_pColorChoose->setStyleSheet(s);
 	
-	s = QString("background: rgb(%1, %2, %3);").arg(c.red()).arg(c.green()).arg(c.blue());
 	if(m_pSvgCanvas)
-		m_pSvgCanvas->setStyleSheet(s);
+		m_pSvgCanvas->setColor(mRgb);
 }
 
 void SVGMainWIndow::setCanvasCenter()
@@ -420,7 +376,7 @@ void SVGMainWIndow::setSettingPane()
 	m_pColorChoose->setMaximumSize(QSize(50, 25));
 	m_pColorChoose->setStyleSheet("background: rgb(255,255,255);border:none;");
 
-	connect(m_pColorChoose, SIGNAL(pressed()), this, SLOT(setColor()));
+	connect(m_pColorChoose, SIGNAL(pressed()), this, SLOT(setCanvasColor()));
 
 	m_pGridLayout->addWidget(m_pEditCanvasWidth, 0, 1, 1, 1);
 	m_pGridLayout->addWidget(m_pEditCanvasHeight, 0, 2, 1, 1);

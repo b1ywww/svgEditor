@@ -1,4 +1,5 @@
 #pragma once
+#pragma execution_character_set("utf-8")
 #include <QtSvg/qsvgrenderer.h>
 #include <QtWidgets/QMenuBar>
 #include "shape.h"
@@ -26,14 +27,15 @@ public:
 	bool isSvgValid();
 	int getShapeCount();
 
-	void init();
 public slots:
 	void setCurrentType(ShapeType);
 	void setCanvasSize();
 	void setCanvasWidth(QString);
 	void setCanvasHeight(QString);
-	void opensvg();
+	void openSvg();
 	void saveSvg();
+	void init();
+	void setColor(QRgb);
 
 private:
 	Shape* getClickShape(QPoint point);
@@ -49,6 +51,7 @@ private:
 	Shape* m_pCurrentShape = nullptr;
 	Shape* m_pClickShape = nullptr;
 	qreal m_offset = 0.0;
+	QRgb m_rgb;
 	bool isMove = false;
 	int m_canvasWidth = 500;
 	int m_canvasHeight = 500;
