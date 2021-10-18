@@ -92,7 +92,12 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 
 		if (false == isMove && m_currentType == ShapeType::TypeSelect)
 		{
-			if (QApplication::keyboardModifiers() != Qt::ControlModifier)
+			if(m_positionType == mousePosition::noClick || m_positionType == mousePosition::move)
+			{
+				m_pClickShape = getClickShape(transformPoint);
+			}
+
+			if (nullptr == m_pClickShape || (QApplication::keyboardModifiers() != Qt::ControlModifier && m_clickShapeList.size() < 2))
 			{
 				for (auto i : m_clickShapeList)
 				{
@@ -101,14 +106,10 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 				}
 			}
 
-			if(m_positionType == mousePosition::noClick || m_positionType == mousePosition::move)
+			if (nullptr != m_pClickShape && false == m_pClickShape->getClickState())
 			{
-				m_pClickShape = getClickShape(transformPoint);
-				if(nullptr != m_pClickShape && false == m_pClickShape->getClickState())
-				{
-					m_clickShapeList.append(m_pClickShape);
-					m_pClickShape->setClickState(true);
-				}
+				m_clickShapeList.append(m_pClickShape);
+				m_pClickShape->setClickState(true);
 			}
 
 			isMove = true;
