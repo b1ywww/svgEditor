@@ -21,6 +21,7 @@ public:
 	~Shape();
 
 	virtual void drawShape(QPainter& painter) = 0;
+	virtual void drawClickRect(QPainter& painter);
 	virtual void setDrawStar(QPointF star) = 0;
 	virtual void setDrawEnd(QPointF end) = 0;
 	virtual void setDepth(qreal depth) = 0;
@@ -41,6 +42,7 @@ public:
 	virtual void moveLowerLeft(QPointF offset) = 0;
 	virtual void moveLowerRight(QPointF offset) = 0;
 
+	void setClickRectOffset(qreal x, qreal y);
 	ShapeType getShapeType();
 protected:
 	QPointF m_star;      //ÎïÀí×ø±ê
@@ -49,6 +51,12 @@ protected:
 	QPointF m_drawEnd;
 	qreal m_depth;
 	ShapeType m_type;
+
+private:
+	int m_offsetStartX = -4;
+	int m_offsetStartY = -4;
+	int m_offsetWidth = 8;
+	int m_offsetHeight = 8;
 };
 
 class Line : public Shape

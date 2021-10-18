@@ -13,6 +13,23 @@ Shape::~Shape()
 
 }
 
+void Shape::drawClickRect(QPainter& painter)
+{
+	setClickRectOffset(m_drawEnd.x() - m_drawStar.x(), m_drawEnd.y() - m_drawStar.y());
+	QPen pen(Qt::DashLine);
+	pen.setColor(QColor(255, 192, 203));
+	QPainterPath path;
+
+	painter.setPen(pen);
+	path.addRect(m_drawStar.x() + m_offsetStartX
+		, m_drawStar.y() + m_offsetStartY
+		, m_drawEnd.x() - m_drawStar.x() + m_offsetWidth
+		, m_drawEnd.y() - m_drawStar.y() + m_offsetHeight);
+
+	painter.drawPath(path);
+	painter.setPen(Qt::NoPen);
+}
+
 QPointF& Shape::getPhysicalStar()
 {
 	return m_star;
@@ -43,6 +60,55 @@ void Shape::move(QPointF offset)
 {
 	m_drawStar = m_drawStar + offset;
 	m_drawEnd = m_drawEnd + offset;
+}
+
+void Shape::setClickRectOffset(qreal x, qreal y)
+{
+	if (x > 0)
+	{
+		if (m_offsetStartX > 0)
+		{
+			m_offsetStartX *= -1;
+		}
+		if (m_offsetWidth < 0)
+		{
+			m_offsetWidth *= -1;
+		}
+	}
+	else
+	{
+		if (m_offsetStartX < 0)
+		{
+			m_offsetStartX *= -1;
+		}
+		if (m_offsetWidth > 0)
+		{
+			m_offsetWidth *= -1;
+		}
+	}
+
+	if (y > 0)
+	{
+		if (m_offsetStartY > 0)
+		{
+			m_offsetStartY *= -1;
+		}
+		if (m_offsetHeight < 0)
+		{
+			m_offsetHeight *= -1;
+		}
+	}
+	else
+	{
+		if (m_offsetStartY < 0)
+		{
+			m_offsetStartY *= -1;
+		}
+		if (m_offsetHeight > 0)
+		{
+			m_offsetHeight *= -1;
+		}
+	}
 }
 
 ShapeType Shape::getShapeType()

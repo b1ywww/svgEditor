@@ -149,6 +149,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 		else
 		{
 			m_pClickShape = m_pCurrentShape;
+			m_pClickShape->setClickRectOffset(event->pos().x() - m_transfrom.x() - m_pClickShape->getDrawStar().x(), event->pos().y() - m_transfrom.y() - m_pClickShape->getDrawStar().y());
 		}
 	}
 	updatePhysicalPoint();
