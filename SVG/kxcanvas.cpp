@@ -270,18 +270,20 @@ void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 	{
 	case Qt::Key_Delete:
 	{
-		if (m_pClickShape)
+		for (Shape* j : m_clickShapeList)
 		{
 			for each (Shape * i in m_shapeList)
 			{
-				if (i == m_pClickShape)
+				if (i == j)
 				{
 					m_shapeList.removeOne(i);
-					delete m_pClickShape;
-					m_pClickShape = nullptr;
+					delete j;
+					j = nullptr;
 				}
 			}
 		}
+		m_clickShapeList.clear();
+		m_pClickShape = nullptr;
 	}
 	default:
 		update();
