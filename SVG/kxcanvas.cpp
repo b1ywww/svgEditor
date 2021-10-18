@@ -31,6 +31,9 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	setAttribute(Qt::WA_InputMethodEnabled, true);
 	setCanvasSize();
 	m_pClickRect = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeSquare);
+	QColor color(255, 255, 255);
+	color.setAlpha(0);
+	m_pClickRect->getBrush().setColor(color);
 }
 
 KxSvgCanvas::KxSvgCanvas(QWidget* parent, qreal x, qreal y, qreal w, qreal h)
@@ -76,15 +79,9 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 	//绘制选取框
 	if (!m_pClickRect->getDrawEnd().isNull())
 	{
-		QPen pen(Qt::DashLine);
-		pen.setColor(QColor(67, 142, 419));
-		QPainterPath path;
-
-		painter.setPen(pen);
+		m_pClickRect->getPen().setStyle(Qt::DashLine);
+		m_pClickRect->getPen().setColor(QColor(67, 142, 419));
 		m_pClickRect->drawShape(painter);
-
-		painter.drawPath(path);
-		painter.setPen(Qt::NoPen);
 	}
 
 	//加载通用的svg图片

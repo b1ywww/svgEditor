@@ -27,6 +27,7 @@ public:
 	bool isSvgValid();
 	int getShapeCount();
 	void shapeInClickRect();
+
 public slots:
 	void setCurrentType(ShapeType);
 	void setCanvasSize();

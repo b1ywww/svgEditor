@@ -50,6 +50,7 @@ public:
 	void paintEvent(QPaintEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
 	bool eventFilter(QObject* watched, QEvent* event) override;
+
 public slots:
 	void setCanvasColor();
 
@@ -59,7 +60,6 @@ private:
 	void setSettingPane();
 
 private:
-
 	QHBoxLayout* m_pMainHoriLayout = nullptr;
 	QHBoxLayout* m_pCentralLayout = nullptr;
 	QVBoxLayout* m_pToolBarLayout = nullptr;

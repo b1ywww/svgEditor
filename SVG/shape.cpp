@@ -126,9 +126,20 @@ void Shape::setClickState(bool click)
 	m_isClick = click;
 }
 
+QPen& Shape::getPen()
+{
+	return m_pen;
+}
+
+QBrush& Shape::getBrush()
+{
+	return m_brush;
+}
+
 Line::Line()
 {
 	m_type = ShapeType::TypeLine;
+	m_pen.setStyle(Qt::SolidLine);
 }
 
 Line::~Line()
@@ -155,7 +166,9 @@ void Line::drawShape(QPainter& painter)
 	QPainterPath path;
 	path.moveTo(m_drawStar);
 	path.lineTo(m_drawEnd);
+	painter.setPen(m_pen);
 	painter.drawPath(path);
+	painter.setPen(Qt::NoPen);
 }
 
 void Line::setDepth(qreal depth)
@@ -223,6 +236,9 @@ void Line::moveLowerRight(QPointF offset)
 Square::Square()
 {
 	m_type = ShapeType::TypeSquare;
+	m_brush.setColor(QColor(255, 255, 255));
+	m_brush.setStyle(Qt::SolidPattern);
+	m_pen.setStyle(Qt::SolidLine);
 }
 
 Square::~Square()
@@ -246,12 +262,14 @@ void Square::drawShape(QPainter& painter)
 {
 	if (m_drawStar.isNull() || m_drawEnd.isNull())
 		return;
-	QBrush brush(QColor(255, 255, 255));
-	painter.setBrush(brush);
+
+	painter.setPen(m_pen);
+	painter.setBrush(m_brush);
 	QPainterPath path;
 	path.addRect(m_drawStar.x(), m_drawStar.y(), m_drawEnd.x() - m_drawStar.x(), m_drawEnd.y() - m_drawStar.y());
 	painter.drawPath(path);
 	painter.setBrush(Qt::NoBrush);
+	painter.setPen(Qt::NoPen);
 }
 
 void Square::setDepth(qreal depth)
@@ -319,6 +337,7 @@ void Square::moveLowerRight(QPointF offset)
 Pancil::Pancil()
 {
 	m_type = ShapeType::TypePencil;
+	m_pen.setStyle(Qt::SolidLine);
 }
 
 Pancil::~Pancil()
@@ -339,7 +358,9 @@ void Pancil::drawShape(QPainter& painter)
 		path.lineTo((*i));
 		i++;
 	}
+	painter.setPen(m_pen);
 	painter.drawPath(path);
+	painter.setPen(Qt::NoPen);
 }
 
 void Pancil::setDrawStar(QPointF star)
@@ -583,6 +604,9 @@ ShapeFactory::ShapeFactory()
 Circle::Circle()
 {
 	m_type = ShapeType::TypeCircle;
+	m_brush.setColor(QColor(255, 255, 255));
+	m_brush.setStyle(Qt::SolidPattern);
+	m_pen.setStyle(Qt::SolidLine);
 }
 
 Circle::~Circle()
@@ -605,10 +629,11 @@ void Circle::drawShape(QPainter& painter)
 {
 	if (m_drawStar.isNull() || m_drawEnd.isNull())
 		return;
-	QBrush brush(QColor(255, 255, 255));
-	painter.setBrush(brush);
+	painter.setBrush(m_brush);
+	painter.setPen(m_pen);
 	painter.drawEllipse(m_drawStar.x(), m_drawStar.y(), m_drawEnd.x() - m_drawStar.x(), m_drawEnd.y() - m_drawStar.y());
 	painter.setBrush(Qt::NoBrush);
+	painter.setPen(Qt::NoPen);
 }
 
 void Circle::setDepth(qreal depth)
@@ -677,6 +702,9 @@ Hexagon::Hexagon()
 {
 	m_vertex.resize(7);
 	m_type = ShapeType::TypeHexagon;
+	m_brush.setColor(QColor(255, 255, 255));
+	m_brush.setStyle(Qt::SolidPattern);
+	m_pen.setStyle(Qt::SolidLine);
 }
 
 Hexagon::~Hexagon()
@@ -685,13 +713,14 @@ Hexagon::~Hexagon()
 
 void Hexagon::drawShape(QPainter& painter)
 {
-	QBrush brush(QColor(255, 255, 255));
-	painter.setBrush(brush);
+	painter.setBrush(m_brush);
+	painter.setPen(m_pen);
 	QPolygonF myPolygon(m_vertex);
 	QPainterPath path;
 	path.addPolygon(myPolygon);
 	painter.drawPath(path);
 	painter.setBrush(Qt::NoBrush);
+	painter.setPen(Qt::NoPen);
 }
 
 void Hexagon::setDrawStar(QPointF star)
