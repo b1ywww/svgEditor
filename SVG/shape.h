@@ -124,6 +124,7 @@ public:
 	void moveLowerRight(QPointF offset) override;
 
 	void updateClickRect(QPointF point);
+	void updateEdgeValue();
 	const QList<QPointF>& getPhysicalPoint();
 
 private:

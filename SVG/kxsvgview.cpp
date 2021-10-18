@@ -1,13 +1,11 @@
 #include "kxsvgview.h"
 
 #include <qgraphicsview.h>
-#include <QtSvg/QGraphicsSvgItem>
 #include <QtWidgets/QToolBar>
 #include <QDebug>
 #include <QButtonGroup>
 #include <qcoreevent.h>
 #include <QSvgGenerator>
-#include <QGraphicsItem>
 #include <QPen>
 #include <QRect>
 #include <QMessageBox>
@@ -15,7 +13,6 @@
 #include <QLineEdit>
 #include <QRegExpValidator>
 #include <QColorDialog>
-#include <QGraphicsOpacityEffect>
 #include <QPainter>
 
 const int MAINWINDOW_WIDTH = 1000;

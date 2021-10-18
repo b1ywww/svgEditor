@@ -1,4 +1,7 @@
 #pragma once
+#include "kxcanvas.h"
+#include "shape.h"
+
 #include <QtWidgets/QMainWindow>
 #include <QtSvg/qsvgrenderer.h>
 #include <QtWidgets/QMenuBar>
@@ -6,10 +9,8 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QRadioButton>
-#include "kxcanvas.h"
 #include <QList>
 
-#include "shape.h"
 class Line;
 class Shape;
 class QLineEdit;

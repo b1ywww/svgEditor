@@ -1,9 +1,10 @@
 #include "kxcanvas.h"
+#include "svgwrite.h"
+
 #include "QPainter"
 #include "QDebug"
 #include <QTextCursor>
-#include<cstdlib>
-#include "svgwrite.h"
+#include <cstdlib>
 #include <QMessageBox>
 #include <QFileDialog>
 

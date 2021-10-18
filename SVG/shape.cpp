@@ -297,6 +297,14 @@ void Pancil::updateClickRect(QPointF point)
 	m_end = m_drawEnd;
 }
 
+void Pancil::updateEdgeValue()
+{
+	m_top = m_drawStar.y();
+	m_bottom = m_drawEnd.y();
+	m_Left = m_drawStar.x();
+	m_right = m_drawEnd.x();
+}
+
 const QList<QPointF>& Pancil::getPhysicalPoint()
 {
 	return m_PhysicalPoint;
@@ -323,31 +331,34 @@ void Pancil::scale(qreal ratioW, qreal ratioH)
 	m_drawEnd.setX((m_end.x()) * (1 + ratioW));
 
 	m_drawStar.setY((m_star.y()) * (1 + ratioH));
-	m_drawEnd.setY((m_end.y()) * (1 + ratioH));
+	m_drawEnd.setY((m_end.y()) * (1 + ratioH));\
+	updateEdgeValue();
 }
 
 void Pancil::move(QPointF offset)
 {
 	QList<QPointF>::iterator i = m_drawPoint.begin();
-	for (; i != m_drawPoint.end(); i++)
+	QList<QPointF>::iterator j = m_PhysicalPoint.begin();
+	for (; i != m_drawPoint.end(); i++,j++)
 	{
 		*i = *i + offset;
 	}
 	m_drawStar += offset;
 	m_drawEnd += offset;
 
-	m_bottom = m_bottom + offset.y();
-	m_top = m_top + offset.y();
-	m_Left = m_Left + offset.x();
-	m_right = m_right + offset.x();
+	updateEdgeValue();
 }
 
 void Pancil::moveTop(QPointF offset)
 {
 	QList<QPointF>::iterator i = m_drawPoint.begin();
+	//防止线重合加一个判断
+	if (qAbs(m_top + offset.y() - m_bottom) < 0.0001)
+		return;
+
 	for (; i != m_drawPoint.end(); i++)
 	{
-		qreal ratio = ((*i).y() - m_bottom) * 1.0 / (m_top - m_bottom);
+		qreal ratio = ((*i).y() - m_bottom) / (m_top - m_bottom);
 		qreal offsetY = offset.y() * ratio;
 		(*i).setY((*i).y() + offsetY);
 	}
@@ -357,37 +368,78 @@ void Pancil::moveTop(QPointF offset)
 
 void Pancil::moveBottom(QPointF offset)
 {
+	QList<QPointF>::iterator i = m_drawPoint.begin();
+	//防止线重合加一个判断
+	if (qAbs(m_bottom + offset.y() - m_top) < 0.0001)
+		return;
+
+	for (; i != m_drawPoint.end(); i++)
+	{
+		qreal ratio = ((*i).y() - m_top) / (m_bottom - m_top);
+		qreal offsetY = offset.y() * ratio;
+		(*i).setY((*i).y() + offsetY);
+	}
+	m_bottom = m_drawEnd.y() + offset.y();
+	m_drawEnd.setY(m_bottom);
 
 }
 
 void Pancil::moveLeft(QPointF offset)
 {
+	QList<QPointF>::iterator i = m_drawPoint.begin();
+	//防止线重合加一个判断
+	if (qAbs(m_Left + offset.x() - m_right) < 0.0001)
+		return;
 
+	for (; i != m_drawPoint.end(); i++)
+	{
+		qreal ratio = ((*i).x() - m_right) / (m_Left - m_right);
+		qreal offsetX = offset.x() * ratio;
+		(*i).setX((*i).x() + offsetX);
+	}
+	m_Left = m_drawStar.x() + offset.x();
+	m_drawStar.setX(m_Left);
 }
 
 void Pancil::moveRight(QPointF offset)
 {
+	QList<QPointF>::iterator i = m_drawPoint.begin();
+	//防止线重合加一个判断
+	if (qAbs(m_right + offset.x() - m_Left) < 0.0001)
+		return;
 
+	for (; i != m_drawPoint.end(); i++)
+	{
+		qreal ratio = ((*i).x() - m_Left) / (m_right - m_Left);
+		qreal offsetX = offset.x() * ratio;
+		(*i).setX((*i).x() + offsetX);
+	}
+	m_right = m_drawEnd.x() + offset.x();
+	m_drawEnd.setX(m_right);
 }
 
 void Pancil::moveUpperLeft(QPointF offset)
 {
-
+	moveLeft(offset);
+	moveTop(offset);
 }
 
 void Pancil::moveUpperRight(QPointF offset)
 {
-
+	moveRight(offset);
+	moveTop(offset);
 }
 
 void Pancil::moveLowerLeft(QPointF offset)
 {
-
+	moveLeft(offset);
+	moveBottom(offset);
 }
 
 void Pancil::moveLowerRight(QPointF offset)
 {
-
+	moveRight(offset);
+	moveBottom(offset);
 }
 
 void Pancil::drawPointToPhysicalPoint(qreal ratio)
