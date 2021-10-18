@@ -7,11 +7,7 @@
 #include <cstdlib>
 #include <QMessageBox>
 #include <QFileDialog>
-
-int KxSvgCanvas::s_offsetStartX = -4;
-int KxSvgCanvas::s_offsetStartY = -4;
-int KxSvgCanvas::s_offsetWidth = 8;
-int KxSvgCanvas::s_offsetHeight = 8;
+#include <QApplication>
 
 const int POSITION_DEFAULT = 0;
 const int POSITION_LEFT = 1;
@@ -62,9 +58,10 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 	}
 
 	//绘制选中框
-	if (m_pClickShape)
+	if (m_clickShapeList.size() > 0)
 	{
-		m_pClickShape->drawClickRect(painter);
+		for(auto i : m_clickShapeList)
+			i->drawClickRect(painter);
 	}
 	else
 	{
@@ -90,13 +87,29 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 			m_pCurrentShape->setDrawStar(transformPoint / (1 + m_offset));
 		}
 
-		if (nullptr == m_pClickShape)
+		if (m_clickShapeList.isEmpty())
 			m_positionType = mousePosition::noClick;
 
 		if (false == isMove && m_currentType == ShapeType::TypeSelect)
 		{
+			if (QApplication::keyboardModifiers() != Qt::ControlModifier)
+			{
+				for (auto i : m_clickShapeList)
+				{
+					i->setClickState(false);
+					m_clickShapeList.removeOne(i);
+				}
+			}
+
 			if(m_positionType == mousePosition::noClick || m_positionType == mousePosition::move)
+			{
 				m_pClickShape = getClickShape(transformPoint);
+				if(nullptr != m_pClickShape && false == m_pClickShape->getClickState())
+				{
+					m_clickShapeList.append(m_pClickShape);
+					m_pClickShape->setClickState(true);
+				}
+			}
 
 			isMove = true;
 		}
@@ -117,7 +130,7 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 		m_pCurrentShape->scale(m_offset, m_offset); //更新drawPoint坐标
 	}
 
-	if (nullptr == m_pClickShape)
+	if (m_clickShapeList.isEmpty())
 	{		
 		update();
 		return;
@@ -149,6 +162,13 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 		else
 		{
 			m_pClickShape = m_pCurrentShape;
+			for (auto i : m_clickShapeList)
+			{
+				i->setClickState(false);
+				m_clickShapeList.removeOne(i);
+			}
+			m_clickShapeList.append(m_pClickShape);
+			m_pClickShape->setClickState(true);
 		}
 	}
 	updatePhysicalPoint();
@@ -391,8 +411,6 @@ bool KxSvgCanvas::isInRect(QPoint point, Shape* shape)
 	qreal point_x = point.x() - shape->getDrawStar().x();
 	qreal point_y = point.y() - shape->getDrawStar().y();
 
-	setOffset(x, y);
-
 	if (point_x / x <= 1 &&
 		point_x / x >= 0 &&
 		point_y / y <= 1 &&
@@ -403,59 +421,10 @@ bool KxSvgCanvas::isInRect(QPoint point, Shape* shape)
 	return false;
 }
 
-void KxSvgCanvas::setOffset(qreal x, qreal y)
-{
-	if (x > 0)
-	{
-		if (s_offsetStartX > 0)
-		{
-			s_offsetStartX *= -1;
-		}
-		if (s_offsetWidth < 0)
-		{
-			s_offsetWidth *= -1;
-		}
-	}
-	else
-	{
-		if (s_offsetStartX < 0)
-		{
-			s_offsetStartX *= -1;
-		}
-		if (s_offsetWidth > 0)
-		{
-			s_offsetWidth *= -1;
-		}
-	}
-
-	if (y > 0)
-	{
-		if (s_offsetStartY > 0)
-		{
-			s_offsetStartY *= -1;
-		}
-		if (s_offsetHeight < 0)
-		{
-			s_offsetHeight *= -1;
-		}
-	}
-	else
-	{
-		if (s_offsetStartY < 0)
-		{
-			s_offsetStartY *= -1;
-		}
-		if (s_offsetHeight > 0)
-		{
-			s_offsetHeight *= -1;
-		}
-	}
-}
-
 void KxSvgCanvas::setPositionType(QPoint point)
 {
 	int flag = 0;
-	if (false == isInRect(point, m_pClickShape))
+	if (false == isInRect(point, m_pClickShape) || m_clickShapeList.size() > 1)
 	{
 		setCursor(Qt::ArrowCursor);
 		m_positionType = mousePosition::noClick;
@@ -515,60 +484,63 @@ void KxSvgCanvas::setPositionType(QPoint point)
 
 void KxSvgCanvas::editShape(QPoint transformPoint)
 {
-	switch (m_positionType)
+	for(auto i : m_clickShapeList)
 	{
-	case KxSvgCanvas::mousePosition::move:
-	{
-		m_pClickShape->move((transformPoint - m_currentPoint));
-		break;
-	}
-	case KxSvgCanvas::mousePosition::noClick:
-	{
-		m_pClickShape->move((transformPoint - m_currentPoint));
-		break;
-	}
-	case KxSvgCanvas::mousePosition::top:
-	{
-		m_pClickShape->moveTop(QPoint(0, transformPoint.y() - m_currentPoint.y()));
-		break;
-	}
-	case KxSvgCanvas::mousePosition::left:
-	{
-		m_pClickShape->moveLeft(QPoint(transformPoint.x() - m_currentPoint.x(), 0));
-		break;
-	}
-	case KxSvgCanvas::mousePosition::right:
-	{
-		m_pClickShape->moveRight(QPoint(transformPoint.x() - m_currentPoint.x(), 0));
-		break;
-	}
-	case KxSvgCanvas::mousePosition::bottom:
-	{
-		m_pClickShape->moveBottom(QPoint(0, transformPoint.y() - m_currentPoint.y()));
-		break;
-	}
-	case KxSvgCanvas::mousePosition::upperLeft:
-	{
-		m_pClickShape->moveUpperLeft(transformPoint - m_currentPoint);
-		break;
-	}
-	case KxSvgCanvas::mousePosition::lowerLeft:
-	{
-		m_pClickShape->moveLowerLeft(transformPoint - m_currentPoint);
-		break;
-	}
-	case KxSvgCanvas::mousePosition::upperRight:
-	{
-		m_pClickShape->moveUpperRight(transformPoint - m_currentPoint);
-		break;
-	}
-	case KxSvgCanvas::mousePosition::lowerRight:
-	{
-		m_pClickShape->moveLowerRight(transformPoint - m_currentPoint);
-		break;
-	}
-	default:
-		break;
+		switch (m_positionType)
+		{
+		case KxSvgCanvas::mousePosition::move:
+		{
+			i->move((transformPoint - m_currentPoint));
+			break;
+		}
+		case KxSvgCanvas::mousePosition::noClick:
+		{
+			i->move((transformPoint - m_currentPoint));
+			break;
+		}
+		case KxSvgCanvas::mousePosition::top:
+		{
+			i->moveTop(QPoint(0, transformPoint.y() - m_currentPoint.y()));
+			break;
+		}
+		case KxSvgCanvas::mousePosition::left:
+		{
+			i->moveLeft(QPoint(transformPoint.x() - m_currentPoint.x(), 0));
+			break;
+		}
+		case KxSvgCanvas::mousePosition::right:
+		{
+			i->moveRight(QPoint(transformPoint.x() - m_currentPoint.x(), 0));
+			break;
+		}
+		case KxSvgCanvas::mousePosition::bottom:
+		{
+			i->moveBottom(QPoint(0, transformPoint.y() - m_currentPoint.y()));
+			break;
+		}
+		case KxSvgCanvas::mousePosition::upperLeft:
+		{
+			i->moveUpperLeft(transformPoint - m_currentPoint);
+			break;
+		}
+		case KxSvgCanvas::mousePosition::lowerLeft:
+		{
+			i->moveLowerLeft(transformPoint - m_currentPoint);
+			break;
+		}
+		case KxSvgCanvas::mousePosition::upperRight:
+		{
+			i->moveUpperRight(transformPoint - m_currentPoint);
+			break;
+		}
+		case KxSvgCanvas::mousePosition::lowerRight:
+		{
+			i->moveLowerRight(transformPoint - m_currentPoint);
+			break;
+		}
+		default:
+			break;
+		}
 	}
 }
 

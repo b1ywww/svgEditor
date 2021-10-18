@@ -44,6 +44,8 @@ public:
 
 	void setClickRectOffset(qreal x, qreal y);
 	ShapeType getShapeType();
+	bool getClickState();
+	void setClickState(bool click);
 protected:
 	QPointF m_star;      //ÎïÀí×ø±ê
 	QPointF m_end;
@@ -57,6 +59,7 @@ private:
 	int m_offsetStartY = -4;
 	int m_offsetWidth = 8;
 	int m_offsetHeight = 8;
+	bool m_isClick = false;
 };
 
 class Line : public Shape

@@ -116,6 +116,16 @@ ShapeType Shape::getShapeType()
 	return m_type;
 }
 
+bool Shape::getClickState()
+{
+	return m_isClick;
+}
+
+void Shape::setClickState(bool click)
+{
+	m_isClick = click;
+}
+
 Line::Line()
 {
 	m_type = ShapeType::TypeLine;

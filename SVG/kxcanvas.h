@@ -40,11 +40,11 @@ public slots:
 private:
 	Shape* getClickShape(QPoint point);
 	bool isInRect(QPoint point, Shape* shape);
-	void setOffset(qreal, qreal);
 	void setPositionType(QPoint point);
 
 	ShapeType m_currentType;
 	QList<Shape*> m_shapeList;
+	QList<Shape*> m_clickShapeList;
 	QSvgRenderer* m_pSvgRenderer = nullptr;
 	QPoint m_transfrom;
 	QPoint m_currentPoint;
@@ -70,11 +70,6 @@ private:
 		noClick
 	};
 	mousePosition m_positionType = mousePosition::noClick;
-
-	static int s_offsetStartX;
-	static int s_offsetStartY;
-	static int s_offsetWidth;
-	static int s_offsetHeight;
 
 	void editShape(QPoint transformPoint);
 	void updatePhysicalPoint();
