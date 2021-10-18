@@ -30,6 +30,7 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	setFocusPolicy(Qt::ClickFocus);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
 	setCanvasSize();
+	m_pClickRect = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeSquare);
 }
 
 KxSvgCanvas::KxSvgCanvas(QWidget* parent, qreal x, qreal y, qreal w, qreal h)
@@ -40,16 +41,19 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent, qreal x, qreal y, qreal w, qreal h)
 
 KxSvgCanvas::~KxSvgCanvas()
 {
-
+	delete m_pClickRect;
 }
 
 void KxSvgCanvas::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
+	//坐标变换
 	QTransform transform;
 	transform.translate(m_transfrom.x(), m_transfrom.y());
 	painter.setTransform(transform);
-	for each (Shape * i in m_shapeList)
+
+	//绘制所有图像
+	for (Shape * i : m_shapeList)
 	{
 		if (i != nullptr)
 		{
@@ -69,6 +73,21 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 		m_positionType = mousePosition::move;
 	}
 
+	//绘制选取框
+	if (!m_pClickRect->getDrawEnd().isNull())
+	{
+		QPen pen(Qt::DashLine);
+		pen.setColor(QColor(67, 142, 419));
+		QPainterPath path;
+
+		painter.setPen(pen);
+		m_pClickRect->drawShape(painter);
+
+		painter.drawPath(path);
+		painter.setPen(Qt::NoPen);
+	}
+
+	//加载通用的svg图片
 	if (m_pSvgRenderer && m_pSvgRenderer->isValid())
 		m_pSvgRenderer->render(&painter);
 }
@@ -78,6 +97,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 	QPoint transformPoint = event->pos() - m_transfrom;
 	if (Qt::LeftButton == event->button())
 	{
+		//设置新增图像的结束点
 		Shape* tmpShape = nullptr;
 		tmpShape = ShapeFactory::getShapeFactory()->getShape(m_currentType);
 		if (tmpShape)
@@ -90,11 +110,17 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 		if (m_clickShapeList.isEmpty())
 			m_positionType = mousePosition::noClick;
 
+		//单选和点击多选对象
 		if (false == isMove && m_currentType == ShapeType::TypeSelect)
 		{
 			if(m_positionType == mousePosition::noClick || m_positionType == mousePosition::move)
 			{
 				m_pClickShape = getClickShape(transformPoint);
+			}
+
+			if (nullptr == m_pClickShape)
+			{
+				m_pClickRect->setDrawStar(transformPoint);
 			}
 
 			if (nullptr == m_pClickShape || (QApplication::keyboardModifiers() != Qt::ControlModifier && m_clickShapeList.size() < 2))
@@ -118,7 +144,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 		{
 			isMove = false;
 		}
-		m_currentPoint = transformPoint;
+		m_lastPoint = transformPoint;
 	}
 }
 
@@ -131,6 +157,11 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 		m_pCurrentShape->scale(m_offset, m_offset); //更新drawPoint坐标
 	}
 
+	if (!m_pClickRect->getDrawStar().isNull())
+	{
+		m_pClickRect->setDrawEnd(transformPoint / (1 + m_offset));
+	}
+
 	if (m_clickShapeList.isEmpty())
 	{		
 		update();
@@ -140,7 +171,7 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 	if (isMove)
 	{
 		editShape(transformPoint);
-		m_currentPoint = transformPoint;
+		m_lastPoint = transformPoint;
 	}
 	else if (m_currentType == ShapeType::TypeSelect)
 	{
@@ -172,6 +203,11 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 			m_pClickShape->setClickState(true);
 		}
 	}
+	if(!m_pClickRect->getDrawEnd().isNull())
+		shapeInClickRect();
+	m_pClickRect->setDrawStar(QPoint(0, 0));
+	m_pClickRect->setDrawEnd(QPoint(0, 0));
+
 	updatePhysicalPoint();
 	isMove = false;
 	m_pCurrentShape = nullptr;
@@ -392,6 +428,25 @@ int KxSvgCanvas::getShapeCount()
 	return 0;
 }
 
+void KxSvgCanvas::shapeInClickRect()
+{
+	for (Shape* i : m_shapeList)
+	{
+		QPointF topLeft = i->getDrawStar();
+		QPointF bottomLeft = QPointF(i->getDrawStar().x(), i->getDrawEnd().y());
+		QPointF topRight = QPointF(i->getDrawEnd().x(), i->getDrawStar().y());
+		QPointF bottomRight = i->getDrawEnd();
+		if (isInRect(topLeft, m_pClickRect)
+			|| isInRect(bottomLeft, m_pClickRect)
+			|| isInRect(topRight, m_pClickRect)
+			|| isInRect(bottomRight, m_pClickRect))
+		{
+			m_clickShapeList.append(i);
+			i->setClickState(true);
+		}
+	}
+}
+
 Shape* KxSvgCanvas::getClickShape(QPoint point)
 {
 	//逆序遍历，深度值越小 在链表的位置越靠前
@@ -403,7 +458,7 @@ Shape* KxSvgCanvas::getClickShape(QPoint point)
 	return nullptr;
 }
 
-bool KxSvgCanvas::isInRect(QPoint point, Shape* shape)
+bool KxSvgCanvas::isInRect(QPointF point, Shape* shape)
 {
 	if (shape == nullptr)
 		return nullptr;
@@ -493,52 +548,52 @@ void KxSvgCanvas::editShape(QPoint transformPoint)
 		{
 		case KxSvgCanvas::mousePosition::move:
 		{
-			i->move((transformPoint - m_currentPoint));
+			i->move((transformPoint - m_lastPoint));
 			break;
 		}
 		case KxSvgCanvas::mousePosition::noClick:
 		{
-			i->move((transformPoint - m_currentPoint));
+			i->move((transformPoint - m_lastPoint));
 			break;
 		}
 		case KxSvgCanvas::mousePosition::top:
 		{
-			i->moveTop(QPoint(0, transformPoint.y() - m_currentPoint.y()));
+			i->moveTop(QPoint(0, transformPoint.y() - m_lastPoint.y()));
 			break;
 		}
 		case KxSvgCanvas::mousePosition::left:
 		{
-			i->moveLeft(QPoint(transformPoint.x() - m_currentPoint.x(), 0));
+			i->moveLeft(QPoint(transformPoint.x() - m_lastPoint.x(), 0));
 			break;
 		}
 		case KxSvgCanvas::mousePosition::right:
 		{
-			i->moveRight(QPoint(transformPoint.x() - m_currentPoint.x(), 0));
+			i->moveRight(QPoint(transformPoint.x() - m_lastPoint.x(), 0));
 			break;
 		}
 		case KxSvgCanvas::mousePosition::bottom:
 		{
-			i->moveBottom(QPoint(0, transformPoint.y() - m_currentPoint.y()));
+			i->moveBottom(QPoint(0, transformPoint.y() - m_lastPoint.y()));
 			break;
 		}
 		case KxSvgCanvas::mousePosition::upperLeft:
 		{
-			i->moveUpperLeft(transformPoint - m_currentPoint);
+			i->moveUpperLeft(transformPoint - m_lastPoint);
 			break;
 		}
 		case KxSvgCanvas::mousePosition::lowerLeft:
 		{
-			i->moveLowerLeft(transformPoint - m_currentPoint);
+			i->moveLowerLeft(transformPoint - m_lastPoint);
 			break;
 		}
 		case KxSvgCanvas::mousePosition::upperRight:
 		{
-			i->moveUpperRight(transformPoint - m_currentPoint);
+			i->moveUpperRight(transformPoint - m_lastPoint);
 			break;
 		}
 		case KxSvgCanvas::mousePosition::lowerRight:
 		{
-			i->moveLowerRight(transformPoint - m_currentPoint);
+			i->moveLowerRight(transformPoint - m_lastPoint);
 			break;
 		}
 		default:
