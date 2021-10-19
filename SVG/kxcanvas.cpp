@@ -45,11 +45,14 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent, qreal x, qreal y, qreal w, qreal h)
 KxSvgCanvas::~KxSvgCanvas()
 {
 	delete m_pClickRect;
+	deleteShapeList();
+	ShapeFactory::getShapeFactory()->deleteShapeFactory();
 }
 
 void KxSvgCanvas::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
+	painter.setRenderHint(QPainter::Antialiasing);
 	//×ø±ê±ä»»
 	QTransform transform;
 	transform.translate(m_transfrom.x(), m_transfrom.y());

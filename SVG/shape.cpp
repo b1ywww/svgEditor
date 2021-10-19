@@ -342,7 +342,8 @@ Pancil::Pancil()
 
 Pancil::~Pancil()
 {
-
+	m_drawPoint.clear();
+	m_PhysicalPoint.clear();
 }
 
 void Pancil::drawShape(QPainter& painter)
@@ -552,53 +553,6 @@ void Pancil::drawPointToPhysicalPoint(qreal ratio)
 	}
 
 	Shape::drawPointToPhysicalPoint(ratio);
-}
-
-ShapeFactory* ShapeFactory::getShapeFactory()
-{
-	static ShapeFactory* m_pShapeFactory = nullptr;
-	if (m_pShapeFactory == nullptr)
-	{
-		m_pShapeFactory = new ShapeFactory();
-	}
-
-	return m_pShapeFactory;
-}
-
-Shape* ShapeFactory::getShape(ShapeType type)
-{
-	Shape* inShape = nullptr;
-	switch (type)
-	{
-	case ShapeType::TypeSelect:
-		break;
-	case ShapeType::TypeLine:
-		inShape = new Line();
-		break;
-	case ShapeType::TypeSquare:
-		inShape = new Square();
-		break;
-	case ShapeType::TypePencil:
-		inShape = new Pancil();
-		break;
-	case ShapeType::TypeCircle:
-		inShape = new Circle();
-		break;
-	case ShapeType::TypeHexagon:
-		inShape = new Hexagon();
-		break;
-	case ShapeType::TypeText:
-		inShape = new TextEdit();
-		break;
-	default:
-		break;
-	}
-	return inShape;
-}
-
-ShapeFactory::ShapeFactory()
-{
-
 }
 
 Circle::Circle()
@@ -937,4 +891,56 @@ void TextEdit::moveLowerRight(QPointF offset)
 void TextEdit::setText(QString text)
 {
 	m_text = text;
+}
+
+ShapeFactory* ShapeFactory::getShapeFactory()
+{
+	static ShapeFactory* m_pShapeFactory = nullptr;
+	if (m_pShapeFactory == nullptr)
+	{
+		m_pShapeFactory = new ShapeFactory();
+	}
+
+	return m_pShapeFactory;
+}
+
+Shape* ShapeFactory::getShape(ShapeType type)
+{
+	Shape* inShape = nullptr;
+	switch (type)
+	{
+	case ShapeType::TypeSelect:
+		break;
+	case ShapeType::TypeLine:
+		inShape = new Line();
+		break;
+	case ShapeType::TypeSquare:
+		inShape = new Square();
+		break;
+	case ShapeType::TypePencil:
+		inShape = new Pancil();
+		break;
+	case ShapeType::TypeCircle:
+		inShape = new Circle();
+		break;
+	case ShapeType::TypeHexagon:
+		inShape = new Hexagon();
+		break;
+	case ShapeType::TypeText:
+		inShape = new TextEdit();
+		break;
+	default:
+		break;
+	}
+	return inShape;
+}
+
+void ShapeFactory::deleteShapeFactory()
+{
+	delete getShapeFactory();
+}
+
+ShapeFactory::ShapeFactory()
+{
+
 }

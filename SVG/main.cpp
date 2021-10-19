@@ -1,3 +1,4 @@
+#include <vld.h>
 #include "kxsvgview.h"
 #include <QtWidgets/QApplication>
 

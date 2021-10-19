@@ -144,15 +144,9 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	m_pMainHoriLayout->addWidget(m_pCanvasWidget);
 
 	//设置右边的设置面板
-	m_pSettingWidget = new QWidget();
-	m_pSettingWidget->setObjectName(QStringLiteral("settingWidget"));
-	m_pSettingWidget->setMinimumSize(QSize(SETTING_MIN_WIDTH, 0));
-	m_pSettingWidget->setMaximumSize(QSize(SETTING_MAX_WIDTH, DEFAULT_MAX));
-	m_pSettingWidget->setStyleSheet(QStringLiteral("background-color: rgb(47, 47, 44);"));
-
 	setSettingPane();
 
-	m_pMainHoriLayout->addWidget(m_pSettingWidget);
+	m_pMainHoriLayout->addWidget(m_pages);
 	m_pCentralLayout->addLayout(m_pMainHoriLayout);
 
 	this->setCentralWidget(m_pCentralWidget);
@@ -180,6 +174,13 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	//设置左边工具栏布局
 	setToolBar();
 
+}
+
+SVGMainWIndow::~SVGMainWIndow()
+{
+	delete m_pActionNew;
+	delete m_pActionOpen;
+	delete m_pActionSave;
 }
 
 void SVGMainWIndow::paintEvent(QPaintEvent* event)
@@ -289,18 +290,41 @@ void SVGMainWIndow::setToolBar()
 
 void SVGMainWIndow::setSettingPane()
 {
-	m_pGridLayout = new QGridLayout(m_pSettingWidget);
-	m_pGridLayout->setSpacing(20);
-	m_pGridLayout->setContentsMargins(20, 10, 10, 10);
-	m_pGridLayout->setObjectName(QStringLiteral("settingGridLayout"));
-	m_pGridLayout->setAlignment(Qt::AlignTop);
+	setSettingCanvas();
+	setSettingSquare();
+	m_pages = new QStackedWidget();
+	m_pages->setObjectName(QStringLiteral("pages"));
+	m_pages->setMinimumSize(QSize(SETTING_MIN_WIDTH, 0));
+	m_pages->setMaximumSize(QSize(SETTING_MAX_WIDTH, DEFAULT_MAX));
+	m_pages->setStyleSheet(QStringLiteral("background-color: rgb(47, 47, 44);"));
 
-	m_pEditCanvasWidth = new QWidget(m_pSettingWidget);
-	m_pEditCanvasWidth->setObjectName(QStringLiteral("widget_4"));
-	m_pEditCanvasWidth->setMinimumSize(QSize(60, 60));
-	m_pEditCanvasWidth->setMaximumSize(QSize(60, 60));
-	m_pEditCanvasWidth->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
-	QLabel* widthLabel = new QLabel(m_pEditCanvasWidth);
+	m_pages->addWidget(m_pSettingCanvasWidget);
+	m_pages->addWidget(m_pSettingSquareWidget);
+
+	m_pages->setCurrentIndex(0);
+
+}
+
+void SVGMainWIndow::setSettingCanvas()
+{
+	m_pSettingCanvasWidget = new QWidget();
+	m_pSettingCanvasWidget->setObjectName(QStringLiteral("settingWidget"));
+	m_pSettingCanvasWidget->setMinimumSize(QSize(SETTING_MIN_WIDTH, 0));
+	m_pSettingCanvasWidget->setMaximumSize(QSize(SETTING_MAX_WIDTH, DEFAULT_MAX));
+	m_pSettingCanvasWidget->setStyleSheet(QStringLiteral("background-color: rgb(47, 47, 44);"));
+
+	m_pSettingCanvasLayout = new QGridLayout(m_pSettingCanvasWidget);
+	m_pSettingCanvasLayout->setSpacing(20);
+	m_pSettingCanvasLayout->setContentsMargins(20, 10, 10, 10);
+	m_pSettingCanvasLayout->setObjectName(QStringLiteral("settingGridLayout"));
+	m_pSettingCanvasLayout->setAlignment(Qt::AlignTop);
+
+	QWidget* pEditCanvasWidth = new QWidget(m_pSettingCanvasWidget);
+	pEditCanvasWidth->setObjectName(QStringLiteral("widget_4"));
+	pEditCanvasWidth->setMinimumSize(QSize(60, 60));
+	pEditCanvasWidth->setMaximumSize(QSize(60, 60));
+	pEditCanvasWidth->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
+	QLabel* widthLabel = new QLabel(pEditCanvasWidth);
 	widthLabel->setObjectName(QStringLiteral("widthLabel"));
 	widthLabel->setGeometry(QRect(0, 5, 60, 12));
 	widthLabel->setMinimumSize(QSize(60, 0));
@@ -309,7 +333,7 @@ void SVGMainWIndow::setSettingPane()
 	widthLabel->setAlignment(Qt::AlignCenter);
 	widthLabel->setText("宽度");
 	//设置输入框
-	m_pWidthLineEdit = new QLineEdit(m_pEditCanvasWidth);
+	m_pWidthLineEdit = new QLineEdit(pEditCanvasWidth);
 	m_pWidthLineEdit->setGeometry(QRect(0, 20, 60, 40));
 	m_pWidthLineEdit->setText("500");
 	m_pWidthLineEdit->setAlignment(Qt::AlignCenter);
@@ -325,12 +349,12 @@ void SVGMainWIndow::setSettingPane()
 	connect(m_pWidthLineEdit, SIGNAL(textChanged(QString)), m_pSvgCanvas, SLOT(setCanvasWidth(QString)));
 	connect(m_pWidthLineEdit, SIGNAL(editingFinished()), m_pSvgCanvas, SLOT(setCanvasSize()));
 
-	m_pEditCanvasHeight = new QWidget(m_pSettingWidget);
-	m_pEditCanvasHeight->setObjectName(QStringLiteral("widget_5"));
-	m_pEditCanvasHeight->setMinimumSize(QSize(60, 60));
-	m_pEditCanvasHeight->setMaximumSize(QSize(60, 60));
-	m_pEditCanvasHeight->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
-	QLabel* heightLabel = new QLabel(m_pEditCanvasHeight);
+	QWidget* pEditCanvasHeight = new QWidget(m_pSettingCanvasWidget);
+	pEditCanvasHeight->setObjectName(QStringLiteral("widget_5"));
+	pEditCanvasHeight->setMinimumSize(QSize(60, 60));
+	pEditCanvasHeight->setMaximumSize(QSize(60, 60));
+	pEditCanvasHeight->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
+	QLabel* heightLabel = new QLabel(pEditCanvasHeight);
 	heightLabel->setObjectName(QStringLiteral("heightLabel"));
 	heightLabel->setGeometry(QRect(0, 5, 60, 12));
 	heightLabel->setMinimumSize(QSize(60, 0));
@@ -339,7 +363,7 @@ void SVGMainWIndow::setSettingPane()
 	heightLabel->setAlignment(Qt::AlignCenter);
 	heightLabel->setText("宽度");
 	//设置输入框
-	m_pHeightLineEdit = new QLineEdit(m_pEditCanvasHeight);
+	m_pHeightLineEdit = new QLineEdit(pEditCanvasHeight);
 	m_pHeightLineEdit->setGeometry(QRect(0, 20, 60, 40));
 	m_pHeightLineEdit->setText("500");
 	m_pHeightLineEdit->setAlignment(Qt::AlignCenter);
@@ -353,12 +377,12 @@ void SVGMainWIndow::setSettingPane()
 	connect(m_pHeightLineEdit, SIGNAL(textChanged(QString)), m_pSvgCanvas, SLOT(setCanvasHeight(QString)));
 	connect(m_pHeightLineEdit, SIGNAL(editingFinished()), m_pSvgCanvas, SLOT(setCanvasSize()));
 
-	m_pEditCanvasColor = new QWidget(m_pSettingWidget);
-	m_pEditCanvasColor->setObjectName(QStringLiteral("widget_5"));
-	m_pEditCanvasColor->setMinimumSize(QSize(60, 60));
-	m_pEditCanvasColor->setMaximumSize(QSize(60, 60));
-	m_pEditCanvasColor->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
-	QLabel* colorLabel = new QLabel(m_pEditCanvasColor);
+	QWidget* pEditCanvasColor = new QWidget(m_pSettingCanvasWidget);
+	pEditCanvasColor->setObjectName(QStringLiteral("widget_5"));
+	pEditCanvasColor->setMinimumSize(QSize(60, 60));
+	pEditCanvasColor->setMaximumSize(QSize(60, 60));
+	pEditCanvasColor->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
+	QLabel* colorLabel = new QLabel(pEditCanvasColor);
 	colorLabel->setObjectName(QStringLiteral("colorLabel"));
 	colorLabel->setGeometry(QRect(0, 5, 60, 12));
 	colorLabel->setMinimumSize(QSize(60, 0));
@@ -366,7 +390,7 @@ void SVGMainWIndow::setSettingPane()
 	colorLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
 	colorLabel->setAlignment(Qt::AlignCenter);
 	colorLabel->setText("颜色");
-	m_pColorChoose = new QPushButton(m_pEditCanvasColor);
+	m_pColorChoose = new QPushButton(pEditCanvasColor);
 	m_pColorChoose->setObjectName(QStringLiteral("m_pColorChoose"));
 	m_pColorChoose->setGeometry(QRect(5, 30, 50, 25));
 	m_pColorChoose->setMinimumSize(QSize(50, 25));
@@ -375,9 +399,85 @@ void SVGMainWIndow::setSettingPane()
 
 	connect(m_pColorChoose, SIGNAL(pressed()), this, SLOT(setCanvasColor()));
 
-	m_pGridLayout->addWidget(m_pEditCanvasWidth, 0, 1, 1, 1);
-	m_pGridLayout->addWidget(m_pEditCanvasHeight, 0, 2, 1, 1);
-	m_pGridLayout->addWidget(m_pEditCanvasColor, 1, 1, 1, 1);
+	m_pSettingCanvasLayout->addWidget(pEditCanvasWidth, 0, 1, 1, 1);
+	m_pSettingCanvasLayout->addWidget(pEditCanvasHeight, 0, 2, 1, 1);
+	m_pSettingCanvasLayout->addWidget(pEditCanvasColor, 1, 1, 1, 1);
+}
+
+void SVGMainWIndow::setSettingSquare(QString x, QString y)
+{
+	m_pSettingSquareWidget = new QWidget();
+	m_pSettingSquareWidget->setObjectName(QStringLiteral("settingSquareWidget"));
+	m_pSettingSquareWidget->setMinimumSize(QSize(SETTING_MIN_WIDTH, 0));
+	m_pSettingSquareWidget->setMaximumSize(QSize(SETTING_MAX_WIDTH, DEFAULT_MAX));
+	m_pSettingSquareWidget->setStyleSheet(QStringLiteral("background-color: rgb(47, 47, 44);"));
+
+	m_pSettingSquareLayout = new QGridLayout(m_pSettingSquareWidget);
+	m_pSettingSquareLayout->setSpacing(20);
+	m_pSettingSquareLayout->setContentsMargins(20, 10, 10, 10);
+	m_pSettingSquareLayout->setObjectName(QStringLiteral("settingGridLayout"));
+	m_pSettingSquareLayout->setAlignment(Qt::AlignTop);
+
+	m_pEditSquareX = new QWidget(m_pSettingSquareWidget);
+	m_pEditSquareX->setObjectName(QStringLiteral("SqureX"));
+	m_pEditSquareX->setMinimumSize(QSize(60, 60));
+	m_pEditSquareX->setMaximumSize(QSize(60, 60));
+	m_pEditSquareX->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
+	QLabel* xLabel = new QLabel(m_pEditSquareX);
+	xLabel->setFont(QFont("Microsoft YaHei", 10));
+	xLabel->setObjectName(QStringLiteral("widthLabel"));
+	xLabel->setGeometry(QRect(0, 5, 60, 12));
+	xLabel->setMinimumSize(QSize(60, 0));
+	xLabel->setMaximumSize(QSize(60, 16777215));
+	xLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
+	xLabel->setAlignment(Qt::AlignCenter);
+	xLabel->setText("X");
+	//设置输入框
+	QLineEdit* pSquareXLineEdit = new QLineEdit(m_pEditSquareX);
+	pSquareXLineEdit->setGeometry(QRect(0, 20, 60, 40));
+	pSquareXLineEdit->setText(x);
+	pSquareXLineEdit->setAlignment(Qt::AlignCenter);
+	pSquareXLineEdit->setStyleSheet(QStringLiteral("color:rgb(79, 128, 255);border-width:0;border-style:outset"));
+	pSquareXLineEdit->setFont(QFont("宋体", 18, QFont::Bold));
+	pSquareXLineEdit->setMaxLength(4);
+	pSquareXLineEdit->setFocusPolicy(Qt::ClickFocus);
+	//限制只能输入数字
+	QRegExp regx("[1-9][0-9]+$");
+	QValidator* validatorX = new QRegExpValidator(regx, pSquareXLineEdit);
+	pSquareXLineEdit->setValidator(validatorX);
+
+	m_pEditSquareY = new QWidget(m_pSettingSquareWidget);
+	m_pEditSquareY->setObjectName(QStringLiteral("SqureX"));
+	m_pEditSquareY->setMinimumSize(QSize(60, 60));
+	m_pEditSquareY->setMaximumSize(QSize(60, 60));
+	m_pEditSquareY->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
+	QLabel* YLabel = new QLabel(m_pEditSquareY);
+	YLabel->setFont(QFont("Microsoft YaHei", 10));
+	YLabel->setObjectName(QStringLiteral("widthLabel"));
+	YLabel->setGeometry(QRect(0, 5, 60, 12));
+	YLabel->setMinimumSize(QSize(60, 0));
+	YLabel->setMaximumSize(QSize(60, 16777215));
+	YLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
+	YLabel->setAlignment(Qt::AlignCenter);
+	YLabel->setText("Y");
+	//设置输入框
+	QLineEdit* pSquareYLineEdit = new QLineEdit(m_pEditSquareY);
+	pSquareYLineEdit->setGeometry(QRect(0, 20, 60, 40));
+	pSquareYLineEdit->setText(y);
+	pSquareYLineEdit->setAlignment(Qt::AlignCenter);
+	pSquareYLineEdit->setStyleSheet(QStringLiteral("color:rgb(79, 128, 255);border-width:0;border-style:outset"));
+	pSquareYLineEdit->setFont(QFont("宋体", 18, QFont::Bold));
+	pSquareYLineEdit->setMaxLength(4);
+	pSquareYLineEdit->setFocusPolicy(Qt::ClickFocus);
+	//限制只能输入数字
+	QRegExp regY("[1-9][0-9]+$");
+	QValidator* validatorY = new QRegExpValidator(regY, pSquareYLineEdit);
+	pSquareYLineEdit->setValidator(validatorY);
+
+
+
+	m_pSettingSquareLayout->addWidget(m_pEditSquareX, 0, 1, 1, 1);
+	m_pSettingSquareLayout->addWidget(m_pEditSquareY, 0, 2, 1, 1);
 }
 
 bool SVGMainWIndow::eventFilter(QObject* watched, QEvent* event)

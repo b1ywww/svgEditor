@@ -20,7 +20,7 @@ class Shape
 {
 public:
 	Shape();
-	~Shape();
+	virtual ~Shape();
 
 	virtual void drawShape(QPainter& painter) = 0;
 	virtual void drawClickRect(QPainter& painter);
@@ -237,7 +237,7 @@ class ShapeFactory
 public:
 	static ShapeFactory* getShapeFactory();
 	Shape* getShape(ShapeType);
-		
+	void deleteShapeFactory();
 protected:
 	ShapeFactory();
 };

@@ -9,6 +9,7 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QRadioButton>
+#include <QStackedWidget>
 #include <QList>
 
 class Line;
@@ -46,7 +47,7 @@ class SVGMainWIndow : public QMainWindow
 
 public:
 	SVGMainWIndow(QWidget* parent = Q_NULLPTR);
-
+	~SVGMainWIndow();
 	void paintEvent(QPaintEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
 	bool eventFilter(QObject* watched, QEvent* event) override;
@@ -58,21 +59,29 @@ private:
 	void setCanvasCenter();
 	void setToolBar();
 	void setSettingPane();
+	void setSettingCanvas();
+	void setSettingSquare(QString x = QString("0"), QString y = QString("0"));
 
 private:
 	QHBoxLayout* m_pMainHoriLayout = nullptr;
 	QHBoxLayout* m_pCentralLayout = nullptr;
 	QVBoxLayout* m_pToolBarLayout = nullptr;
-	QGridLayout* m_pGridLayout = nullptr;
+	QGridLayout* m_pSettingCanvasLayout = nullptr;
+	QGridLayout* m_pSettingSquareLayout = nullptr;
 
-	QWidget* m_pEditCanvasWidth = nullptr;
-	QWidget* m_pEditCanvasHeight = nullptr;
-	QWidget* m_pEditCanvasColor = nullptr;
+	QStackedWidget* m_pages = nullptr;
+
+	//QWidget* m_pEditCanvasWidth = nullptr;		//画布宽度的设置面板
+	//QWidget* m_pEditCanvasHeight = nullptr;		//画布宽度的设置面板
+	//QWidget* m_pEditCanvasColor = nullptr;		//画布颜色的设置面板
+	QWidget* m_pEditSquareX = nullptr;			//矩形X坐标设置面板
+	QWidget* m_pEditSquareY = nullptr;			//矩形Y坐标设置面板
 
 	QWidget* m_pCentralWidget = nullptr;
 	QWidget* m_pToolBarLeftWidget = nullptr;
 	QWidget* m_pCanvasWidget = nullptr;
-	QWidget* m_pSettingWidget = nullptr;
+	QWidget* m_pSettingCanvasWidget = nullptr;
+	QWidget* m_pSettingSquareWidget = nullptr;
 
 	QLineEdit* m_pWidthLineEdit = nullptr;		 //设置面板的编辑工具
 	QLineEdit* m_pHeightLineEdit = nullptr;
