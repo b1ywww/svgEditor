@@ -334,6 +334,7 @@ void KxSvgCanvas::setText()
 	m_pTextEditWidget->hide();
 	if (m_text.isEmpty())
 		return;
+
 	Shape* i = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeText);
 	i->setDrawStar(m_pTextEditWidget->pos() - m_transfrom);
 	i->setDrawEnd(m_pTextEditWidget->pos() + QPointF(m_pTextEditWidget->width(), m_pTextEditWidget->height()) - m_transfrom);

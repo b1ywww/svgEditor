@@ -134,15 +134,16 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 
 	//设置画布
 
-	m_pCanvasWidget = new QWidget(m_pCentralWidget);
-	m_pCanvasWidget->setObjectName(QStringLiteral("canvasWidget"));
-	m_pCanvasWidget->setStyleSheet(QLatin1String("background-color: rgb(63, 63, 60);\n"
-												"border-color: rgb(255, 255, 255);\n"));
+	m_pCanvasScroll = new QScrollArea(m_pCentralWidget);
+	m_pCanvasScroll->setObjectName(QStringLiteral("canvasWidget"));
+	m_pCanvasScroll->setStyleSheet(QLatin1String("background-color: rgb(63, 63, 60);\n"
+												 "border: 0;"));
 
-	m_pSvgCanvas = new KxSvgCanvas(m_pCanvasWidget);
+	m_pSvgCanvas = new KxSvgCanvas(m_pCanvasScroll);
 
-	m_pMainHoriLayout->addWidget(m_pCanvasWidget);
+	m_pMainHoriLayout->addWidget(m_pCanvasScroll);
 
+	m_pCanvasScroll->setWidget(m_pSvgCanvas);
 	//设置右边的设置面板
 	setSettingPane();
 
@@ -209,8 +210,8 @@ void SVGMainWIndow::setCanvasColor()
 
 void SVGMainWIndow::setCanvasCenter()
 {
-	int w = m_pCanvasWidget->width();
-	int h = m_pCanvasWidget->height();
+	int w = m_pCanvasScroll->width();
+	int h = m_pCanvasScroll->height();
 
 	m_pSvgCanvas->move((w - m_pSvgCanvas->width()) / 2, (h - m_pSvgCanvas->height()) / 2);
 	m_pSvgCanvas->show();

@@ -11,6 +11,7 @@
 #include <QtWidgets/QRadioButton>
 #include <QStackedWidget>
 #include <QList>
+#include <QScrollArea>
 
 class Line;
 class Shape;
@@ -74,9 +75,9 @@ private:
 	QWidget* m_pEditSquareX = nullptr;			//矩形X坐标设置面板
 	QWidget* m_pEditSquareY = nullptr;			//矩形Y坐标设置面板
 
+	QScrollArea* m_pCanvasScroll = nullptr;
 	QWidget* m_pCentralWidget = nullptr;
 	QWidget* m_pToolBarLeftWidget = nullptr;
-	QWidget* m_pCanvasWidget = nullptr;
 	QWidget* m_pSettingCanvasWidget = nullptr;
 	QWidget* m_pSettingSquareWidget = nullptr;
 
