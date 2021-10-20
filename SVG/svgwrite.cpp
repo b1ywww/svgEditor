@@ -248,5 +248,20 @@ void SvgWrite::writeHexagon(Shape* shape)
 
 void SvgWrite::writeText(Shape* shape)
 {
+	QDomElement text = m_doc.createElement("text");
 
+	text.setAttribute("white-space", "preserve");
+	text.setAttribute("text-anchor", "start");
+	text.setAttribute("font-family", "Microsoft YaHei");
+	text.setAttribute("font-size", "20");
+	text.setAttribute("x", shape->getPhysicalStar().x() + m_transfrom.x() + 10);
+	text.setAttribute("y", shape->getPhysicalStar().y() + m_transfrom.y() + 20);
+	text.setAttribute("fill-opacity", "null");
+	text.setAttribute("stroke-opacity", "null");
+	text.setAttribute("stroke", "#000");
+	text.setAttribute("fill", "#000000");
+
+	QDomNode node = m_doc.createTextNode(dynamic_cast<TextEdit*>(shape)->getText());
+	text.appendChild(node);
+	m_shapeG.appendChild(text);
 }

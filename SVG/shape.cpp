@@ -898,6 +898,11 @@ void TextEdit::setText(QString text)
 	m_text = text;
 }
 
+QString TextEdit::getText()
+{
+	return m_text;
+}
+
 ShapeFactory* ShapeFactory::getShapeFactory()
 {
 	static ShapeFactory* m_pShapeFactory = nullptr;

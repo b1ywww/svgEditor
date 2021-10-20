@@ -226,6 +226,7 @@ public:
 	void moveLowerRight(QPointF offset) override;
 
 	void setText(QString text);
+	QString getText();
 
 private:
 	QString m_text;

@@ -338,6 +338,7 @@ void KxSvgCanvas::setText()
 	i->setDrawStar(m_pTextEditWidget->pos() - m_transfrom);
 	i->setDrawEnd(m_pTextEditWidget->pos() + QPointF(m_pTextEditWidget->width(), m_pTextEditWidget->height()) - m_transfrom);
 	dynamic_cast<TextEdit*>(i)->setText(m_text);
+	i->drawPointToPhysicalPoint(m_offset);
 	m_shapeList.append(i);
 	m_pClickShape = i;
 	m_text = "";
