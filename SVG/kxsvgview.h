@@ -49,15 +49,12 @@ class SVGMainWIndow : public QMainWindow
 public:
 	SVGMainWIndow(QWidget* parent = Q_NULLPTR);
 	~SVGMainWIndow();
-	void paintEvent(QPaintEvent* event) override;
-	void resizeEvent(QResizeEvent* event) override;
 	bool eventFilter(QObject* watched, QEvent* event) override;
 
 public slots:
 	void setCanvasColor();
 
 private:
-	void setCanvasCenter();
 	void setToolBar();
 	void setSettingPane();
 	void setSettingCanvas();

@@ -135,11 +135,14 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	//ÉèÖÃ»­²¼
 
 	m_pCanvasScroll = new QScrollArea(m_pCentralWidget);
+	m_pCanvasScroll->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
 	m_pCanvasScroll->setObjectName(QStringLiteral("canvasWidget"));
 	m_pCanvasScroll->setStyleSheet(QLatin1String("background-color: rgb(63, 63, 60);\n"
 												 "border: 0;"));
 
 	m_pSvgCanvas = new KxSvgCanvas(m_pCanvasScroll);
+	setCanvasCenter();
+	connect(m_pSvgCanvas, SIGNAL(setCanvasCenter()), this, SLOT(setCanvasCenter()));
 
 	m_pMainHoriLayout->addWidget(m_pCanvasScroll);
 
@@ -186,12 +189,12 @@ SVGMainWIndow::~SVGMainWIndow()
 
 void SVGMainWIndow::paintEvent(QPaintEvent* event)
 {
-	setCanvasCenter();
+	//setCanvasCenter();
 }
 
 void SVGMainWIndow::resizeEvent(QResizeEvent* event)
 {
-	setCanvasCenter();
+	//setCanvasCenter();
 }
 
 void SVGMainWIndow::setCanvasColor()
