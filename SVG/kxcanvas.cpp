@@ -180,7 +180,7 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 
 	if (!m_pClickRect->getDrawStar().isNull())
 	{
-		m_pClickRect->setDrawEnd(transformPoint / (1 + m_offset));
+		m_pClickRect->setDrawEnd(transformPoint);
 	}
 
 	if (m_clickShapeList.isEmpty())

@@ -141,7 +141,6 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 												 "border: 0;"));
 
 	m_pSvgCanvas = new KxSvgCanvas(m_pCanvasScroll);
-	setCanvasCenter();
 	connect(m_pSvgCanvas, SIGNAL(setCanvasCenter()), this, SLOT(setCanvasCenter()));
 
 	m_pMainHoriLayout->addWidget(m_pCanvasScroll);
@@ -187,16 +186,6 @@ SVGMainWIndow::~SVGMainWIndow()
 	delete m_pActionSave;
 }
 
-void SVGMainWIndow::paintEvent(QPaintEvent* event)
-{
-	//setCanvasCenter();
-}
-
-void SVGMainWIndow::resizeEvent(QResizeEvent* event)
-{
-	//setCanvasCenter();
-}
-
 void SVGMainWIndow::setCanvasColor()
 {
 	QColorDialog color;
@@ -209,15 +198,6 @@ void SVGMainWIndow::setCanvasColor()
 	
 	if(m_pSvgCanvas)
 		m_pSvgCanvas->setColor(mRgb);
-}
-
-void SVGMainWIndow::setCanvasCenter()
-{
-	int w = m_pCanvasScroll->width();
-	int h = m_pCanvasScroll->height();
-
-	m_pSvgCanvas->move((w - m_pSvgCanvas->width()) / 2, (h - m_pSvgCanvas->height()) / 2);
-	m_pSvgCanvas->show();
 }
 
 void SVGMainWIndow::setToolBar()
