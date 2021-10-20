@@ -30,10 +30,19 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	setFocusPolicy(Qt::ClickFocus);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
 	setCanvasSize();
+
 	m_pClickRect = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeSquare);
 	QColor color(255, 255, 255);
 	color.setAlpha(0);
 	m_pClickRect->getBrush().setColor(color);
+
+	m_pTextEditWidget = new QLineEdit(this);
+	m_pTextEditWidget->resize(10, 40);
+	m_pTextEditWidget->setFont(QFont("Microsoft YaHei", 20));
+	m_pTextEditWidget->hide();
+
+	connect(m_pTextEditWidget, SIGNAL(textChanged(QString)), this, SLOT(changeText(QString)));
+	connect(m_pTextEditWidget, SIGNAL(editingFinished()), this, SLOT(setText()));
 }
 
 KxSvgCanvas::KxSvgCanvas(QWidget* parent, qreal x, qreal y, qreal w, qreal h)
@@ -97,15 +106,26 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 	QPoint transformPoint = event->pos() - m_transfrom;
 	if (Qt::LeftButton == event->button())
 	{
-		//设置新增图像的结束点
-		Shape* tmpShape = nullptr;
-		tmpShape = ShapeFactory::getShapeFactory()->getShape(m_currentType);
-		if (tmpShape)
+		//如果是新建文本
+		if (m_currentType == ShapeType::TypeText && m_pTextEditWidget->isHidden())
 		{
-			m_shapeList.append(tmpShape);
-			m_pCurrentShape = tmpShape;
-			m_pCurrentShape->setDrawStar(transformPoint / (1 + m_offset));
+			m_pTextEditWidget->move(event->pos());
+			m_pTextEditWidget->setFocus();
+			m_pTextEditWidget->show();
 		}
+		else
+		{
+			//设置新增图像的开始点
+			Shape* tmpShape = nullptr;
+			tmpShape = ShapeFactory::getShapeFactory()->getShape(m_currentType);
+			if (tmpShape)
+			{
+				m_shapeList.append(tmpShape);
+				m_pCurrentShape = tmpShape;
+				m_pCurrentShape->setDrawStar(transformPoint / (1 + m_offset));
+			}
+		}
+
 
 		if (m_clickShapeList.isEmpty())
 			m_positionType = mousePosition::noClick;
@@ -298,6 +318,27 @@ void KxSvgCanvas::setColor(QRgb rgb)
 	m_rgb = rgb;
 	QString s = QString("background: #%1;").arg(QString::number(m_rgb, 16));
 	setStyleSheet(s);
+}
+
+void KxSvgCanvas::changeText(QString text)
+{
+	QFontMetrics textLength(m_pTextEditWidget->font());
+	int length = textLength.width(text);
+	length < 10 ? m_pTextEditWidget->resize(10, 40) : m_pTextEditWidget->resize(length + 10, 40); //加个10是为了防止左边字体被遮住一块
+	m_text = text;
+}
+
+void KxSvgCanvas::setText()
+{
+	m_pTextEditWidget->hide();
+	Shape* i = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeText);
+	i->setDrawStar(m_pTextEditWidget->pos() - m_transfrom);
+	i->setDrawEnd(m_pTextEditWidget->pos() + QPointF(m_pTextEditWidget->width(), m_pTextEditWidget->height()) - m_transfrom);
+	dynamic_cast<TextEdit*>(i)->setText(m_text);
+	m_shapeList.append(i);
+	m_pClickShape = i;
+	m_text = "";
+	m_pTextEditWidget->clear();
 }
 
 void KxSvgCanvas::keyPressEvent(QKeyEvent* event)

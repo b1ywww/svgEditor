@@ -71,9 +71,6 @@ private:
 
 	QStackedWidget* m_pages = nullptr;
 
-	//QWidget* m_pEditCanvasWidth = nullptr;		//画布宽度的设置面板
-	//QWidget* m_pEditCanvasHeight = nullptr;		//画布宽度的设置面板
-	//QWidget* m_pEditCanvasColor = nullptr;		//画布颜色的设置面板
 	QWidget* m_pEditSquareX = nullptr;			//矩形X坐标设置面板
 	QWidget* m_pEditSquareY = nullptr;			//矩形Y坐标设置面板
 

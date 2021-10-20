@@ -3,6 +3,7 @@
 #include <QtSvg/qsvgrenderer.h>
 #include <QtWidgets/QMenuBar>
 #include "shape.h"
+#include <QLineEdit>
 
 class KxSvgCanvas :public QWidget
 {
@@ -37,12 +38,15 @@ public slots:
 	void saveSvg();
 	void init();
 	void setColor(QRgb);
+	void changeText(QString);
+	void setText();
 
 private:
 	Shape* getClickShape(QPoint point);
 	bool isInRect(QPointF point, Shape* shape);
 	void setPositionType(QPoint point);
 
+	QLineEdit* m_pTextEditWidget = nullptr;
 	ShapeType m_currentType;				//新增对象的类型
 	QList<Shape*> m_shapeList;				//对象链表
 	QList<Shape*> m_clickShapeList;			//点击对象链表
@@ -54,6 +58,7 @@ private:
 	Shape* m_pClickRect = nullptr;			//拖拉的选择框
 	qreal m_offset = 0.0;					//放大缩小的比率
 	QRgb m_rgb;
+	QString m_text;							//文字控件的文字值
 	bool isMove = false;
 	int m_canvasWidth = 500;
 	int m_canvasHeight = 500;

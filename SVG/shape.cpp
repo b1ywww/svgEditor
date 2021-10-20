@@ -775,8 +775,8 @@ const QVector<QPointF>& Hexagon::getVertex()
 
 TextEdit::TextEdit()
 {
-	setText(QStringLiteral("请输入"));
 	m_type = ShapeType::TypeText;
+	m_pen.setStyle(Qt::SolidLine);
 }
 
 TextEdit::~TextEdit()
@@ -786,16 +786,21 @@ TextEdit::~TextEdit()
 void TextEdit::drawShape(QPainter& painter)
 {
 
-	QPen pen;
+	//QPen pen;
 
-	QFont font("Microsoft YaHei", 20);//这里设置字体大小
+	//QFont font("Microsoft YaHei", 20);//这里设置字体大小
 
-	static int x =300;
-	font.setStretch(x);
-	//font.setPointSize(x);
-	painter.setFont(font);
-	painter.drawText(QRect(m_drawStar.toPoint(), m_drawEnd.toPoint()), Qt::AlignCenter, m_text);
+	//static int x =300;
+	//font.setStretch(x);
+	////font.setPointSize(x);
+	//painter.setFont(font);
+	//painter.drawText(QRect(m_drawStar.toPoint(), m_drawEnd.toPoint()), Qt::AlignCenter, m_text);
 
+	painter.setPen(m_pen);
+	painter.setFont(QFont("Microsoft YaHei", 20));
+	painter.drawText(QRect(m_drawStar.toPoint(), m_drawEnd.toPoint()), m_text);
+
+	painter.setPen(Qt::NoPen);
 	//static QSize size(qAbs(m_drawEnd.toPoint().x() - m_drawStar.toPoint().x()), qAbs(m_drawEnd.toPoint().y() - m_drawStar.toPoint().y())); //指定图片大小;
 	//QImage image(size, QImage::Format_ARGB32);
 	////以ARGB32格式构造一个QImage
