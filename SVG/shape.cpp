@@ -798,8 +798,8 @@ void TextEdit::drawShape(QPainter& painter)
 
 	painter.setPen(m_pen);
 	painter.setFont(QFont("Microsoft YaHei", 20));
-	painter.drawText(QRect(m_drawStar.toPoint(), m_drawEnd.toPoint()), m_text);
 
+	painter.drawText(QRect(m_drawStar.toPoint(), m_drawEnd.toPoint()), m_text);
 	painter.setPen(Qt::NoPen);
 	//static QSize size(qAbs(m_drawEnd.toPoint().x() - m_drawStar.toPoint().x()), qAbs(m_drawEnd.toPoint().y() - m_drawStar.toPoint().y())); //指定图片大小;
 	//QImage image(size, QImage::Format_ARGB32);
@@ -853,44 +853,44 @@ void TextEdit::move(QPointF offset)
 
 void TextEdit::moveTop(QPointF offset)
 {
-	m_drawStar.setY(m_drawStar.y() + offset.y());
+	//m_drawStar.setY(m_drawStar.y() + offset.y());
 }
 
 void TextEdit::moveBottom(QPointF offset)
 {
-	m_drawEnd.setY(m_drawEnd.y() + offset.y());
+	//m_drawEnd.setY(m_drawEnd.y() + offset.y());
 }
 
 void TextEdit::moveLeft(QPointF offset)
 {
-	m_drawStar.setX(m_drawStar.x() + offset.x());
+	//m_drawStar.setX(m_drawStar.x() + offset.x());
 }
 
 void TextEdit::moveRight(QPointF offset)
 {
-	m_drawEnd.setX(m_drawEnd.x() + offset.x());
+	//m_drawEnd.setX(m_drawEnd.x() + offset.x());
 }
 
 void TextEdit::moveUpperLeft(QPointF offset)
 {
-	m_drawStar = m_drawStar + offset;
+	//m_drawStar = m_drawStar + offset;
 }
 
 void TextEdit::moveUpperRight(QPointF offset)
 {
-	m_drawStar.setY(m_drawStar.y() + offset.y());
-	m_drawEnd.setX(m_drawEnd.x() + offset.x());
+	//m_drawStar.setY(m_drawStar.y() + offset.y());
+	//m_drawEnd.setX(m_drawEnd.x() + offset.x());
 }
 
 void TextEdit::moveLowerLeft(QPointF offset)
 {
-	m_drawStar.setX(m_drawStar.x() + offset.x());
-	m_drawEnd.setY(m_drawEnd.y() + offset.y());
+	//m_drawStar.setX(m_drawStar.x() + offset.x());
+	//m_drawEnd.setY(m_drawEnd.y() + offset.y());
 }
 
 void TextEdit::moveLowerRight(QPointF offset)
 {
-	m_drawEnd = m_drawEnd + offset;
+	//m_drawEnd = m_drawEnd + offset;
 }
 
 void TextEdit::setText(QString text)

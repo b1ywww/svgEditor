@@ -109,6 +109,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 		//如果是新建文本
 		if (m_currentType == ShapeType::TypeText && m_pTextEditWidget->isHidden())
 		{
+			m_pCurrentShape = nullptr;
 			m_pTextEditWidget->move(event->pos());
 			m_pTextEditWidget->setFocus();
 			m_pTextEditWidget->show();
@@ -331,6 +332,8 @@ void KxSvgCanvas::changeText(QString text)
 void KxSvgCanvas::setText()
 {
 	m_pTextEditWidget->hide();
+	if (m_text.isEmpty())
+		return;
 	Shape* i = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeText);
 	i->setDrawStar(m_pTextEditWidget->pos() - m_transfrom);
 	i->setDrawEnd(m_pTextEditWidget->pos() + QPointF(m_pTextEditWidget->width(), m_pTextEditWidget->height()) - m_transfrom);
