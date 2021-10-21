@@ -432,7 +432,7 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 bool KxSvgCanvas::deleteShapeList()
 {
 	m_pClickShape = nullptr;
-
+	m_clickShapeList.clear();
 	if (false == m_shapeList.isEmpty())
 	{
 		for each (Shape * i in m_shapeList)
