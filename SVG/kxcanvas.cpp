@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QApplication>
+#include <QColorDialog>
 
 const int POSITION_DEFAULT = 0;
 const int POSITION_LEFT = 1;
@@ -168,6 +169,15 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 			isMove = false;
 		}
 		m_lastPoint = transformPoint;
+
+		if (!m_clickShapeList.isEmpty())
+		{
+			emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color());
+			emit paneIndex(1);
+		}
+		else {
+			emit paneIndex(0);
+		}
 	}
 }
 
@@ -228,8 +238,18 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 	}
 	if(!m_pClickRect->getDrawEnd().isNull())
 		shapeInClickRect();
+
 	m_pClickRect->setDrawStar(QPoint(0, 0));
 	m_pClickRect->setDrawEnd(QPoint(0, 0));
+
+	if (!m_clickShapeList.isEmpty())
+	{
+		emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color());
+		emit paneIndex(1);
+	}
+	else {
+		emit paneIndex(0);
+	}
 
 	updatePhysicalPoint();
 	isMove = false;
@@ -319,7 +339,7 @@ void KxSvgCanvas::init()
 	update();
 }
 
-void KxSvgCanvas::setColor(QRgb rgb)
+void KxSvgCanvas::setCanvasColor(QRgb rgb)
 {
 	m_rgb = rgb;
 	QString s = QString("background: #%1;").arg(QString::number(m_rgb, 16));
@@ -495,6 +515,28 @@ void KxSvgCanvas::shapeInClickRect()
 			m_clickShapeList.append(i);
 			i->setClickState(true);
 		}
+	}
+}
+
+void KxSvgCanvas::setShapeColor(QRgb rgb)
+{
+	if (m_clickShapeList.isEmpty())
+		return;
+
+	for (Shape* i : m_clickShapeList)
+	{
+		i->getBrush().setColor(rgb);
+	}
+}
+
+void KxSvgCanvas::setPenColor(QRgb rgb)
+{
+	if (m_clickShapeList.isEmpty())
+		return;
+
+	for (Shape* i : m_clickShapeList)
+	{
+		i->getPen().setColor(rgb);
 	}
 }
 

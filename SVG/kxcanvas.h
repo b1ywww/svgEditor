@@ -28,6 +28,8 @@ public:
 	bool isSvgValid();
 	int getShapeCount();
 	void shapeInClickRect();
+	void setShapeColor(QRgb);         //设置选中对象的填充
+	void setPenColor(QRgb);			  //设置选中对象线条的颜色
 
 public slots:
 	void setCurrentType(ShapeType);
@@ -37,9 +39,13 @@ public slots:
 	void openSvg();
 	void saveSvg();
 	void init();
-	void setColor(QRgb);
+	void setCanvasColor(QRgb);
 	void changeText(QString);
 	void setText();
+
+signals:
+	void setShapePane(QColor shapeRgb, QColor penRgb);
+	void paneIndex(int);
 
 private:
 	Shape* getClickShape(QPoint point);

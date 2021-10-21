@@ -192,11 +192,65 @@ void SVGMainWIndow::setCanvasColor()
 	QRgb mRgb = qRgb(c.red(), c.green(), c.blue());
 
 	QString s = QString("background: #%1;border:none").arg(QString::number(mRgb, 16));
-	if(m_pColorChoose)
-		m_pColorChoose->setStyleSheet(s);
+	if(m_pCanvasColorChoose)
+		m_pCanvasColorChoose->setStyleSheet(s);
 	
 	if(m_pSvgCanvas)
-		m_pSvgCanvas->setColor(mRgb);
+		m_pSvgCanvas->setCanvasColor(mRgb);
+}
+
+void SVGMainWIndow::setShapeColor()
+{
+	QColorDialog color;
+	QColor c = color.getRgba();
+	QRgb mRgb = qRgb(c.red(), c.green(), c.blue());
+
+	setShapeChooseColor(mRgb);
+	if (m_pSvgCanvas)
+		m_pSvgCanvas->setShapeColor(mRgb);
+}
+
+void SVGMainWIndow::setPenColor()
+{
+	QColorDialog color;
+	QColor c = color.getRgba();
+	QRgb mRgb = qRgb(c.red(), c.green(), c.blue());
+
+	setPenChooseColor(mRgb);
+	if (m_pSvgCanvas)
+		m_pSvgCanvas->setPenColor(mRgb);
+}
+
+void SVGMainWIndow::setShapePane(QColor shapeRgb, QColor penRgb)
+{
+	QRgb rgb = qRgb(shapeRgb.red(), shapeRgb.green(), shapeRgb.blue());
+	setShapeChooseColor(rgb);
+
+	rgb = qRgb(penRgb.red(), penRgb.green(), penRgb.blue());
+	setPenChooseColor(rgb);
+}
+
+void SVGMainWIndow::paneIndex(int index /*= 0*/)
+{
+	index > 1? m_pages->setCurrentIndex(0): m_pages->setCurrentIndex(index);
+}
+
+void SVGMainWIndow::setShapeChooseColor(QRgb rgb)
+{
+	QPushButton* colorChoose = m_pSettingSquareWidget->findChild<QPushButton*>(QString("shapeColorChoose"));
+
+	QString s = QString("background: #%1;border:none").arg(QString::number(rgb, 16));
+	if (colorChoose)
+		colorChoose->setStyleSheet(s);
+}
+
+void SVGMainWIndow::setPenChooseColor(QRgb rgb)
+{
+	QPushButton* colorChoose = m_pSettingSquareWidget->findChild<QPushButton*>(QString("penColorChoose"));
+
+	QString s = QString("background: #%1;border:none").arg(QString::number(rgb, 16));
+	if (colorChoose)
+		colorChoose->setStyleSheet(s);
 }
 
 void SVGMainWIndow::setToolBar()
@@ -285,7 +339,6 @@ void SVGMainWIndow::setSettingPane()
 	m_pages->addWidget(m_pSettingSquareWidget);
 
 	m_pages->setCurrentIndex(0);
-
 }
 
 void SVGMainWIndow::setSettingCanvas()
@@ -373,14 +426,14 @@ void SVGMainWIndow::setSettingCanvas()
 	colorLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
 	colorLabel->setAlignment(Qt::AlignCenter);
 	colorLabel->setText("颜色");
-	m_pColorChoose = new QPushButton(pEditCanvasColor);
-	m_pColorChoose->setObjectName(QStringLiteral("m_pColorChoose"));
-	m_pColorChoose->setGeometry(QRect(5, 30, 50, 25));
-	m_pColorChoose->setMinimumSize(QSize(50, 25));
-	m_pColorChoose->setMaximumSize(QSize(50, 25));
-	m_pColorChoose->setStyleSheet("background: rgb(255,255,255);border:none;");
+	m_pCanvasColorChoose = new QPushButton(pEditCanvasColor);
+	m_pCanvasColorChoose->setObjectName(QStringLiteral("m_pColorChoose"));
+	m_pCanvasColorChoose->setGeometry(QRect(5, 30, 50, 25));
+	m_pCanvasColorChoose->setMinimumSize(QSize(50, 25));
+	m_pCanvasColorChoose->setMaximumSize(QSize(50, 25));
+	m_pCanvasColorChoose->setStyleSheet("background: rgb(255,255,255);border:none;");
 
-	connect(m_pColorChoose, SIGNAL(pressed()), this, SLOT(setCanvasColor()));
+	connect(m_pCanvasColorChoose, SIGNAL(pressed()), this, SLOT(setCanvasColor()));
 
 	m_pSettingCanvasLayout->addWidget(pEditCanvasWidth, 0, 1, 1, 1);
 	m_pSettingCanvasLayout->addWidget(pEditCanvasHeight, 0, 2, 1, 1);
@@ -401,74 +454,121 @@ void SVGMainWIndow::setSettingSquare(QString x, QString y)
 	m_pSettingSquareLayout->setObjectName(QStringLiteral("settingGridLayout"));
 	m_pSettingSquareLayout->setAlignment(Qt::AlignTop);
 
-	m_pEditSquareX = new QWidget(m_pSettingSquareWidget);
-	m_pEditSquareX->setObjectName(QStringLiteral("SqureX"));
-	m_pEditSquareX->setMinimumSize(QSize(60, 60));
-	m_pEditSquareX->setMaximumSize(QSize(60, 60));
-	m_pEditSquareX->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
-	QLabel* xLabel = new QLabel(m_pEditSquareX);
-	xLabel->setFont(QFont("Microsoft YaHei", 10));
-	xLabel->setObjectName(QStringLiteral("widthLabel"));
-	xLabel->setGeometry(QRect(0, 5, 60, 12));
-	xLabel->setMinimumSize(QSize(60, 0));
-	xLabel->setMaximumSize(QSize(60, 16777215));
-	xLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
-	xLabel->setAlignment(Qt::AlignCenter);
-	xLabel->setText("X");
-	//设置输入框
-	QLineEdit* pSquareXLineEdit = new QLineEdit(m_pEditSquareX);
-	pSquareXLineEdit->setGeometry(QRect(0, 20, 60, 40));
-	pSquareXLineEdit->setText(x);
-	pSquareXLineEdit->setAlignment(Qt::AlignCenter);
-	pSquareXLineEdit->setStyleSheet(QStringLiteral("color:rgb(79, 128, 255);border-width:0;border-style:outset"));
-	pSquareXLineEdit->setFont(QFont("宋体", 18, QFont::Bold));
-	pSquareXLineEdit->setMaxLength(4);
-	pSquareXLineEdit->setFocusPolicy(Qt::ClickFocus);
-	//限制只能输入数字
-	QRegExp regx("[1-9][0-9]+$");
-	QValidator* validatorX = new QRegExpValidator(regx, pSquareXLineEdit);
-	pSquareXLineEdit->setValidator(validatorX);
+	//m_pEditSquareX = new QWidget(m_pSettingSquareWidget);
+	//m_pEditSquareX->setObjectName(QStringLiteral("SqureX"));
+	//m_pEditSquareX->setMinimumSize(QSize(60, 60));
+	//m_pEditSquareX->setMaximumSize(QSize(60, 60));
+	//m_pEditSquareX->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
+	//QLabel* xLabel = new QLabel(m_pEditSquareX);
+	//xLabel->setFont(QFont("Microsoft YaHei", 10));
+	//xLabel->setObjectName(QStringLiteral("widthLabel"));
+	//xLabel->setGeometry(QRect(0, 5, 60, 12));
+	//xLabel->setMinimumSize(QSize(60, 0));
+	//xLabel->setMaximumSize(QSize(60, 16777215));
+	//xLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
+	//xLabel->setAlignment(Qt::AlignCenter);
+	//xLabel->setText("X");
+	////设置输入框
+	//QLineEdit* pSquareXLineEdit = new QLineEdit(m_pEditSquareX);
+	//pSquareXLineEdit->setGeometry(QRect(0, 20, 60, 40));
+	//pSquareXLineEdit->setText(x);
+	//pSquareXLineEdit->setAlignment(Qt::AlignCenter);
+	//pSquareXLineEdit->setStyleSheet(QStringLiteral("color:rgb(79, 128, 255);border-width:0;border-style:outset"));
+	//pSquareXLineEdit->setFont(QFont("宋体", 18, QFont::Bold));
+	//pSquareXLineEdit->setMaxLength(4);
+	//pSquareXLineEdit->setFocusPolicy(Qt::ClickFocus);
+	////限制只能输入数字
+	//QRegExp regx("[1-9][0-9]+$");
+	//QValidator* validatorX = new QRegExpValidator(regx, pSquareXLineEdit);
+	//pSquareXLineEdit->setValidator(validatorX);
 
-	m_pEditSquareY = new QWidget(m_pSettingSquareWidget);
-	m_pEditSquareY->setObjectName(QStringLiteral("SqureX"));
-	m_pEditSquareY->setMinimumSize(QSize(60, 60));
-	m_pEditSquareY->setMaximumSize(QSize(60, 60));
-	m_pEditSquareY->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
-	QLabel* YLabel = new QLabel(m_pEditSquareY);
-	YLabel->setFont(QFont("Microsoft YaHei", 10));
-	YLabel->setObjectName(QStringLiteral("widthLabel"));
-	YLabel->setGeometry(QRect(0, 5, 60, 12));
-	YLabel->setMinimumSize(QSize(60, 0));
-	YLabel->setMaximumSize(QSize(60, 16777215));
-	YLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
-	YLabel->setAlignment(Qt::AlignCenter);
-	YLabel->setText("Y");
-	//设置输入框
-	QLineEdit* pSquareYLineEdit = new QLineEdit(m_pEditSquareY);
-	pSquareYLineEdit->setGeometry(QRect(0, 20, 60, 40));
-	pSquareYLineEdit->setText(y);
-	pSquareYLineEdit->setAlignment(Qt::AlignCenter);
-	pSquareYLineEdit->setStyleSheet(QStringLiteral("color:rgb(79, 128, 255);border-width:0;border-style:outset"));
-	pSquareYLineEdit->setFont(QFont("宋体", 18, QFont::Bold));
-	pSquareYLineEdit->setMaxLength(4);
-	pSquareYLineEdit->setFocusPolicy(Qt::ClickFocus);
-	//限制只能输入数字
-	QRegExp regY("[1-9][0-9]+$");
-	QValidator* validatorY = new QRegExpValidator(regY, pSquareYLineEdit);
-	pSquareYLineEdit->setValidator(validatorY);
+	//m_pEditSquareY = new QWidget(m_pSettingSquareWidget);
+	//m_pEditSquareY->setObjectName(QStringLiteral("SqureX"));
+	//m_pEditSquareY->setMinimumSize(QSize(60, 60));
+	//m_pEditSquareY->setMaximumSize(QSize(60, 60));
+	//m_pEditSquareY->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
+	//QLabel* YLabel = new QLabel(m_pEditSquareY);
+	//YLabel->setFont(QFont("Microsoft YaHei", 10));
+	//YLabel->setObjectName(QStringLiteral("widthLabel"));
+	//YLabel->setGeometry(QRect(0, 5, 60, 12));
+	//YLabel->setMinimumSize(QSize(60, 0));
+	//YLabel->setMaximumSize(QSize(60, 16777215));
+	//YLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
+	//YLabel->setAlignment(Qt::AlignCenter);
+	//YLabel->setText("Y");
+	////设置输入框
+	//QLineEdit* pSquareYLineEdit = new QLineEdit(m_pEditSquareY);
+	//pSquareYLineEdit->setGeometry(QRect(0, 20, 60, 40));
+	//pSquareYLineEdit->setText(y);
+	//pSquareYLineEdit->setAlignment(Qt::AlignCenter);
+	//pSquareYLineEdit->setStyleSheet(QStringLiteral("color:rgb(79, 128, 255);border-width:0;border-style:outset"));
+	//pSquareYLineEdit->setFont(QFont("宋体", 18, QFont::Bold));
+	//pSquareYLineEdit->setMaxLength(4);
+	//pSquareYLineEdit->setFocusPolicy(Qt::ClickFocus);
+	////限制只能输入数字
+	//QRegExp regY("[1-9][0-9]+$");
+	//QValidator* validatorY = new QRegExpValidator(regY, pSquareYLineEdit);
+	//pSquareYLineEdit->setValidator(validatorY);
 
+	//m_pSettingSquareLayout->addWidget(m_pEditSquareX, 0, 1, 1, 1);
+	//m_pSettingSquareLayout->addWidget(m_pEditSquareY, 0, 2, 1, 1);
 
+	//暂时用来充当一下对象颜色 线条颜色的面板
+	QWidget* pEditShapeColor = new QWidget(m_pSettingSquareWidget);
+	pEditShapeColor->setObjectName(QStringLiteral("editShapeColor"));
+	pEditShapeColor->setMinimumSize(QSize(60, 60));
+	pEditShapeColor->setMaximumSize(QSize(60, 60));
+	pEditShapeColor->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
+	QLabel* pShapeColorLabel = new QLabel(pEditShapeColor);
+	pShapeColorLabel->setObjectName(QStringLiteral("colorLabel"));
+	pShapeColorLabel->setGeometry(QRect(0, 5, 60, 12));
+	pShapeColorLabel->setMinimumSize(QSize(60, 0));
+	pShapeColorLabel->setMaximumSize(QSize(60, 16777215));
+	pShapeColorLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
+	pShapeColorLabel->setAlignment(Qt::AlignCenter);
+	pShapeColorLabel->setText("颜色填充");
+	QPushButton* pShapeColorChoose = new QPushButton(pEditShapeColor);
+	pShapeColorChoose->setObjectName(QStringLiteral("shapeColorChoose"));
+	pShapeColorChoose->setGeometry(QRect(5, 30, 50, 25));
+	pShapeColorChoose->setMinimumSize(QSize(50, 25));
+	pShapeColorChoose->setMaximumSize(QSize(50, 25));
+	pShapeColorChoose->setStyleSheet("background: rgb(255,255,255);border:none;");
 
-	m_pSettingSquareLayout->addWidget(m_pEditSquareX, 0, 1, 1, 1);
-	m_pSettingSquareLayout->addWidget(m_pEditSquareY, 0, 2, 1, 1);
+	connect(pShapeColorChoose, SIGNAL(pressed()), this, SLOT(setShapeColor()));
+
+	QWidget* pEditPenColor = new QWidget(m_pSettingSquareWidget);
+	pEditPenColor->setObjectName(QStringLiteral("editPenColor"));
+	pEditPenColor->setMinimumSize(QSize(60, 60));
+	pEditPenColor->setMaximumSize(QSize(60, 60));
+	pEditPenColor->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
+	QLabel* pPencolorLabel = new QLabel(pEditPenColor);
+	pPencolorLabel->setObjectName(QStringLiteral("colorLabel"));
+	pPencolorLabel->setGeometry(QRect(0, 5, 60, 12));
+	pPencolorLabel->setMinimumSize(QSize(60, 0));
+	pPencolorLabel->setMaximumSize(QSize(60, 16777215));
+	pPencolorLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
+	pPencolorLabel->setAlignment(Qt::AlignCenter);
+	pPencolorLabel->setText("线条颜色");
+	QPushButton* pPenColorChoose = new QPushButton(pEditPenColor);
+	pPenColorChoose->setObjectName(QStringLiteral("penColorChoose"));
+	pPenColorChoose->setGeometry(QRect(5, 30, 50, 25));
+	pPenColorChoose->setMinimumSize(QSize(50, 25));
+	pPenColorChoose->setMaximumSize(QSize(50, 25));
+	pPenColorChoose->setStyleSheet("background: rgb(255,255,255);border:none;");
+
+	connect(pPenColorChoose, SIGNAL(pressed()), this, SLOT(setPenColor()));
+
+	m_pSettingSquareLayout->addWidget(pEditShapeColor, 0, 1, 1, 1);
+	m_pSettingSquareLayout->addWidget(pEditPenColor, 0, 2, 1, 1);
+
+	connect(m_pSvgCanvas, SIGNAL(setShapePane(QColor, QColor)), this, SLOT(setShapePane(QColor, QColor)));
+	connect(m_pSvgCanvas, SIGNAL(paneIndex(int)), this, SLOT(paneIndex(int)));
 }
 
 bool SVGMainWIndow::eventFilter(QObject* watched, QEvent* event)
 {
 	if (event->type() != QEvent::MouseButtonPress)
 		return false;
-
-
 
 	if (m_pHeightLineEdit && watched != m_pHeightLineEdit)
 	{

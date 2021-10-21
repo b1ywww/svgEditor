@@ -50,6 +50,7 @@ public:
 	void setClickState(bool click);
 	QPen& getPen();
 	QBrush& getBrush();
+
 protected:
 	QPointF m_star;      //ÎïÀí×ø±ê
 	QPointF m_end;
@@ -59,6 +60,7 @@ protected:
 	ShapeType m_type;
 	QPen m_pen;
 	QBrush m_brush;
+
 private:
 	int m_offsetStartX = -4;
 	int m_offsetStartY = -4;

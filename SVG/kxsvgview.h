@@ -53,12 +53,19 @@ public:
 
 public slots:
 	void setCanvasColor();
+	void setShapeColor();
+	void setPenColor();
+	void setShapePane(QColor shapeRgb, QColor penRgb);
+	void paneIndex(int index = 0);
 
 private:
 	void setToolBar();
 	void setSettingPane();
 	void setSettingCanvas();
 	void setSettingSquare(QString x = QString("0"), QString y = QString("0"));
+
+	void setShapeChooseColor(QRgb rgb);
+	void setPenChooseColor(QRgb rgb);
 
 private:
 	QHBoxLayout* m_pMainHoriLayout = nullptr;
@@ -80,7 +87,9 @@ private:
 
 	QLineEdit* m_pWidthLineEdit = nullptr;		 //设置面板的编辑工具
 	QLineEdit* m_pHeightLineEdit = nullptr;
-	QPushButton* m_pColorChoose = nullptr;
+	QPushButton* m_pCanvasColorChoose = nullptr;
+	QPushButton* m_pShapeColorChoose = nullptr;
+	QPushButton* m_pPenColorChoose = nullptr;
 
 	KxLeftToolBarBtn* m_pSelectButton = nullptr; //选择工具
 	KxLeftToolBarBtn* m_pPencilButton = nullptr; //画笔工具
