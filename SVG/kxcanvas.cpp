@@ -40,7 +40,7 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	m_pTextEditWidget = new QLineEdit(this);
 	m_pTextEditWidget->resize(10, 40);
 	m_pTextEditWidget->setFont(QFont("Microsoft YaHei", 20));
-	m_pTextEditWidget->setStyleSheet("border - style: outset;");
+	m_pTextEditWidget->setStyleSheet("border-style: outset;border-width:1px;border-color: blue; ");
 	m_pTextEditWidget->hide();
 
 	connect(m_pTextEditWidget, SIGNAL(textChanged(QString)), this, SLOT(changeText(QString)));
