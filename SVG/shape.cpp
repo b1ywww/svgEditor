@@ -702,7 +702,13 @@ void Hexagon::setDepth(qreal depth)
 
 void Hexagon::scale(qreal width, qreal height)
 {
+	m_drawStar.setX((m_star.x()) * (1 + width));
+	m_drawEnd.setX((m_end.x()) * (1 + width));
 
+	m_drawStar.setY((m_star.y()) * (1 + height));
+	m_drawEnd.setY((m_end.y()) * (1 + height));
+
+	setVertex();
 }
 
 void Hexagon::move(QPointF offset)
