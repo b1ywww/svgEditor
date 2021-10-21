@@ -1,5 +1,6 @@
 #include "kxcanvas.h"
 #include "svgwrite.h"
+#include "svgread.h"
 
 #include "QPainter"
 #include "QDebug"
@@ -39,6 +40,7 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	m_pTextEditWidget = new QLineEdit(this);
 	m_pTextEditWidget->resize(10, 40);
 	m_pTextEditWidget->setFont(QFont("Microsoft YaHei", 20));
+	m_pTextEditWidget->setStyleSheet("border - style: outset;");
 	m_pTextEditWidget->hide();
 
 	connect(m_pTextEditWidget, SIGNAL(textChanged(QString)), this, SLOT(changeText(QString)));
@@ -259,14 +261,17 @@ void KxSvgCanvas::setCanvasHeight(QString height)
 
 void KxSvgCanvas::openSvg()
 {
-	qDebug() << "opensvg";
 	QString file_path = QFileDialog::getOpenFileName(this, tr("打开文件"), "./", tr("Exe files(*.svg);;All files(*.*)"));
 	if (file_path.isEmpty())
 	{
 		return;
 	}
 	init();
-	loadSvgRenderer(file_path);
+	if (!SvgRead::svgRead()->read(file_path, m_shapeList))
+	{
+		m_transfrom = QPoint(0, 0);
+		loadSvgRenderer(file_path);
+	}
 }
 
 void KxSvgCanvas::saveSvg()

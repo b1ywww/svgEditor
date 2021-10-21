@@ -57,25 +57,6 @@ void SvgWrite::writeBackGround(int canvasW, int canvasH)
 	rect.setAttribute("x", -1);
 	background.appendChild(rect);
 
-	QDomElement g = m_doc.createElement("g");
-	g.setAttribute("dispaly", "none");
-	g.setAttribute("overflow", "visible");
-	g.setAttribute("y", 0);
-	g.setAttribute("x", 0);
-	g.setAttribute("height", "100%");
-	g.setAttribute("width", "100%");
-	g.setAttribute("id", "canvasGrid");
-
-	QDomElement rect_1 = m_doc.createElement("rect");
-	rect_1.setAttribute("fill", "url(#gridpattern)");
-	rect_1.setAttribute("stroke-width", 0);
-	rect_1.setAttribute("y", 0);
-	rect_1.setAttribute("x", 0);
-	rect_1.setAttribute("height", "100%");
-	rect_1.setAttribute("width", "100%");
-
-	g.appendChild(rect_1);
-	background.appendChild(g);
 	m_svg.appendChild(background);
 }
 
@@ -155,6 +136,7 @@ void SvgWrite::writeLine(Shape* shape)
 	line.setAttribute("stroke-width", 1.5);
 	line.setAttribute("stroke", "#000");
 	line.setAttribute("fill", "none");
+	line.setAttribute("type", "line");
 
 	m_shapeG.appendChild(line);
 }
@@ -176,6 +158,7 @@ void SvgWrite::writeSquare(Shape* shape)
 	rect.setAttribute("stroke-width", "1.5");
 	rect.setAttribute("stroke", "#000");
 	rect.setAttribute("fill", "#fff");
+	rect.setAttribute("type", "rect");
 
 	m_shapeG.appendChild(rect);
 }
@@ -186,9 +169,9 @@ void SvgWrite::writePencil(Shape* shape)
 
 	QString d = "";
 
-	QList<QPointF> point = dynamic_cast<Pancil*>(shape)->getPhysicalPoint();
+	QList<QPointF> point = dynamic_cast<Pencil*>(shape)->getPhysicalPoint();
 	QString M = "M%1 %2";
-	QString L = "L%1 %2";
+	QString L = ",L%1 %2";
 	d = d + M.arg((*point.begin()).x() + m_transfrom.x()).arg((*point.begin()).y() + m_transfrom.y());
 	for each (QPointF i in point)
 	{
@@ -201,6 +184,7 @@ void SvgWrite::writePencil(Shape* shape)
 	pencil.setAttribute("stroke-width", "1.5");
 	pencil.setAttribute("stroke", "#000");
 	pencil.setAttribute("fill", "none");
+	pencil.setAttribute("type", "pencil");
 
 	m_shapeG.appendChild(pencil);
 }
@@ -221,6 +205,7 @@ void SvgWrite::writeCircle(Shape* shape)
 	circle.setAttribute("stroke-width", "1.5");
 	circle.setAttribute("stroke", "#000");
 	circle.setAttribute("fill", "#fff");
+	circle.setAttribute("type", "circle");
 
 	m_shapeG.appendChild(circle);
 }
@@ -229,7 +214,7 @@ void SvgWrite::writeHexagon(Shape* shape)
 {
 	QDomElement hexagon = m_doc.createElement("path");
 
-	QString d = "M%1 %2, L%3 %4, L%5 %6, L%7 %8, L%9 %10, L%11 %12, L%13 %14";
+	QString d = "M%1 %2,L%3 %4,L%5 %6,L%7 %8,L%9 %10,L%11 %12,L%13 %14";
 
 	for each (QPointF i in dynamic_cast<Hexagon*>(shape)->getVertex())
 	{
@@ -242,6 +227,7 @@ void SvgWrite::writeHexagon(Shape* shape)
 	hexagon.setAttribute("stroke-width", "1.5");
 	hexagon.setAttribute("stroke", "#000");
 	hexagon.setAttribute("fill", "#fff");
+	hexagon.setAttribute("type", "hexagon");
 
 	m_shapeG.appendChild(hexagon);
 }
@@ -260,6 +246,7 @@ void SvgWrite::writeText(Shape* shape)
 	text.setAttribute("stroke-opacity", "null");
 	text.setAttribute("stroke", "#000");
 	text.setAttribute("fill", "#000000");
+	text.setAttribute("type", "text");
 
 	QDomNode node = m_doc.createTextNode(dynamic_cast<TextEdit*>(shape)->getText());
 	text.appendChild(node);

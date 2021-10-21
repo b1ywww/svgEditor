@@ -116,11 +116,11 @@ public:
 
 };
 
-class Pancil : public Shape
+class Pencil : public Shape
 {
 public:
-	Pancil();
-	~Pancil();
+	Pencil();
+	~Pencil();
 
 	void drawShape(QPainter& painter) override;
 	void setDrawStar(QPointF star) override;
@@ -142,6 +142,7 @@ public:
 	void updateClickRect(QPointF point);
 	void updateEdgeValue();
 	const QList<QPointF>& getPhysicalPoint();
+	void setDrawPoint(QList<QPointF>& list);
 
 private:
 	QList<QPointF> m_drawPoint;
@@ -197,7 +198,7 @@ public:
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
 
-	void setVertex();
+	void setVertex(QVector<QPointF>& vector = QVector<QPointF>());
 	const QVector<QPointF>& getVertex();
 private:
 	QVector<QPointF> m_vertex;

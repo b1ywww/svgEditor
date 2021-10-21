@@ -334,19 +334,19 @@ void Square::moveLowerRight(QPointF offset)
 	m_drawEnd = m_drawEnd + offset;
 }
 
-Pancil::Pancil()
+Pencil::Pencil()
 {
 	m_type = ShapeType::TypePencil;
 	m_pen.setStyle(Qt::SolidLine);
 }
 
-Pancil::~Pancil()
+Pencil::~Pencil()
 {
 	m_drawPoint.clear();
 	m_PhysicalPoint.clear();
 }
 
-void Pancil::drawShape(QPainter& painter)
+void Pencil::drawShape(QPainter& painter)
 {
 	if (m_drawPoint.size() < 2)
 		return;
@@ -364,21 +364,21 @@ void Pancil::drawShape(QPainter& painter)
 	painter.setPen(Qt::NoPen);
 }
 
-void Pancil::setDrawStar(QPointF star)
+void Pencil::setDrawStar(QPointF star)
 {
 	m_drawPoint.append(star);
 	m_PhysicalPoint.append(star);
 	updateClickRect(star);
 }
 
-void Pancil::setDrawEnd(QPointF end)
+void Pencil::setDrawEnd(QPointF end)
 {
 	m_drawPoint.append(end);
 	m_PhysicalPoint.append(end);
 	updateClickRect(end);
 }
 
-void Pancil::updateClickRect(QPointF point)
+void Pencil::updateClickRect(QPointF point)
 {
 	point.x() < m_Left ? m_Left = point.x() : m_Left;
 	point.x() > m_right ? m_right = point.x() : m_right;
@@ -395,7 +395,7 @@ void Pancil::updateClickRect(QPointF point)
 	m_end = m_drawEnd;
 }
 
-void Pancil::updateEdgeValue()
+void Pencil::updateEdgeValue()
 {
 	m_top = m_drawStar.y();
 	m_bottom = m_drawEnd.y();
@@ -403,16 +403,21 @@ void Pancil::updateEdgeValue()
 	m_right = m_drawEnd.x();
 }
 
-const QList<QPointF>& Pancil::getPhysicalPoint()
+const QList<QPointF>& Pencil::getPhysicalPoint()
 {
 	return m_PhysicalPoint;
 }
 
-void Pancil::setDepth(qreal depth)
+void Pencil::setDrawPoint(QList<QPointF>& list)
+{
+	m_drawPoint = std::move(list);
+}
+
+void Pencil::setDepth(qreal depth)
 {
 }
 
-void Pancil::scale(qreal ratioW, qreal ratioH)
+void Pencil::scale(qreal ratioW, qreal ratioH)
 {
 	QList<QPointF>::iterator i = m_drawPoint.begin();
 	QList<QPointF>::iterator j = m_PhysicalPoint.begin();
@@ -433,7 +438,7 @@ void Pancil::scale(qreal ratioW, qreal ratioH)
 	updateEdgeValue();
 }
 
-void Pancil::move(QPointF offset)
+void Pencil::move(QPointF offset)
 {
 	QList<QPointF>::iterator i = m_drawPoint.begin();
 	QList<QPointF>::iterator j = m_PhysicalPoint.begin();
@@ -447,7 +452,7 @@ void Pancil::move(QPointF offset)
 	updateEdgeValue();
 }
 
-void Pancil::moveTop(QPointF offset)
+void Pencil::moveTop(QPointF offset)
 {
 	QList<QPointF>::iterator i = m_drawPoint.begin();
 	//防止线重合加一个判断
@@ -464,7 +469,7 @@ void Pancil::moveTop(QPointF offset)
 	m_drawStar.setY(m_top);
 }
 
-void Pancil::moveBottom(QPointF offset)
+void Pencil::moveBottom(QPointF offset)
 {
 	QList<QPointF>::iterator i = m_drawPoint.begin();
 	//防止线重合加一个判断
@@ -482,7 +487,7 @@ void Pancil::moveBottom(QPointF offset)
 
 }
 
-void Pancil::moveLeft(QPointF offset)
+void Pencil::moveLeft(QPointF offset)
 {
 	QList<QPointF>::iterator i = m_drawPoint.begin();
 	//防止线重合加一个判断
@@ -499,7 +504,7 @@ void Pancil::moveLeft(QPointF offset)
 	m_drawStar.setX(m_Left);
 }
 
-void Pancil::moveRight(QPointF offset)
+void Pencil::moveRight(QPointF offset)
 {
 	QList<QPointF>::iterator i = m_drawPoint.begin();
 	//防止线重合加一个判断
@@ -516,31 +521,31 @@ void Pancil::moveRight(QPointF offset)
 	m_drawEnd.setX(m_right);
 }
 
-void Pancil::moveUpperLeft(QPointF offset)
+void Pencil::moveUpperLeft(QPointF offset)
 {
 	moveLeft(offset);
 	moveTop(offset);
 }
 
-void Pancil::moveUpperRight(QPointF offset)
+void Pencil::moveUpperRight(QPointF offset)
 {
 	moveRight(offset);
 	moveTop(offset);
 }
 
-void Pancil::moveLowerLeft(QPointF offset)
+void Pencil::moveLowerLeft(QPointF offset)
 {
 	moveLeft(offset);
 	moveBottom(offset);
 }
 
-void Pancil::moveLowerRight(QPointF offset)
+void Pencil::moveLowerRight(QPointF offset)
 {
 	moveRight(offset);
 	moveBottom(offset);
 }
 
-void Pancil::drawPointToPhysicalPoint(qreal ratio)
+void Pencil::drawPointToPhysicalPoint(qreal ratio)
 {
 	QList<QPointF>::iterator i = m_drawPoint.begin();
 	QList<QPointF>::iterator j = m_PhysicalPoint.begin();
@@ -757,15 +762,22 @@ void Hexagon::moveLowerRight(QPointF offset)
 	setVertex();
 }
 
-void Hexagon::setVertex()
+void Hexagon::setVertex(QVector<QPointF>& vector)
 {
-	m_vertex[0] = QPointF(m_drawStar.x() + (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawStar.y());
-	m_vertex[1] = QPointF(m_drawStar.x() + 4 * (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawStar.y());
-	m_vertex[2] = QPointF(m_drawEnd.x(), (m_drawStar.y() + m_drawEnd.y()) / 2);
-	m_vertex[3] = QPointF(m_drawStar.x() + 4 * (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawEnd.y());
-	m_vertex[4] = QPointF(m_drawStar.x() + (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawEnd.y());
-	m_vertex[5] = QPointF(m_drawStar.x(), (m_drawStar.y() + m_drawEnd.y()) / 2);
-	m_vertex[6] = QPointF(m_drawStar.x() + (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawStar.y());
+	if(vector.isEmpty())
+	{
+		m_vertex[0] = QPointF(m_drawStar.x() + (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawStar.y());
+		m_vertex[1] = QPointF(m_drawStar.x() + 4 * (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawStar.y());
+		m_vertex[2] = QPointF(m_drawEnd.x(), (m_drawStar.y() + m_drawEnd.y()) / 2);
+		m_vertex[3] = QPointF(m_drawStar.x() + 4 * (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawEnd.y());
+		m_vertex[4] = QPointF(m_drawStar.x() + (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawEnd.y());
+		m_vertex[5] = QPointF(m_drawStar.x(), (m_drawStar.y() + m_drawEnd.y()) / 2);
+		m_vertex[6] = QPointF(m_drawStar.x() + (m_drawEnd.x() - m_drawStar.x()) / 5, m_drawStar.y());
+	}
+	else
+	{
+		m_vertex = std::move(vector);
+	}
 }
 
 const QVector<QPointF>& Hexagon::getVertex()
@@ -928,7 +940,7 @@ Shape* ShapeFactory::getShape(ShapeType type)
 		inShape = new Square();
 		break;
 	case ShapeType::TypePencil:
-		inShape = new Pancil();
+		inShape = new Pencil();
 		break;
 	case ShapeType::TypeCircle:
 		inShape = new Circle();
