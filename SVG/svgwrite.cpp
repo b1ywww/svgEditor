@@ -39,7 +39,7 @@ void SvgWrite::writeHead()
 	m_doc.appendChild(instruction);
 }
 
-void SvgWrite::writeBackGround(int canvasW, int canvasH)
+void SvgWrite::writeBackGround(int canvasW, int canvasH, QRgb rgb)
 {
 	QDomElement background = m_doc.createElement("g");
 	QDomElement title = m_doc.createElement("title");
@@ -49,7 +49,8 @@ void SvgWrite::writeBackGround(int canvasW, int canvasH)
 	title.appendChild(text);
 
 	QDomElement rect = m_doc.createElement("rect");
-	rect.setAttribute("fill", "#ffffff");
+	rect.setAttribute("fill", QString("#%1").arg((QString::number(rgb, 16)).mid(2)));
+	qDebug() << rgb;
 	rect.setAttribute("id", "canvas_background");
 	rect.setAttribute("height", 502);
 	rect.setAttribute("width", 502);
@@ -92,7 +93,7 @@ void SvgWrite::writeShape(QList<Shape*> list)
 	}
 }
 
-bool SvgWrite::write(QList<Shape*> list, QString fileDir, int canvasW, int canvasH)
+bool SvgWrite::write(QList<Shape*> list, QString fileDir, int canvasW, int canvasH, QRgb rgb)
 {
 	m_transfrom = QPointF(canvasW / 2, canvasH / 2);
 
@@ -106,7 +107,7 @@ bool SvgWrite::write(QList<Shape*> list, QString fileDir, int canvasW, int canva
 	m_svg.setAttribute("type", "wps");
 
 	writeHead();
-	writeBackGround(canvasW, canvasH);
+	writeBackGround(canvasW, canvasH, rgb);
 
 	m_shapeG = m_doc.createElement("g");
 

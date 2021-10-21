@@ -141,7 +141,6 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 												 "border: 0;"));
 
 	m_pSvgCanvas = new KxSvgCanvas(m_pCanvasScroll);
-	connect(m_pSvgCanvas, SIGNAL(setCanvasCenter()), this, SLOT(setCanvasCenter()));
 
 	m_pMainHoriLayout->addWidget(m_pCanvasScroll);
 

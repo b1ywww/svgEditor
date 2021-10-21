@@ -5,6 +5,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QList>
+#include <QRgb>
 
 class Shape;
 class SvgWrite
@@ -16,11 +17,11 @@ public:
 
 	void writeHead();
 
-	void writeBackGround(int canvasW, int canvasH);
+	void writeBackGround(int canvasW, int canvasH, QRgb rgb);
 
 	void writeShape(QList<Shape*> list);
 
-	bool write(QList<Shape*> list, QString fileDir, int canvasW, int canvasH);
+	bool write(QList<Shape*> list, QString fileDir, int canvasW, int canvasH, QRgb rgb);
 
 private:
 
