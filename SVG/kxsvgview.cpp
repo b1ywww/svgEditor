@@ -187,22 +187,26 @@ SVGMainWIndow::~SVGMainWIndow()
 
 void SVGMainWIndow::setCanvasColor()
 {
-	QColorDialog color;
-	QColor c = color.getRgba();
-	QRgb mRgb = qRgb(c.red(), c.green(), c.blue());
+	QColorDialog color(this);
+	QColor c = color.getColor();
+	if (false == c.isValid())
+		return;
 
+	QRgb mRgb = qRgb(c.red(), c.green(), c.blue());
 	QString s = QString("background: #%1;border:none").arg(QString::number(mRgb, 16));
-	if(m_pCanvasColorChoose)
+	if (m_pCanvasColorChoose)
 		m_pCanvasColorChoose->setStyleSheet(s);
-	
-	if(m_pSvgCanvas)
+
+	if (m_pSvgCanvas)
 		m_pSvgCanvas->setCanvasColor(mRgb);
 }
 
 void SVGMainWIndow::setShapeColor()
 {
 	QColorDialog color;
-	QColor c = color.getRgba();
+	QColor c = color.getColor();
+	if (false == c.isValid())
+		return;
 	QRgb mRgb = qRgb(c.red(), c.green(), c.blue());
 
 	setShapeChooseColor(mRgb);
@@ -213,7 +217,9 @@ void SVGMainWIndow::setShapeColor()
 void SVGMainWIndow::setPenColor()
 {
 	QColorDialog color;
-	QColor c = color.getRgba();
+	QColor c = color.getColor();
+	if (false == c.isValid())
+		return;
 	QRgb mRgb = qRgb(c.red(), c.green(), c.blue());
 
 	setPenChooseColor(mRgb);
