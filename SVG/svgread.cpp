@@ -89,6 +89,7 @@ Shape* SvgRead::readLine(QXmlStreamAttributes& attributes)
 	Shape* i = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeLine);
 	i->setDrawStar(QPointF(attributes.value("x1").toString().toDouble(), attributes.value("y1").toString().toDouble()) - m_transform);
 	i->setDrawEnd(QPointF(attributes.value("x2").toString().toDouble(), attributes.value("y2").toString().toDouble()) - m_transform);
+	i->getPen().setColor(attributes.value("stroke").toString().replace("#", "").toInt(NULL, 16));
 	i->drawPointToPhysicalPoint(0);
 	return i;
 }

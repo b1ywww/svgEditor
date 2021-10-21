@@ -33,6 +33,8 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	setAttribute(Qt::WA_InputMethodEnabled, true);
 	setCanvasSize();
 
+	installEventFilter(this);
+
 	m_pClickRect = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeSquare);
 	QColor color(255, 255, 255);
 	color.setAlpha(0);
@@ -89,7 +91,7 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 	}
 	else
 	{
-		setCursor(Qt::ArrowCursor);
+		//setCursor(Qt::ArrowCursor);
 		m_positionType = mousePosition::move;
 	}
 
@@ -293,7 +295,11 @@ void KxSvgCanvas::openSvg()
 	{
 		m_transfrom = QPoint(0, 0);
 		loadSvgRenderer(file_path);
+		m_isCloseEvent = true;
+		return;
 	}
+	m_transfrom = QPoint(m_canvasWidth / 2, m_canvasHeight / 2);
+	m_isCloseEvent = false;
 }
 
 void KxSvgCanvas::saveSvg()
@@ -449,6 +455,13 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 	}
 	m_transfrom = transfromOffset;
 	update();
+}
+
+bool KxSvgCanvas::eventFilter(QObject* watched, QEvent* event)
+{
+	if(m_isCloseEvent)
+		paintEvent(static_cast<QPaintEvent*>(event));
+	return m_isCloseEvent;
 }
 
 bool KxSvgCanvas::deleteShapeList()

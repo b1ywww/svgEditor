@@ -21,6 +21,7 @@ public:
 	void keyPressEvent(QKeyEvent* event) override;
 	void inputMethodEvent(QInputMethodEvent* event) override;
 	void wheelEvent(QWheelEvent* event) override;
+	bool eventFilter(QObject* watched, QEvent* event) override;
 
 	bool deleteShapeList();
 	void loadSvgRenderer(QString);
@@ -68,6 +69,7 @@ private:
 	bool isMove = false;
 	int m_canvasWidth = 500;
 	int m_canvasHeight = 500;
+	bool m_isCloseEvent = false;
 
 	enum class mousePosition
 	{
