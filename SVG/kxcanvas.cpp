@@ -38,6 +38,8 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	color.setAlpha(0);
 	m_pClickRect->getBrush().setColor(color);
 
+	m_rgb = color.rgb();
+
 	m_pTextEditWidget = new QLineEdit(this);
 	m_pTextEditWidget->resize(10, 40);
 	m_pTextEditWidget->setFont(QFont("Microsoft YaHei", 20));

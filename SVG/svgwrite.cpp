@@ -50,7 +50,6 @@ void SvgWrite::writeBackGround(int canvasW, int canvasH, QRgb rgb)
 
 	QDomElement rect = m_doc.createElement("rect");
 	rect.setAttribute("fill", QString("#%1").arg((QString::number(rgb, 16)).mid(2)));
-	qDebug() << rgb;
 	rect.setAttribute("id", "canvas_background");
 	rect.setAttribute("height", 502);
 	rect.setAttribute("width", 502);
@@ -135,7 +134,7 @@ void SvgWrite::writeLine(Shape* shape)
 	line.setAttribute("x1", shape->getPhysicalStar().x() + m_transfrom.x());
 	line.setAttribute("fill-opacity", "null");
 	line.setAttribute("stroke-width", 1.5);
-	line.setAttribute("stroke", "#000");
+	line.setAttribute("stroke", QString("#%1").arg((QString::number(shape->getPen().color().rgb(), 16)).mid(2)));
 	line.setAttribute("fill", "none");
 	line.setAttribute("type", "line");
 
@@ -157,8 +156,8 @@ void SvgWrite::writeSquare(Shape* shape)
 	rect.setAttribute("fill-opacity", "null");
 	rect.setAttribute("stroke-opacity", "null");
 	rect.setAttribute("stroke-width", "1.5");
-	rect.setAttribute("stroke", "#000");
-	rect.setAttribute("fill", "#fff");
+	rect.setAttribute("stroke", QString("#%1").arg((QString::number(shape->getPen().color().rgb(), 16)).mid(2)));
+	rect.setAttribute("fill", QString("#%1").arg((QString::number(shape->getBrush().color().rgb(), 16)).mid(2)));
 	rect.setAttribute("type", "rect");
 
 	m_shapeG.appendChild(rect);
@@ -183,7 +182,7 @@ void SvgWrite::writePencil(Shape* shape)
 	pencil.setAttribute("fill-opacity", "null");
 	pencil.setAttribute("stroke-opacity", "null");
 	pencil.setAttribute("stroke-width", "1.5");
-	pencil.setAttribute("stroke", "#000");
+	pencil.setAttribute("stroke", QString("#%1").arg((QString::number(shape->getPen().color().rgb(), 16)).mid(2)));
 	pencil.setAttribute("fill", "none");
 	pencil.setAttribute("type", "pencil");
 
@@ -204,8 +203,8 @@ void SvgWrite::writeCircle(Shape* shape)
 	circle.setAttribute("fill-opacity", "null");
 	circle.setAttribute("stroke-opacity", "null");
 	circle.setAttribute("stroke-width", "1.5");
-	circle.setAttribute("stroke", "#000");
-	circle.setAttribute("fill", "#fff");
+	circle.setAttribute("stroke", QString("#%1").arg((QString::number(shape->getPen().color().rgb(), 16)).mid(2)));
+	circle.setAttribute("fill", QString("#%1").arg((QString::number(shape->getBrush().color().rgb(), 16)).mid(2)));
 	circle.setAttribute("type", "circle");
 
 	m_shapeG.appendChild(circle);
@@ -226,8 +225,8 @@ void SvgWrite::writeHexagon(Shape* shape)
 	hexagon.setAttribute("fill-opacity", "null");
 	hexagon.setAttribute("stroke-opacity", "null");
 	hexagon.setAttribute("stroke-width", "1.5");
-	hexagon.setAttribute("stroke", "#000");
-	hexagon.setAttribute("fill", "#fff");
+	hexagon.setAttribute("stroke", QString("#%1").arg((QString::number(shape->getPen().color().rgb(), 16)).mid(2)));
+	hexagon.setAttribute("fill", QString("#%1").arg((QString::number(shape->getBrush().color().rgb(), 16)).mid(2)));
 	hexagon.setAttribute("type", "hexagon");
 
 	m_shapeG.appendChild(hexagon);
