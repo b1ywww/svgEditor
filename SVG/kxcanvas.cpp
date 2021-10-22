@@ -331,12 +331,14 @@ void KxSvgCanvas::init()
 			saveSvg();
 			deleteShapeList();
 			unloadSvgRenderer();
+			m_isCloseEvent = false;
 			break;
 		}
 		case QMessageBox::No:
 		{
 			deleteShapeList();
 			unloadSvgRenderer();
+			m_isCloseEvent = false;
 			break;
 		}
 		default:
