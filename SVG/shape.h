@@ -57,9 +57,9 @@ protected:
 	QPointF m_drawStar;  //Âß¼­×ø±ê
 	QPointF m_drawEnd;
 	qreal m_depth;
-	ShapeType m_type;
 	QPen m_pen;
 	QBrush m_brush;
+	ShapeType m_type;
 
 private:
 	int m_offsetStartX = -4;
