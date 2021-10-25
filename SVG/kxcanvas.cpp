@@ -62,6 +62,7 @@ KxSvgCanvas::~KxSvgCanvas()
 {
 	delete m_pClickRect;
 	deleteShapeList();
+	clearCopyList();
 	ShapeFactory::getShapeFactory()->deleteShapeFactory();
 }
 
@@ -614,8 +615,6 @@ void KxSvgCanvas::copyListToShapeList()
 		shape->copyDate(i);
 		m_copyShapeList.append(shape);
 	}
-
-
 }
 
 Shape* KxSvgCanvas::getClickShape(QPoint point)

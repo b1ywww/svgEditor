@@ -356,6 +356,11 @@ void Square::moveLowerRight(QPointF offset)
 	m_drawEnd = m_drawEnd + offset;
 }
 
+void Square::copyDate(Shape* shape)
+{
+	Shape::copyDate(shape);
+}
+
 Pencil::Pencil()
 {
 	m_type = ShapeType::TypePencil;
@@ -433,6 +438,20 @@ const QList<QPointF>& Pencil::getPhysicalPoint()
 void Pencil::setDrawPoint(QList<QPointF>& list)
 {
 	m_drawPoint = std::move(list);
+}
+
+void Pencil::copyDate(Shape* shape)
+{
+	for (auto i : dynamic_cast<Pencil*>(shape)->m_drawPoint)
+	{
+		m_drawPoint.append(i + QPointF(10, 10));
+	}
+
+	for (auto i : dynamic_cast<Pencil*>(shape)->m_PhysicalPoint)
+	{
+		m_PhysicalPoint.append(i + QPointF(10, 10));
+	}
+	Shape::copyDate(shape);
 }
 
 void Pencil::setDepth(qreal depth)
@@ -679,6 +698,11 @@ void Circle::moveLowerRight(QPointF offset)
 	m_drawEnd = m_drawEnd + offset;
 }
 
+void Circle::copyDate(Shape* shape)
+{
+	Shape::copyDate(shape);
+}
+
 Hexagon::Hexagon()
 {
 	m_vertex.resize(7);
@@ -813,6 +837,12 @@ const QVector<QPointF>& Hexagon::getVertex()
 	return m_vertex;
 }
 
+void Hexagon::copyDate(Shape* shape)
+{
+	Shape::copyDate(shape);
+	setVertex();
+}
+
 TextEdit::TextEdit()
 {
 	m_type = ShapeType::TypeText;
@@ -941,6 +971,13 @@ void TextEdit::setText(QString text)
 QString TextEdit::getText()
 {
 	return m_text;
+}
+
+void TextEdit::copyDate(Shape* shape)
+{
+	m_text = dynamic_cast<TextEdit*>(shape)->m_text;
+	
+	Shape::copyDate(shape);
 }
 
 ShapeFactory* ShapeFactory::getShapeFactory()

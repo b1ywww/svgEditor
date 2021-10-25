@@ -120,6 +120,7 @@ public:
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
 
+	void copyDate(Shape* shape);
 };
 
 class Pencil : public Shape
@@ -149,6 +150,8 @@ public:
 	void updateEdgeValue();
 	const QList<QPointF>& getPhysicalPoint();
 	void setDrawPoint(QList<QPointF>& list);
+
+	void copyDate(Shape* shape);
 
 private:
 	QList<QPointF> m_drawPoint;
@@ -180,6 +183,8 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
+
+	void copyDate(Shape* shape);
 };
 
 class Hexagon : public Shape
@@ -206,6 +211,9 @@ public:
 
 	void setVertex(QVector<QPointF>& vector = QVector<QPointF>());
 	const QVector<QPointF>& getVertex();
+
+	void copyDate(Shape* shape);
+
 private:
 	QVector<QPointF> m_vertex;
 };
@@ -235,9 +243,10 @@ public:
 	void setText(QString text);
 	QString getText();
 
+	void copyDate(Shape* shape);
+
 private:
 	QString m_text;
-
 };
 
 class ShapeFactory
