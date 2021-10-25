@@ -402,24 +402,21 @@ void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 		m_clickShapeList.clear();
 		m_pClickShape = nullptr;
 	}
+	case  Qt::Key_A:
+	{
+		if (event->modifiers() != Qt::ControlModifier)
+			break;
+
+		m_clickShapeList.clear();
+		m_clickShapeList = m_shapeList;
+		for (auto i : m_clickShapeList)
+		{
+			i->setClickState(true);
+		}
+	}
 	default:
-		update();
 		break;
 	}
-}
-
-void KxSvgCanvas::inputMethodEvent(QInputMethodEvent* event)
-{
-	qDebug() << event->commitString();
-	QString a = "";
-	if (m_pClickShape)
-	{
-		if(event->commitString().isEmpty())
-			dynamic_cast<TextEdit*>(m_pClickShape)->setText(event->preeditString());
-		else
-			dynamic_cast<TextEdit*>(m_pClickShape)->setText(event->commitString());
-	}
-
 	update();
 }
 
