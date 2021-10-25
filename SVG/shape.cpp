@@ -50,6 +50,18 @@ QPointF& Shape::getDrawEnd()
 	return m_drawEnd;
 }
 
+void Shape::copyDate(Shape* shape)
+{
+	m_star = shape->m_star + QPointF(10, 10);      //物理坐标
+	m_end = shape->m_end + QPointF(10, 10);
+	m_drawStar = shape->m_drawStar + QPointF(10, 10);  //逻辑坐标
+	m_drawEnd = shape->m_drawEnd + QPointF(10, 10);
+	m_depth = shape->m_depth;
+	m_pen = shape->m_pen;
+	m_brush = shape->m_brush;
+	m_type = shape->m_type;
+}
+
 void Shape::drawPointToPhysicalPoint(qreal ratio)
 {
 	m_star = m_drawStar / (1 + ratio);
@@ -112,6 +124,11 @@ void Shape::setClickRectOffset(qreal x, qreal y)
 }
 
 ShapeType Shape::getShapeType()
+{
+	return m_type;
+}
+
+ShapeType Shape::getShapeType() const
 {
 	return m_type;
 }
@@ -231,6 +248,11 @@ void Line::moveLowerLeft(QPointF offset)
 void Line::moveLowerRight(QPointF offset)
 {
 	m_drawEnd = m_drawEnd + offset;
+}
+
+void Line::copyDate(Shape* shape)
+{
+	Shape::copyDate(shape);
 }
 
 Square::Square()

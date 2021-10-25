@@ -30,6 +30,9 @@ public:
 	void shapeInClickRect();
 	void setShapeColor(QRgb);         //设置选中对象的填充
 	void setPenColor(QRgb);			  //设置选中对象线条的颜色
+	void copyClickShape();
+	void clearCopyList();
+	void copyListToShapeList();
 
 public slots:
 	void setCurrentType(ShapeType);
@@ -56,6 +59,7 @@ private:
 	ShapeType m_currentType;				//新增对象的类型
 	QList<Shape*> m_shapeList;				//对象链表
 	QList<Shape*> m_clickShapeList;			//点击对象链表
+	QList<Shape*> m_copyShapeList;			//拷贝对象链表
 	QSvgRenderer* m_pSvgRenderer = nullptr; //通用svg图片加载器
 	QPoint m_transfrom;						//坐标变换量
 	QPoint m_lastPoint;						//鼠标的前一个坐标点

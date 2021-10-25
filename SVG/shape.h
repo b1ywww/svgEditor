@@ -32,6 +32,7 @@ public:
 	virtual QPointF& getPhysicalEnd();
 	virtual QPointF& getDrawStar();
 	virtual QPointF& getDrawEnd();
+	virtual void copyDate(Shape* shape);
 	virtual void drawPointToPhysicalPoint(qreal ratio);
 
 	virtual void move(QPointF offset);
@@ -48,6 +49,7 @@ public:
 	ShapeType getShapeType();
 	bool getClickState();
 	void setClickState(bool click);
+	ShapeType getShapeType() const;
 	QPen& getPen();
 	QBrush& getBrush();
 
@@ -91,6 +93,8 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
+
+	void copyDate(Shape* shape);
 };
 
 class Square : public Shape

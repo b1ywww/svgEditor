@@ -413,6 +413,23 @@ void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 		{
 			i->setClickState(true);
 		}
+		break;
+	}
+	case  Qt::Key_C:
+	{
+		if(event->modifiers() != Qt::ControlModifier)
+			break;
+
+		copyClickShape();
+		break;
+	}
+	case Qt::Key_V:
+	{
+		if(event->modifiers() != Qt::ControlModifier)
+			break;
+
+		copyListToShapeList();
+		break;
 	}
 	default:
 		break;
@@ -552,6 +569,53 @@ void KxSvgCanvas::setPenColor(QRgb rgb)
 	{
 		i->getPen().setColor(rgb);
 	}
+}
+
+void KxSvgCanvas::copyClickShape()
+{
+	if (m_clickShapeList.isEmpty())
+		return;
+
+	clearCopyList();
+	for (auto i : m_clickShapeList)
+	{
+		Shape* shape = ShapeFactory::getShapeFactory()->getShape(i->getShapeType());
+		shape->copyDate(i);
+		m_copyShapeList.append(shape);
+	}
+}
+
+void KxSvgCanvas::clearCopyList()
+{
+	if (m_copyShapeList.isEmpty())
+		return;
+
+	for (auto i : m_copyShapeList)
+	{
+		m_copyShapeList.removeOne(i);
+		delete i;
+	}
+}
+
+void KxSvgCanvas::copyListToShapeList()
+{
+	if (m_copyShapeList.isEmpty())
+		return;
+
+	m_shapeList.append(m_copyShapeList);
+	m_clickShapeList.clear();
+	m_clickShapeList = m_copyShapeList;
+
+	for (auto i : m_copyShapeList)
+	{
+		i->setClickState(true);
+		m_copyShapeList.removeOne(i);
+		Shape* shape = ShapeFactory::getShapeFactory()->getShape(i->getShapeType());
+		shape->copyDate(i);
+		m_copyShapeList.append(shape);
+	}
+
+
 }
 
 Shape* KxSvgCanvas::getClickShape(QPoint point)
