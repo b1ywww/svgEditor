@@ -604,7 +604,11 @@ void KxSvgCanvas::copyListToShapeList()
 		return;
 
 	m_shapeList.append(m_copyShapeList);
-	m_clickShapeList.clear();
+	for (auto i : m_clickShapeList)
+	{
+		i->setClickState(false);
+		m_clickShapeList.removeOne(i);
+	}
 	m_clickShapeList = m_copyShapeList;
 
 	for (auto i : m_copyShapeList)
