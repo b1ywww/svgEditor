@@ -604,21 +604,19 @@ void KxSvgCanvas::copyListToShapeList()
 		return;
 
 	m_shapeList.append(m_copyShapeList);
-	for (auto j : m_clickShapeList)
+	for (auto i : m_clickShapeList)
 	{
-		j->setClickState(false);
-		m_clickShapeList.removeOne(j);
+		i->setClickState(false);
+		m_clickShapeList.removeOne(i);
 	}
 	m_clickShapeList = m_copyShapeList;
 
-	auto copyBegin = m_copyShapeList.begin();
-	auto copyEnd = m_copyShapeList.end();
-	for ( ; copyBegin != copyEnd; copyBegin++)
+	for (auto i : m_copyShapeList)
 	{
-		(*copyBegin)->setClickState(true);
-		m_copyShapeList.removeOne((*copyBegin));
-		Shape* shape = ShapeFactory::getShapeFactory()->getShape((*copyBegin)->getShapeType());
-		shape->copyDate((*copyBegin));
+		i->setClickState(true);
+		m_copyShapeList.removeOne(i);
+		Shape* shape = ShapeFactory::getShapeFactory()->getShape(i->getShapeType());
+		shape->copyDate(i);
 		m_copyShapeList.append(shape);
 	}
 }
