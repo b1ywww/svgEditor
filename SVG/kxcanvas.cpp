@@ -152,7 +152,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 				m_pClickRect->setDrawStar(transformPoint);
 			}
 
-			if (nullptr == m_pClickShape || QApplication::keyboardModifiers() != Qt::ControlModifier)
+			if (nullptr == m_pClickShape || (QApplication::keyboardModifiers() != Qt::ControlModifier && m_clickShapeList.size() < 2))
 			{
 				for (auto i : m_clickShapeList)
 				{
