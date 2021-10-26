@@ -117,6 +117,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 		//如果是新建文本
 		if (m_currentType == ShapeType::TypeText && m_pTextEditWidget->isHidden())
 		{
+			m_clickShapeList.clear();
 			m_pCurrentShape = nullptr;
 			m_pTextEditWidget->move(event->pos());
 			m_pTextEditWidget->setFocus();
