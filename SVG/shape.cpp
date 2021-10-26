@@ -856,7 +856,7 @@ TextEdit::~TextEdit()
 void TextEdit::drawShape(QPainter& painter)
 {
 	painter.setPen(m_pen);
-	painter.setFont(QFont("Microsoft YaHei", 20));
+	painter.setFont(QFont("Microsoft YaHei", m_fontSize));
 
 	painter.drawText(QRect(m_drawStart.toPoint(), m_drawEnd.toPoint()), m_text);
 	painter.setPen(Qt::NoPen);
@@ -879,6 +879,37 @@ void TextEdit::setDepth(qreal depth)
 
 void TextEdit::scale(qreal width, qreal height)
 {
+	m_drawStart.setX((m_start.x()) * (1 + width));
+	m_drawEnd.setX((m_end.x()) * (1 + width));
+
+	m_drawStart.setY((m_start.y()) * (1 + height));
+	m_drawEnd.setY((m_end.y()) * (1 + height));
+
+	if (m_text.isEmpty())
+		return;
+
+	//简陋版本的文字放大缩小
+	while (true)
+	{
+		QFontMetricsF textLength(QFont("Microsoft YaHei", m_fontSize));
+		qreal widthText = textLength.width(m_text);
+		if(widthText > m_drawEnd.x() - m_drawStart.x())
+			break;
+
+		m_fontSize++;
+		textLength;
+	}
+
+	while (true)
+	{
+		QFontMetricsF textLength(QFont("Microsoft YaHei", m_fontSize));
+		qreal widthText = textLength.width(m_text);
+		if (widthText < m_drawEnd.x() - m_drawStart.x())
+			break;
+
+		m_fontSize--;
+		textLength;
+	}
 }
 
 void TextEdit::move(QPointF offset)

@@ -247,6 +247,7 @@ public:
 
 private:
 	QString m_text;
+	int m_fontSize = 20;
 
 };
 
