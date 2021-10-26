@@ -47,6 +47,15 @@ public slots:
 	void changeText(QString);
 	void setText();
 
+	void shear();
+	void copy();
+	void paste();
+
+	void shapeToUpper();
+	void shapeToLower();
+	void shapeToTop();
+	void shapeToBottom();
+
 signals:
 	void setShapePane(QColor shapeRgb, QColor penRgb);
 	void paneIndex(int);
@@ -55,7 +64,9 @@ private:
 	Shape* getClickShape(QPoint point);
 	bool isInRect(QPointF point, Shape* shape);
 	void setPositionType(QPoint point);
+	void setRightClickMenu();
 
+	QMenu* m_pRightClickMenu = nullptr;			 //右键菜单栏
 	QLineEdit* m_pTextEditWidget = nullptr;
 	ShapeType m_currentType;				//新增对象的类型
 	QList<Shape*> m_shapeList;				//对象链表

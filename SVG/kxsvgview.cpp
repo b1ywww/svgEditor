@@ -98,6 +98,7 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 		setObjectName(QStringLiteral("SVGClass"));
 	resize(MAINWINDOW_WIDTH, MAINWINDOW_HETGHT);
 
+	setFocusPolicy(Qt::ClickFocus);
 	installEventFilter(this);
 
 	//设置布局
@@ -175,7 +176,6 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 
 	//设置左边工具栏布局
 	setToolBar();
-
 }
 
 SVGMainWIndow::~SVGMainWIndow()

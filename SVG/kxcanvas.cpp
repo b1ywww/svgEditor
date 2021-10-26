@@ -30,10 +30,13 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	setAttribute(Qt::WA_StyledBackground, true);
 	setStyleSheet(QStringLiteral("background-color: rgb(255, 255, 255);"));
 	setFocusPolicy(Qt::ClickFocus);
-	setAttribute(Qt::WA_InputMethodEnabled, true);
+	//setAttribute(Qt::WA_TransparentForMouseEvents, true);
 	setCanvasSize();
 
 	installEventFilter(this);
+
+	//³õÊ¼»¯ÓÒ¼ü²Ëµ¥
+	setRightClickMenu();
 
 	m_pClickRect = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeSquare);
 	QColor color(255, 255, 255);
@@ -92,7 +95,6 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 	}
 	else
 	{
-		//setCursor(Qt::ArrowCursor);
 		m_positionType = mousePosition::move;
 	}
 
@@ -176,15 +178,35 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 		}
 
 		m_lastPoint = transformPoint;
+	}
 
-		if (!m_clickShapeList.isEmpty())
+	if (Qt::RightButton == event->button())
+	{
+		if(m_clickShapeList.size() < 2)
 		{
-			emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color());
-			emit paneIndex(1);
+			for (Shape* i : m_clickShapeList)
+			{
+				i->setClickState(false);
+				m_clickShapeList.removeOne(i);
+			}
+			m_pClickShape = getClickShape(transformPoint);
+			if (m_pClickShape)
+			{
+				m_clickShapeList.append(m_pClickShape);
+				m_pClickShape->setClickState(true);
+			}
 		}
-		else {
-			emit paneIndex(0);
-		}
+		m_pRightClickMenu->move(event->globalPos());
+		m_pRightClickMenu->show();
+	}
+
+	if (!m_clickShapeList.isEmpty())
+	{
+		emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color());
+		emit paneIndex(1);
+	}
+	else {
+		emit paneIndex(0);
 	}
 }
 
@@ -419,6 +441,81 @@ void KxSvgCanvas::setText()
 	m_pClickShape = i;
 	m_text = "";
 	m_pTextEditWidget->clear();
+}
+
+void KxSvgCanvas::shear()
+{
+	if (m_clickShapeList.isEmpty())
+		return;
+
+	m_copyShapeList.clear();
+	for (auto i : m_clickShapeList)
+	{
+		m_shapeList.removeOne(i);
+		m_copyShapeList.append(i);
+	}
+	m_clickShapeList.clear();
+	update();
+}
+
+void KxSvgCanvas::copy()
+{
+	copyClickShape();
+	update();
+}
+
+void KxSvgCanvas::paste()
+{
+	copyListToShapeList();
+	update();
+}
+
+void KxSvgCanvas::shapeToUpper()
+{
+	if (m_clickShapeList.size() != 1)
+		return;
+
+	Shape* shape = m_clickShapeList.first();
+
+	int index = m_shapeList.indexOf(shape);
+	m_shapeList.removeOne(shape);
+	m_shapeList.insert(index + 1, shape);
+	update();
+}
+
+void KxSvgCanvas::shapeToLower()
+{
+	if (m_clickShapeList.size() != 1)
+		return;
+
+	Shape* shape = m_clickShapeList.first();
+
+	int index = m_shapeList.indexOf(shape);
+	m_shapeList.removeOne(shape);
+	m_shapeList.insert(index - 1, shape);
+	update();
+}
+
+void KxSvgCanvas::shapeToTop()
+{
+	if (m_clickShapeList.size() != 1)
+		return;
+
+	Shape* shape = m_clickShapeList.first();
+	m_shapeList.removeOne(shape);
+	m_shapeList.insert(m_shapeList.size(), shape);
+	update();
+}
+
+void KxSvgCanvas::shapeToBottom()
+{
+	if (m_clickShapeList.size() != 1)
+		return;
+
+	Shape* shape = m_clickShapeList.first();
+	m_shapeList.removeOne(shape);
+	m_shapeList.insert(-1, shape);
+	update();
 }
 
 void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
@@ -751,6 +848,49 @@ void KxSvgCanvas::setPositionType(QPoint point)
 		case POSITION_LOWER_RIGHT:setCursor(Qt::SizeBDiagCursor); m_positionType = mousePosition::lowerRight; break;
 		}
 	}
+}
+
+void KxSvgCanvas::setRightClickMenu()
+{
+	m_pRightClickMenu = new QMenu(this);
+
+	QAction* pActionShear = new QAction("¼ôÇÐ", this);
+	connect(pActionShear, SIGNAL(triggered()), this, SLOT(shear()));
+
+	QAction* pActionCopy = new QAction("¸´ÖÆ", this);
+	connect(pActionCopy, SIGNAL(triggered()), this, SLOT(copy()));
+
+	QAction* pActionPaste = new QAction("Õ³Ìù", this);
+	connect(pActionPaste, SIGNAL(triggered()), this, SLOT(paste()));
+
+	m_pRightClickMenu->addAction(pActionShear);
+	m_pRightClickMenu->addAction(pActionCopy);
+	m_pRightClickMenu->addAction(pActionPaste);
+
+	m_pRightClickMenu->addSeparator();
+	
+	QAction* pActionUpper = new QAction("ÖÃÓÚÉÏÒ»²ã", this);
+	connect(pActionUpper, SIGNAL(triggered()), this, SLOT(shapeToUpper()));
+
+	QAction* pActionLower = new QAction("ÖÃÓÚÏÂÒ»²ã", this);
+	connect(pActionLower, SIGNAL(triggered()), this, SLOT(shapeToLower()));
+
+	QAction* pActionTop = new QAction("ÖÃÓÚ¶¥²ã", this);
+	connect(pActionTop, SIGNAL(triggered()), this, SLOT(shapeToTop()));
+
+	QAction* pActionBottom = new QAction("ÖÃÓÚµÍ²ã", this);
+	connect(pActionBottom, SIGNAL(triggered()), this, SLOT(shapeToBottom()));
+
+	m_pRightClickMenu->addAction(pActionUpper);
+	m_pRightClickMenu->addAction(pActionLower);
+	m_pRightClickMenu->addAction(pActionTop);
+	m_pRightClickMenu->addAction(pActionBottom);
+
+	m_pRightClickMenu->setStyleSheet("QMenu::item:selected{background-color:#409CE1;}"\
+									 "QMenu::item{padding:5px 32px;color:rgba(51, 51, 51, 1);font-size:12px;}"\
+									 "QMenu{border: 1px solid rgb(125, 125, 125);border-radius: 5px; }");
+
+	m_pRightClickMenu->hide();
 }
 
 void KxSvgCanvas::editShape(QPoint transformPoint)
