@@ -1,6 +1,7 @@
 #include "kxcanvas.h"
 #include "svgwrite.h"
 #include "svgread.h"
+#include "canvastool.h"
 
 #include "QPainter"
 #include "QDebug"
@@ -265,8 +266,23 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 			m_pClickShape->setClickState(true);
 		}
 	}
-	if(!m_pClickRect->getDrawEnd().isNull())
-		shapeInClickRect();
+	//多选框的选中处理
+	if (!m_pClickRect->getDrawEnd().isNull())
+	{
+		for (auto j : m_clickShapeList)
+		{
+			j->setClickState(false);
+		}
+		m_clickShapeList.clear();
+		for (Shape* i : m_shapeList)
+		{
+			if (tool::isShapeIntersect(i, m_pClickRect))
+			{
+				m_clickShapeList.append(i);
+				i->setClickState(true);
+			}
+		}
+	}
 
 	m_pClickRect->setDrawStart(QPoint(0, 0));
 	m_pClickRect->setDrawEnd(QPoint(0, 0));
@@ -675,10 +691,10 @@ void KxSvgCanvas::shapeInClickRect()
 		QPointF bottomLeft = QPointF(i->getDrawStart().x(), i->getDrawEnd().y());
 		QPointF topRight = QPointF(i->getDrawEnd().x(), i->getDrawStart().y());
 		QPointF bottomRight = i->getDrawEnd();
-		if (isInRect(topLeft, m_pClickRect)
-			|| isInRect(bottomLeft, m_pClickRect)
-			|| isInRect(topRight, m_pClickRect)
-			|| isInRect(bottomRight, m_pClickRect))
+		if (tool::ponitInRect(topLeft, m_pClickRect)
+			|| tool::ponitInRect(bottomLeft, m_pClickRect)
+			|| tool::ponitInRect(topRight, m_pClickRect)
+			|| tool::ponitInRect(bottomRight, m_pClickRect))
 		{
 			m_clickShapeList.append(i);
 			i->setClickState(true);
@@ -762,37 +778,16 @@ Shape* KxSvgCanvas::getClickShape(QPoint point)
 	//逆序遍历，深度值越小 在链表的位置越靠前
 	for (QList<Shape*>::iterator i = --m_shapeList.end(); i != --m_shapeList.begin(); --i)
 	{
-		if (isInRect(point, *i))
+		if (tool::ponitInRect(point, *i))
 			return *i;
 	}
 	return nullptr;
 }
 
-bool KxSvgCanvas::isInRect(QPointF point, Shape* shape)
-{
-	if (shape == nullptr)
-		return nullptr;
-
-	qreal x = shape->getDrawEnd().x() - shape->getDrawStart().x() + 0.1; /*加0.1是为了防止出现 分母为0的无法选中的情况，因为点是为整数的，所以加上0.1 不影响x的符号*/
-	qreal y = shape->getDrawEnd().y() - shape->getDrawStart().y() + 0.1; /*上面是第一版的注释后来把坐标改成了QPointF,理应是会有bug的但是没测出来就放这了*/
-
-	qreal point_x = point.x() - shape->getDrawStart().x();
-	qreal point_y = point.y() - shape->getDrawStart().y();
-
-	if (point_x / x <= 1 &&
-		point_x / x >= 0 &&
-		point_y / y <= 1 &&
-		point_y / y >= 0)
-	{
-		return true;
-	}
-	return false;
-}
-
 void KxSvgCanvas::setPositionType(QPoint point)
 {
 	int flag = 0;
-	if (false == isInRect(point, m_pClickShape) || m_clickShapeList.size() > 1)
+	if (false == tool::ponitInRect(point, m_pClickShape) || m_clickShapeList.size() > 1)
 	{
 		setCursor(Qt::ArrowCursor);
 		m_positionType = mousePosition::noClick;

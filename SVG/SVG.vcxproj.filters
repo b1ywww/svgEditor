@@ -49,6 +49,9 @@
     <ClCompile Include="svgread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="canvastool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="kxsvgview.h">
@@ -69,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="svgread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="canvastool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

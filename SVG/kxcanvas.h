@@ -62,7 +62,6 @@ signals:
 
 private:
 	Shape* getClickShape(QPoint point);
-	bool isInRect(QPointF point, Shape* shape);
 	void setPositionType(QPoint point);
 	void setRightClickMenu();
 

@@ -196,6 +196,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="canvastool.cpp" />
     <ClCompile Include="kxcanvas.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="svgread.cpp" />
@@ -210,6 +211,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="kxcanvas.h" />
+    <ClInclude Include="canvastool.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="transaction.h" />
     <ClInclude Include="svgread.h" />
