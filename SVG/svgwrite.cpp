@@ -130,8 +130,8 @@ void SvgWrite::writeLine(Shape* shape)
 	line.setAttribute("id", 1);
 	line.setAttribute("y2", shape->getPhysicalEnd().y() + m_transfrom.y());
 	line.setAttribute("x2", shape->getPhysicalEnd().x() + m_transfrom.x());
-	line.setAttribute("y1", shape->getPhysicalStar().y() + m_transfrom.y());
-	line.setAttribute("x1", shape->getPhysicalStar().x() + m_transfrom.x());
+	line.setAttribute("y1", shape->getPhysicalStart().y() + m_transfrom.y());
+	line.setAttribute("x1", shape->getPhysicalStart().x() + m_transfrom.x());
 	line.setAttribute("fill-opacity", "null");
 	line.setAttribute("stroke-width", 1.5);
 	line.setAttribute("stroke", QString("#%1").arg((QString::number(shape->getPen().color().rgb(), 16)).mid(2)));
@@ -144,10 +144,10 @@ void SvgWrite::writeLine(Shape* shape)
 void SvgWrite::writeSquare(Shape* shape)
 {
 	QDomElement rect = m_doc.createElement("rect");
-	QPointF posStar = shape->getPhysicalStar() + m_transfrom;
+	QPointF posStar = shape->getPhysicalStart() + m_transfrom;
 	QPointF posEnd = shape->getPhysicalEnd() + m_transfrom;
-	qreal width = qAbs(shape->getPhysicalEnd().x() - shape->getPhysicalStar().x());
-	qreal height = qAbs(shape->getPhysicalEnd().y() - shape->getPhysicalStar().y());
+	qreal width = qAbs(shape->getPhysicalEnd().x() - shape->getPhysicalStart().x());
+	qreal height = qAbs(shape->getPhysicalEnd().y() - shape->getPhysicalStart().y());
 	rect.setAttribute("id", "1");
 	posStar.x() > posEnd.x()? rect.setAttribute("x", posEnd.x()) : rect.setAttribute("x", posStar.x());
 	posStar.y() > posEnd.y() ? rect.setAttribute("y", posEnd.y()) : rect.setAttribute("y", posStar.y());
@@ -192,9 +192,9 @@ void SvgWrite::writePencil(Shape* shape)
 void SvgWrite::writeCircle(Shape* shape)
 {
 	QDomElement circle = m_doc.createElement("ellipse");
-	QPointF pos = shape->getPhysicalStar() + m_transfrom;
-	qreal width = shape->getPhysicalEnd().x() - shape->getPhysicalStar().x();
-	qreal height = shape->getPhysicalEnd().y() - shape->getPhysicalStar().y();
+	QPointF pos = shape->getPhysicalStart() + m_transfrom;
+	qreal width = shape->getPhysicalEnd().x() - shape->getPhysicalStart().x();
+	qreal height = shape->getPhysicalEnd().y() - shape->getPhysicalStart().y();
 	circle.setAttribute("id", "1");
 	circle.setAttribute("cx", pos.x() + width / 2);
 	circle.setAttribute("cy", pos.y() + height / 2);
@@ -240,8 +240,8 @@ void SvgWrite::writeText(Shape* shape)
 	text.setAttribute("text-anchor", "start");
 	text.setAttribute("font-family", "Microsoft YaHei");
 	text.setAttribute("font-size", "20");
-	text.setAttribute("x", shape->getPhysicalStar().x() + m_transfrom.x() + 10);
-	text.setAttribute("y", shape->getPhysicalStar().y() + m_transfrom.y() + 20);
+	text.setAttribute("x", shape->getPhysicalStart().x() + m_transfrom.x() + 10);
+	text.setAttribute("y", shape->getPhysicalStart().y() + m_transfrom.y() + 20);
 	text.setAttribute("fill-opacity", "null");
 	text.setAttribute("stroke-opacity", "null");
 	text.setAttribute("stroke", "#000");

@@ -87,7 +87,7 @@ bool SvgRead::read(QString dir, QList<Shape*>& shapelist)
 Shape* SvgRead::readLine(QXmlStreamAttributes& attributes)
 {
 	Shape* i = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeLine);
-	i->setDrawStar(QPointF(attributes.value("x1").toString().toDouble(), attributes.value("y1").toString().toDouble()) - m_transform);
+	i->setDrawStart(QPointF(attributes.value("x1").toString().toDouble(), attributes.value("y1").toString().toDouble()) - m_transform);
 	i->setDrawEnd(QPointF(attributes.value("x2").toString().toDouble(), attributes.value("y2").toString().toDouble()) - m_transform);
 	i->getPen().setColor(attributes.value("stroke").toString().replace("#", "").toInt(NULL, 16));
 	i->drawPointToPhysicalPoint(0);
@@ -100,7 +100,7 @@ Shape* SvgRead::readSquare(QXmlStreamAttributes& attributes)
 	QPointF star = QPointF(attributes.value("x").toString().toDouble(), attributes.value("y").toString().toDouble());
 	qreal width = attributes.value("width").toString().toDouble();
 	qreal height = attributes.value("height").toString().toDouble();
-	i->setDrawStar(star - m_transform);
+	i->setDrawStart(star - m_transform);
 	i->setDrawEnd(QPointF(star.x() + width, star.y() + height) - m_transform);
 	i->drawPointToPhysicalPoint(0);
 
@@ -144,7 +144,7 @@ Shape* SvgRead::readPencil(QXmlStreamAttributes& attributes)
 		else if (y > bottom)
 			bottom = y;
 	}
-	i->setDrawStar(QPointF(left, top) - m_transform);
+	i->setDrawStart(QPointF(left, top) - m_transform);
 	i->setDrawEnd(QPointF(right, bottom) - m_transform);
 	i->drawPointToPhysicalPoint(0);
 	dynamic_cast<Pencil*>(i)->setDrawPoint(point);
@@ -159,7 +159,7 @@ Shape* SvgRead::readCircle(QXmlStreamAttributes& attributes)
 	qreal width = attributes.value("rx").toString().toDouble();
 	qreal height = attributes.value("ry").toString().toDouble();
 	
-	i->setDrawStar(QPointF(cx - width, cy - height));
+	i->setDrawStart(QPointF(cx - width, cy - height));
 	i->setDrawEnd(QPointF(cx + width, cy + height));
 	i->drawPointToPhysicalPoint(0);
 
@@ -203,7 +203,7 @@ Shape* SvgRead::readHexagon(QXmlStreamAttributes& attributes)
 		else if (y > bottom)
 			bottom = y;
 	}
-	i->setDrawStar(QPointF(left, top) - m_transform);
+	i->setDrawStart(QPointF(left, top) - m_transform);
 	i->setDrawEnd(QPointF(right, bottom) - m_transform);
 	i->drawPointToPhysicalPoint(0);
 	dynamic_cast<Hexagon*>(i)->setVertex(point);
@@ -216,8 +216,8 @@ Shape* SvgRead::readText(QXmlStreamAttributes& attributes, QXmlStreamReader& rea
 	QString text = reader.readElementText();
 	QFontMetrics textLength(QFont("Microsoft YaHei", 20));
 	int length = textLength.width(text);
-	i->setDrawStar(QPointF(attributes.value("x").toString().toDouble(), attributes.value("y").toString().toDouble()) - m_transform);
-	i->setDrawEnd(QPointF(length, 40) + i->getDrawStar());
+	i->setDrawStart(QPointF(attributes.value("x").toString().toDouble(), attributes.value("y").toString().toDouble()) - m_transform);
+	i->setDrawEnd(QPointF(length, 40) + i->getDrawStart());
 	dynamic_cast<TextEdit*>(i)->setText(text);
 
 	return i;

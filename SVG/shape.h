@@ -24,13 +24,13 @@ public:
 
 	virtual void drawShape(QPainter& painter) = 0;
 	virtual void drawClickRect(QPainter& painter);
-	virtual void setDrawStar(QPointF star) = 0;
+	virtual void setDrawStart(QPointF star) = 0;
 	virtual void setDrawEnd(QPointF end) = 0;
 	virtual void setDepth(qreal depth) = 0;
 	virtual void scale(qreal ratioW, qreal ratioH) = 0;
-	virtual QPointF& getPhysicalStar();
+	virtual QPointF& getPhysicalStart();
 	virtual QPointF& getPhysicalEnd();
-	virtual QPointF& getDrawStar();
+	virtual QPointF& getDrawStart();
 	virtual QPointF& getDrawEnd();
 	virtual void copyDate(Shape* shape);
 	virtual void drawPointToPhysicalPoint(qreal ratio);
@@ -54,9 +54,9 @@ public:
 	QBrush& getBrush();
 
 protected:
-	QPointF m_star;      //物理坐标
+	QPointF m_start;      //物理坐标
 	QPointF m_end;
-	QPointF m_drawStar;  //逻辑坐标
+	QPointF m_drawStart;  //逻辑坐标
 	QPointF m_drawEnd;
 	qreal m_depth;
 	QPen m_pen;
@@ -79,7 +79,7 @@ public:
 	~Line();
 
 	void drawShape(QPainter& painter) override;
-	void setDrawStar(QPointF star) override;
+	void setDrawStart(QPointF star) override;
 	void setDrawEnd(QPointF end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal width, qreal height) override;
@@ -105,7 +105,7 @@ public:
 	~Square();
 
 	void drawShape(QPainter& painter) override;
-	void setDrawStar(QPointF star) override;
+	void setDrawStart(QPointF star) override;
 	void setDrawEnd(QPointF end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal width, qreal height) override;
@@ -130,7 +130,7 @@ public:
 	~Pencil();
 
 	void drawShape(QPainter& painter) override;
-	void setDrawStar(QPointF star) override;
+	void setDrawStart(QPointF star) override;
 	void setDrawEnd(QPointF end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal ratioW, qreal ratioH) override;
@@ -169,7 +169,7 @@ public:
 	~Circle();
 
 	void drawShape(QPainter& painter) override;
-	void setDrawStar(QPointF star) override;
+	void setDrawStart(QPointF star) override;
 	void setDrawEnd(QPointF end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal width, qreal height) override;
@@ -194,7 +194,7 @@ public:
 	~Hexagon();
 
 	void drawShape(QPainter& painter) override;
-	void setDrawStar(QPointF star) override;
+	void setDrawStart(QPointF star) override;
 	void setDrawEnd(QPointF end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal width, qreal height) override;
@@ -225,7 +225,7 @@ public:
 	~TextEdit();
 
 	void drawShape(QPainter& painter) override;
-	void setDrawStar(QPointF star) override;
+	void setDrawStart(QPointF star) override;
 	void setDrawEnd(QPointF end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal width, qreal height) override;
@@ -241,12 +241,13 @@ public:
 	void moveLowerRight(QPointF offset) override;
 
 	void setText(QString text);
-	QString getText();
+	const QString getText();
 
 	void copyDate(Shape* shape);
 
 private:
 	QString m_text;
+
 };
 
 class ShapeFactory

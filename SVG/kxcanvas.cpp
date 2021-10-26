@@ -131,7 +131,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 			{
 				m_shapeList.append(tmpShape);
 				m_pCurrentShape = tmpShape;
-				m_pCurrentShape->setDrawStar(transformPoint / (1 + m_offset));
+				m_pCurrentShape->setDrawStart(transformPoint / (1 + m_offset));
 			}
 		}
 
@@ -149,7 +149,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 
 			if (nullptr == m_pClickShape)
 			{
-				m_pClickRect->setDrawStar(transformPoint);
+				m_pClickRect->setDrawStart(transformPoint);
 			}
 
 			if (nullptr == m_pClickShape || (QApplication::keyboardModifiers() != Qt::ControlModifier && m_clickShapeList.size() < 2))
@@ -173,6 +173,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 		{
 			isMove = false;
 		}
+
 		m_lastPoint = transformPoint;
 
 		if (!m_clickShapeList.isEmpty())
@@ -195,7 +196,7 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 		m_pCurrentShape->scale(m_offset, m_offset); //更新drawPoint坐标
 	}
 
-	if (!m_pClickRect->getDrawStar().isNull())
+	if (!m_pClickRect->getDrawStart().isNull())
 	{
 		m_pClickRect->setDrawEnd(transformPoint);
 	}
@@ -244,7 +245,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 	if(!m_pClickRect->getDrawEnd().isNull())
 		shapeInClickRect();
 
-	m_pClickRect->setDrawStar(QPoint(0, 0));
+	m_pClickRect->setDrawStart(QPoint(0, 0));
 	m_pClickRect->setDrawEnd(QPoint(0, 0));
 
 	if (!m_clickShapeList.isEmpty())
@@ -260,6 +261,20 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 	isMove = false;
 	m_pCurrentShape = nullptr;
 	update();
+}
+
+void KxSvgCanvas::mouseDoubleClickEvent(QMouseEvent* event)
+{
+	if (m_clickShapeList.size() == 1 && m_clickShapeList.first()->getShapeType() == ShapeType::TypeText)
+	{
+		Shape* shapeText = m_clickShapeList.first();
+		qDebug() << shapeText->getPhysicalStart().toPoint();
+		m_pTextEditWidget->move(shapeText->getPhysicalStart().toPoint() + m_transfrom);
+		m_pTextEditWidget->resize(shapeText->getDrawEnd().toPoint().x() - m_clickShapeList.first()->getDrawStart().toPoint().x(), 40);
+		m_pTextEditWidget->setText(dynamic_cast<TextEdit*>(shapeText)->getText());
+		m_pTextEditWidget->setFocus();
+		m_pTextEditWidget->show();
+	}
 }
 
 void KxSvgCanvas::setCurrentType(ShapeType type)
@@ -362,17 +377,40 @@ void KxSvgCanvas::changeText(QString text)
 	QFontMetrics textLength(m_pTextEditWidget->font());
 	int length = textLength.width(text);
 	length < 10 ? m_pTextEditWidget->resize(10, 40) : m_pTextEditWidget->resize(length + 10, 40); //加个10是为了防止左边字体被遮住一块
+
 	m_text = text;
+	if (m_clickShapeList.size() == 1)
+	{
+		length < 10 ? m_clickShapeList.first()->setDrawEnd(m_clickShapeList.first()->getDrawStart() + QPointF(10, 40))
+			: m_clickShapeList.first()->setDrawEnd(m_clickShapeList.first()->getDrawStart() + QPointF(length, 40));
+		update();
+	}
 }
 
 void KxSvgCanvas::setText()
 {
 	m_pTextEditWidget->hide();
+
+	if (m_clickShapeList.size() == 1 && m_clickShapeList.first()->getShapeType() == ShapeType::TypeText)
+	{
+		Shape* shape = m_clickShapeList.first();
+		if (m_text.isEmpty())
+		{
+			m_clickShapeList.removeFirst();
+			m_shapeList.removeOne(shape);
+			delete shape;
+			return;
+		}
+
+		dynamic_cast<TextEdit*>(shape)->setText(m_text);
+		m_text = "";
+	}
+
 	if (m_text.isEmpty())
 		return;
 
 	Shape* i = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeText);
-	i->setDrawStar(m_pTextEditWidget->pos() - m_transfrom);
+	i->setDrawStart(m_pTextEditWidget->pos() - m_transfrom);
 	i->setDrawEnd(m_pTextEditWidget->pos() + QPointF(m_pTextEditWidget->width(), m_pTextEditWidget->height()) - m_transfrom);
 	dynamic_cast<TextEdit*>(i)->setText(m_text);
 	i->drawPointToPhysicalPoint(m_offset);
@@ -535,9 +573,9 @@ void KxSvgCanvas::shapeInClickRect()
 {
 	for (Shape* i : m_shapeList)
 	{
-		QPointF topLeft = i->getDrawStar();
-		QPointF bottomLeft = QPointF(i->getDrawStar().x(), i->getDrawEnd().y());
-		QPointF topRight = QPointF(i->getDrawEnd().x(), i->getDrawStar().y());
+		QPointF topLeft = i->getDrawStart();
+		QPointF bottomLeft = QPointF(i->getDrawStart().x(), i->getDrawEnd().y());
+		QPointF topRight = QPointF(i->getDrawEnd().x(), i->getDrawStart().y());
 		QPointF bottomRight = i->getDrawEnd();
 		if (isInRect(topLeft, m_pClickRect)
 			|| isInRect(bottomLeft, m_pClickRect)
@@ -637,11 +675,11 @@ bool KxSvgCanvas::isInRect(QPointF point, Shape* shape)
 	if (shape == nullptr)
 		return nullptr;
 
-	qreal x = shape->getDrawEnd().x() - shape->getDrawStar().x() + 0.1; /*加0.1是为了防止出现 分母为0的情况，因为点是为整数的，所以加上0.1 不影响x的符号*/
-	qreal y = shape->getDrawEnd().y() - shape->getDrawStar().y() + 0.1;
+	qreal x = shape->getDrawEnd().x() - shape->getDrawStart().x() + 0.1; /*加0.1是为了防止出现 分母为0的无法选中的情况，因为点是为整数的，所以加上0.1 不影响x的符号*/
+	qreal y = shape->getDrawEnd().y() - shape->getDrawStart().y() + 0.1; /*上面是第一版的注释后来把坐标改成了QPointF,理应是会有bug的但是没测出来就放这了*/
 
-	qreal point_x = point.x() - shape->getDrawStar().x();
-	qreal point_y = point.y() - shape->getDrawStar().y();
+	qreal point_x = point.x() - shape->getDrawStart().x();
+	qreal point_y = point.y() - shape->getDrawStart().y();
 
 	if (point_x / x <= 1 &&
 		point_x / x >= 0 &&
@@ -663,11 +701,11 @@ void KxSvgCanvas::setPositionType(QPoint point)
 		return;
 	}
 
-	if (qAbs(point.x() - m_pClickShape->getDrawStar().x()) < 5)
+	if (qAbs(point.x() - m_pClickShape->getDrawStart().x()) < 5)
 	{
 		flag = flag ^ 1;
 	}
-	if (qAbs(point.y() - m_pClickShape->getDrawStar().y()) < 5)
+	if (qAbs(point.y() - m_pClickShape->getDrawStart().y()) < 5)
 	{
 		flag = flag ^ 2;
 	}
@@ -692,7 +730,7 @@ void KxSvgCanvas::setPositionType(QPoint point)
 	}
 
 	/*下面这么写的原因是对角线存在两种情况，加个if else 来区分，没有其他好点的办法QAQ*/
-	if ((m_pClickShape->getDrawEnd().x() - m_pClickShape->getDrawStar().x()) * (m_pClickShape->getDrawEnd().y() - m_pClickShape->getDrawStar().y()) >= 0)
+	if ((m_pClickShape->getDrawEnd().x() - m_pClickShape->getDrawStart().x()) * (m_pClickShape->getDrawEnd().y() - m_pClickShape->getDrawStart().y()) >= 0)
 	{
 		switch (flag)
 		{
