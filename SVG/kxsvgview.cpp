@@ -227,13 +227,15 @@ void SVGMainWIndow::setPenColor()
 		m_pSvgCanvas->setPenColor(mRgb);
 }
 
-void SVGMainWIndow::setShapePane(QColor shapeRgb, QColor penRgb)
+void SVGMainWIndow::setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth)
 {
 	QRgb rgb = qRgb(shapeRgb.red(), shapeRgb.green(), shapeRgb.blue());
 	setShapeChooseColor(rgb);
 
 	rgb = qRgb(penRgb.red(), penRgb.green(), penRgb.blue());
 	setPenChooseColor(rgb);
+
+	m_pStrokeWidthLineEdit->setText(QString("%1").arg(penWidth));
 }
 
 void SVGMainWIndow::paneIndex(int index /*= 0*/)
@@ -564,10 +566,41 @@ void SVGMainWIndow::setSettingSquare(QString x, QString y)
 
 	connect(pPenColorChoose, SIGNAL(pressed()), this, SLOT(setPenColor()));
 
+	QWidget* pEditStrokeWidth = new QWidget(m_pSettingSquareWidget);
+	pEditStrokeWidth->setObjectName(QStringLiteral("widget_4"));
+	pEditStrokeWidth->setMinimumSize(QSize(60, 60));
+	pEditStrokeWidth->setMaximumSize(QSize(60, 60));
+	pEditStrokeWidth->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
+	QLabel* pStrokeWidthLabel = new QLabel(pEditStrokeWidth);
+	pStrokeWidthLabel->setObjectName(QStringLiteral("widthLabel"));
+	pStrokeWidthLabel->setGeometry(QRect(0, 5, 60, 12));
+	pStrokeWidthLabel->setMinimumSize(QSize(60, 0));
+	pStrokeWidthLabel->setMaximumSize(QSize(60, 16777215));
+	pStrokeWidthLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
+	pStrokeWidthLabel->setAlignment(Qt::AlignCenter);
+	pStrokeWidthLabel->setText("线条宽度");
+	//设置输入框
+	m_pStrokeWidthLineEdit = new QLineEdit(pEditStrokeWidth);
+	m_pStrokeWidthLineEdit->setGeometry(QRect(0, 20, 60, 40));
+	m_pStrokeWidthLineEdit->setText("500");
+	m_pStrokeWidthLineEdit->setAlignment(Qt::AlignCenter);
+	m_pStrokeWidthLineEdit->setStyleSheet(QStringLiteral("color:rgb(79, 128, 255);border-width:0;border-style:outset"));
+	m_pStrokeWidthLineEdit->setFont(QFont("宋体", 18, QFont::Bold));
+	m_pStrokeWidthLineEdit->setMaxLength(4);
+	m_pStrokeWidthLineEdit->setFocusPolicy(Qt::ClickFocus);
+	//限制只能输入数字
+	QRegExp regx("[0-9].*[0-9]*");
+	QValidator* validatorWidth = new QRegExpValidator(regx, pStrokeWidthLabel);
+	m_pWidthLineEdit->setValidator(validatorWidth);
+
+	connect(m_pStrokeWidthLineEdit, SIGNAL(textChanged(QString)), m_pSvgCanvas, SLOT(setStrokeWidth(QString)));
+	connect(m_pStrokeWidthLineEdit, SIGNAL(editingFinished()), m_pSvgCanvas, SLOT(setStroke()));
+
 	m_pSettingSquareLayout->addWidget(pEditShapeColor, 0, 1, 1, 1);
 	m_pSettingSquareLayout->addWidget(pEditPenColor, 0, 2, 1, 1);
+	m_pSettingSquareLayout->addWidget(pEditStrokeWidth, 1, 1, 1, 1);
 
-	connect(m_pSvgCanvas, SIGNAL(setShapePane(QColor, QColor)), this, SLOT(setShapePane(QColor, QColor)));
+	connect(m_pSvgCanvas, SIGNAL(setShapePane(QColor, QColor, qreal)), this, SLOT(setShapePane(QColor, QColor, qreal)));
 	connect(m_pSvgCanvas, SIGNAL(paneIndex(int)), this, SLOT(paneIndex(int)));
 }
 

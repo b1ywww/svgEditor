@@ -203,7 +203,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 
 	if (!m_clickShapeList.isEmpty())
 	{
-		emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color());
+		emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color(), m_clickShapeList[0]->getPen().widthF());
 		emit paneIndex(1);
 	}
 	else {
@@ -289,7 +289,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 
 	if (!m_clickShapeList.isEmpty())
 	{
-		emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color());
+		emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color(), m_clickShapeList[0]->getPen().widthF());
 		emit paneIndex(1);
 	}
 	else {
@@ -464,6 +464,23 @@ void KxSvgCanvas::setText()
 	m_pClickShape = i;
 	m_text = "";
 	m_pTextEditWidget->clear();
+}
+
+void KxSvgCanvas::setStrokeWidth(QString width)
+{
+	m_penWidth = width.toDouble();
+}
+
+void KxSvgCanvas::setStroke()
+{
+	if (m_clickShapeList.isEmpty())
+		return;
+
+	for (auto i : m_clickShapeList)
+	{
+		i->getPen().setWidthF(m_penWidth);
+	}
+	update();
 }
 
 void KxSvgCanvas::shear()

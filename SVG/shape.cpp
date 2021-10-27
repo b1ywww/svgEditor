@@ -21,10 +21,10 @@ void Shape::drawClickRect(QPainter& painter)
 	QPainterPath path;
 
 	painter.setPen(pen);
-	path.addRect(m_drawStart.x() + m_offsetStartX
-		, m_drawStart.y() + m_offsetStartY
-		, m_drawEnd.x() - m_drawStart.x() + m_offsetWidth
-		, m_drawEnd.y() - m_drawStart.y() + m_offsetHeight);
+	path.addRect(m_drawStart.x() + m_offsetStartX + 0.5 * m_pen.widthF() * (m_offsetStartX/qAbs(m_offsetStartX))
+		, m_drawStart.y() + m_offsetStartY + 0.5 * m_pen.widthF() * (m_offsetStartY / qAbs(m_offsetStartY))
+		, m_drawEnd.x() - m_drawStart.x() + m_offsetWidth + m_pen.widthF() * (m_offsetWidth / qAbs(m_offsetWidth))
+		, m_drawEnd.y() - m_drawStart.y() + m_offsetHeight + m_pen.widthF() * (m_offsetHeight / qAbs(m_offsetHeight)));
 
 	painter.drawPath(path);
 	painter.setPen(Qt::NoPen);

@@ -47,6 +47,9 @@ public slots:
 	void changeText(QString);
 	void setText();
 
+	void setStrokeWidth(QString width);
+	void setStroke();
+
 	void shear();
 	void copy();
 	void paste();
@@ -57,7 +60,7 @@ public slots:
 	void shapeToBottom();
 
 signals:
-	void setShapePane(QColor shapeRgb, QColor penRgb);
+	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth);
 	void paneIndex(int);
 
 private:
@@ -78,6 +81,8 @@ private:
 	Shape* m_pClickShape = nullptr;			//点击对象
 	Shape* m_pClickRect = nullptr;			//拖拉的选择框
 	qreal m_offset = 0.0;					//放大缩小的比率
+	qreal m_penWidth = 1.0;					//线条宽度
+	Qt::PenStyle m_penStyle = Qt::SolidLine;//线条样式
 	QRgb m_rgb;
 	QString m_text;							//文字控件的文字值
 	bool isMove = false;

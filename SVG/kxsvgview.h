@@ -55,7 +55,7 @@ public slots:
 	void setCanvasColor();
 	void setShapeColor();
 	void setPenColor();
-	void setShapePane(QColor shapeRgb, QColor penRgb);
+	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth);
 	void paneIndex(int index = 0);
 
 private:
@@ -87,6 +87,7 @@ private:
 
 	QLineEdit* m_pWidthLineEdit = nullptr;		 //设置面板的编辑工具
 	QLineEdit* m_pHeightLineEdit = nullptr;
+	QLineEdit* m_pStrokeWidthLineEdit = nullptr;
 	QPushButton* m_pCanvasColorChoose = nullptr;
 	QPushButton* m_pShapeColorChoose = nullptr;
 	QPushButton* m_pPenColorChoose = nullptr;
