@@ -324,7 +324,7 @@ void KxSvgCanvas::setCurrentType(ShapeType type)
 
 void KxSvgCanvas::setCanvasSize()
 {
-	setGeometry(QRect(0, 0, m_canvasWidth, m_canvasHeight));
+	resize(m_canvasWidth, m_canvasHeight);
 	m_transfrom.setX(m_canvasWidth / 2);
 	m_transfrom.setY(m_canvasHeight / 2);
 }
