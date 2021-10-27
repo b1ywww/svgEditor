@@ -910,6 +910,8 @@ void TextEdit::scale(qreal width, qreal height)
 		m_fontSize--;
 		textLength;
 	}
+
+	drawPointToPhysicalPoint(width);
 }
 
 void TextEdit::move(QPointF offset)
@@ -968,6 +970,11 @@ void TextEdit::setText(QString text)
 const QString TextEdit::getText()
 {
 	return m_text;
+}
+
+const int TextEdit::getFontSize()
+{
+	return m_fontSize;
 }
 
 void TextEdit::copyDate(Shape* shape)

@@ -307,10 +307,11 @@ void KxSvgCanvas::mouseDoubleClickEvent(QMouseEvent* event)
 	if (m_clickShapeList.size() == 1 && m_clickShapeList.first()->getShapeType() == ShapeType::TypeText)
 	{
 		Shape* shapeText = m_clickShapeList.first();
-		qDebug() << shapeText->getPhysicalStart().toPoint();
-		m_pTextEditWidget->move(shapeText->getPhysicalStart().toPoint() + m_transfrom);
-		m_pTextEditWidget->resize(shapeText->getDrawEnd().toPoint().x() - m_clickShapeList.first()->getDrawStart().toPoint().x(), 40);
-		m_pTextEditWidget->setText(dynamic_cast<TextEdit*>(shapeText)->getText());
+		m_pTextEditWidget->move(shapeText->getDrawStart().toPoint() + m_transfrom);
+		m_pTextEditWidget->resize(shapeText->getDrawEnd().toPoint().x() - m_clickShapeList.first()->getDrawStart().toPoint().x() + 10, m_clickShapeList.first()->getDrawEnd().y() - m_clickShapeList.first()->getDrawStart().y());
+		m_text = dynamic_cast<TextEdit*>(shapeText)->getText();
+		m_pTextEditWidget->setText(m_text);
+		m_pTextEditWidget->setFont(QFont("Microsoft YaHei", dynamic_cast<TextEdit*>(shapeText)->getFontSize()));
 		m_pTextEditWidget->setFocus();
 		m_pTextEditWidget->show();
 	}
@@ -420,14 +421,20 @@ void KxSvgCanvas::changeText(QString text)
 	m_text = text;
 	if (m_clickShapeList.size() == 1)
 	{
-		length < 10 ? m_clickShapeList.first()->setDrawEnd(m_clickShapeList.first()->getDrawStart() + QPointF(10, 40))
-			: m_clickShapeList.first()->setDrawEnd(m_clickShapeList.first()->getDrawStart() + QPointF(length, 40));
+		length < 10 ? m_clickShapeList.first()->getDrawEnd().setX(m_clickShapeList.first()->getDrawStart().x() + 10)
+			: m_clickShapeList.first()->getDrawEnd().setX(m_clickShapeList.first()->getDrawStart().x() + length);
+		m_clickShapeList.first()->drawPointToPhysicalPoint(m_offset);
+
+		length < 10 ? m_pTextEditWidget->resize(10, m_clickShapeList.first()->getDrawEnd().y() - m_clickShapeList.first()->getDrawStart().y()) : m_pTextEditWidget->resize(length + 10, m_clickShapeList.first()->getDrawEnd().y() - m_clickShapeList.first()->getDrawStart().y());
 		update();
 	}
 }
 
 void KxSvgCanvas::setText()
 {
+	if (m_pTextEditWidget->isHidden())
+		return;
+
 	m_pTextEditWidget->hide();
 
 	if (m_clickShapeList.size() == 1 && m_clickShapeList.first()->getShapeType() == ShapeType::TypeText)
@@ -592,6 +599,7 @@ void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 
 void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 {
+	setFocus();
 	QPoint transfromOffset;
 	if (event->delta() > 0)
 	{

@@ -242,6 +242,7 @@ public:
 
 	void setText(QString text);
 	const QString getText();
+	const int getFontSize();
 
 	void copyDate(Shape* shape);
 
