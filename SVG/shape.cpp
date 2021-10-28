@@ -930,15 +930,12 @@ void TextEdit::move(QPointF offset)
 	m_drawStart = m_drawStart + offset;
 	m_drawEnd = m_drawEnd + offset;
 
-	for (int i = 0; i < m_path.elementCount(); i++)
-	{
-		m_path.setElementPositionAt(i, m_path.elementAt(i).x + offset.x(), m_path.elementAt(i).y + offset.y());
-	}
+	m_path.translate(offset);
 }
 
 void TextEdit::moveTop(QPointF offset)
 {
-	//m_drawStar.setY(m_drawStar.y() + offset.y());
+	m_drawStart.setY(m_drawStart.y() + offset.y());
 }
 
 void TextEdit::moveBottom(QPointF offset)
