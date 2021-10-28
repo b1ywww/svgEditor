@@ -133,10 +133,28 @@ void SvgWrite::writeLine(Shape* shape)
 	line.setAttribute("y1", shape->getPhysicalStart().y() + m_transfrom.y());
 	line.setAttribute("x1", shape->getPhysicalStart().x() + m_transfrom.x());
 	line.setAttribute("fill-opacity", "null");
-	line.setAttribute("stroke-width", 1.5);
 	line.setAttribute("stroke", QString("#%1").arg((QString::number(shape->getPen().color().rgb(), 16)).mid(2)));
 	line.setAttribute("fill", "none");
 	line.setAttribute("type", "line");
+	line.setAttribute("stroke-width", shape->getPen().widthF());
+
+	switch (shape->getPen().style())
+	{
+	case Qt::SolidLine:
+		line.setAttribute("stroke-dasharray", "null");
+		break;
+	case Qt::DotLine:
+		line.setAttribute("stroke-dasharray", "2,2");
+		break;
+	case Qt::DashDotLine:
+		line.setAttribute("stroke-dasharray", "5,2,2,2");
+		break;
+	case Qt::DashDotDotLine:
+		line.setAttribute("stroke-dasharray", "5,2,2,2,2,2");
+		break;
+	default:
+		break;
+	}
 
 	m_shapeG.appendChild(line);
 }
@@ -155,11 +173,28 @@ void SvgWrite::writeSquare(Shape* shape)
 	rect.setAttribute("height", height);
 	rect.setAttribute("fill-opacity", "null");
 	rect.setAttribute("stroke-opacity", "null");
-	rect.setAttribute("stroke-width", "1.5");
 	rect.setAttribute("stroke", QString("#%1").arg((QString::number(shape->getPen().color().rgb(), 16)).mid(2)));
 	rect.setAttribute("fill", QString("#%1").arg((QString::number(shape->getBrush().color().rgb(), 16)).mid(2)));
 	rect.setAttribute("type", "rect");
+	rect.setAttribute("stroke-width", shape->getPen().widthF());
 
+	switch (shape->getPen().style())
+	{
+	case Qt::SolidLine:
+		rect.setAttribute("stroke-dasharray", "null");
+		break;
+	case Qt::DotLine:
+		rect.setAttribute("stroke-dasharray", "2,2");
+		break;
+	case Qt::DashDotLine:
+		rect.setAttribute("stroke-dasharray", "5,2,2,2");
+		break;
+	case Qt::DashDotDotLine:
+		rect.setAttribute("stroke-dasharray", "5,2,2,2,2,2");
+		break;
+	default:
+		break;
+	}
 	m_shapeG.appendChild(rect);
 }
 
@@ -181,10 +216,28 @@ void SvgWrite::writePencil(Shape* shape)
 	pencil.setAttribute("d", d);
 	pencil.setAttribute("fill-opacity", "null");
 	pencil.setAttribute("stroke-opacity", "null");
-	pencil.setAttribute("stroke-width", "1.5");
 	pencil.setAttribute("stroke", QString("#%1").arg((QString::number(shape->getPen().color().rgb(), 16)).mid(2)));
 	pencil.setAttribute("fill", "none");
 	pencil.setAttribute("type", "pencil");
+	pencil.setAttribute("stroke-width", shape->getPen().widthF());
+
+	switch (shape->getPen().style())
+	{
+	case Qt::SolidLine:
+		pencil.setAttribute("stroke-dasharray", "null");
+		break;
+	case Qt::DotLine:
+		pencil.setAttribute("stroke-dasharray", "2,2");
+		break;
+	case Qt::DashDotLine:
+		pencil.setAttribute("stroke-dasharray", "5,2,2,2");
+		break;
+	case Qt::DashDotDotLine:
+		pencil.setAttribute("stroke-dasharray", "5,2,2,2,2,2");
+		break;
+	default:
+		break;
+	}
 
 	m_shapeG.appendChild(pencil);
 }
@@ -202,10 +255,29 @@ void SvgWrite::writeCircle(Shape* shape)
 	circle.setAttribute("ry", qAbs(height / 2));
 	circle.setAttribute("fill-opacity", "null");
 	circle.setAttribute("stroke-opacity", "null");
-	circle.setAttribute("stroke-width", "1.5");
 	circle.setAttribute("stroke", QString("#%1").arg((QString::number(shape->getPen().color().rgb(), 16)).mid(2)));
 	circle.setAttribute("fill", QString("#%1").arg((QString::number(shape->getBrush().color().rgb(), 16)).mid(2)));
 	circle.setAttribute("type", "circle");
+
+	circle.setAttribute("stroke-width", shape->getPen().widthF());
+
+	switch (shape->getPen().style())
+	{
+	case Qt::SolidLine:
+		circle.setAttribute("stroke-dasharray", "null");
+		break;
+	case Qt::DotLine:
+		circle.setAttribute("stroke-dasharray", "2,2");
+		break;
+	case Qt::DashDotLine:
+		circle.setAttribute("stroke-dasharray", "5,2,2,2");
+		break;
+	case Qt::DashDotDotLine:
+		circle.setAttribute("stroke-dasharray", "5,2,2,2,2,2");
+		break;
+	default:
+		break;
+	}
 
 	m_shapeG.appendChild(circle);
 }
@@ -224,10 +296,28 @@ void SvgWrite::writeHexagon(Shape* shape)
 	hexagon.setAttribute("d", d);
 	hexagon.setAttribute("fill-opacity", "null");
 	hexagon.setAttribute("stroke-opacity", "null");
-	hexagon.setAttribute("stroke-width", "1.5");
 	hexagon.setAttribute("stroke", QString("#%1").arg((QString::number(shape->getPen().color().rgb(), 16)).mid(2)));
 	hexagon.setAttribute("fill", QString("#%1").arg((QString::number(shape->getBrush().color().rgb(), 16)).mid(2)));
 	hexagon.setAttribute("type", "hexagon");
+	hexagon.setAttribute("stroke-width", shape->getPen().widthF());
+
+	switch (shape->getPen().style())
+	{
+	case Qt::SolidLine:
+		hexagon.setAttribute("stroke-dasharray", "null");
+		break;
+	case Qt::DotLine:
+		hexagon.setAttribute("stroke-dasharray", "2,2");
+		break;
+	case Qt::DashDotLine:
+		hexagon.setAttribute("stroke-dasharray", "5,2,2,2");
+		break;
+	case Qt::DashDotDotLine:
+		hexagon.setAttribute("stroke-dasharray", "5,2,2,2,2,2");
+		break;
+	default:
+		break;
+	}
 
 	m_shapeG.appendChild(hexagon);
 }
@@ -247,6 +337,24 @@ void SvgWrite::writeText(Shape* shape)
 	text.setAttribute("stroke", "#000");
 	text.setAttribute("fill", "#000000");
 	text.setAttribute("type", "text");
+
+	switch (shape->getPen().style())
+	{
+	case Qt::SolidLine:
+		text.setAttribute("stroke-dasharray", "null");
+		break;
+	case Qt::DotLine:
+		text.setAttribute("stroke-dasharray", "2,2");
+		break;
+	case Qt::DashDotLine:
+		text.setAttribute("stroke-dasharray", "5,2,2,2");
+		break;
+	case Qt::DashDotDotLine:
+		text.setAttribute("stroke-dasharray", "5,2,2,2,2,2");
+		break;
+	default:
+		break;
+	}
 
 	QDomNode node = m_doc.createTextNode(dynamic_cast<TextEdit*>(shape)->getText());
 	text.appendChild(node);

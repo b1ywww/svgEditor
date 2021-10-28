@@ -89,8 +89,20 @@ Shape* SvgRead::readLine(QXmlStreamAttributes& attributes)
 	Shape* i = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeLine);
 	i->setDrawStart(QPointF(attributes.value("x1").toString().toDouble(), attributes.value("y1").toString().toDouble()) - m_transform);
 	i->setDrawEnd(QPointF(attributes.value("x2").toString().toDouble(), attributes.value("y2").toString().toDouble()) - m_transform);
-	i->getPen().setColor(attributes.value("stroke").toString().replace("#", "").toInt(NULL, 16));
 	i->drawPointToPhysicalPoint(0);
+	i->getPen().setColor(attributes.value("stroke").toString().replace("#", "").toInt(NULL, 16));
+	i->getPen().setWidthF(attributes.value("stroke-width").toString().toDouble());
+
+	QString strokeStyle = attributes.value("stroke-dasharray").toString();
+	if (strokeStyle == "null")
+		i->getPen().setStyle(Qt::SolidLine);
+	else if (strokeStyle == "2,2")
+		i->getPen().setStyle(Qt::DotLine);
+	else if (strokeStyle == "5,2,2,2")
+		i->getPen().setStyle(Qt::DashDotLine);
+	else if (strokeStyle == "5,2,2,2,2,2")
+		i->getPen().setStyle(Qt::DashDotDotLine);
+
 	return i;
 }
 
@@ -103,7 +115,19 @@ Shape* SvgRead::readSquare(QXmlStreamAttributes& attributes)
 	i->setDrawStart(star - m_transform);
 	i->setDrawEnd(QPointF(star.x() + width, star.y() + height) - m_transform);
 	i->drawPointToPhysicalPoint(0);
+	i->getBrush().setColor(attributes.value("fill").toString().replace("#", "").toInt(NULL, 16));
+	i->getPen().setColor(attributes.value("stroke").toString().replace("#", "").toInt(NULL, 16));
+	i->getPen().setWidthF(attributes.value("stroke-width").toString().toDouble());
 
+	QString strokeStyle = attributes.value("stroke-dasharray").toString();
+	if (strokeStyle == "null")
+		i->getPen().setStyle(Qt::SolidLine);
+	else if (strokeStyle == "2,2")
+		i->getPen().setStyle(Qt::DotLine);
+	else if (strokeStyle == "5,2,2,2")
+		i->getPen().setStyle(Qt::DashDotLine);
+	else if (strokeStyle == "5,2,2,2,2,2")
+		i->getPen().setStyle(Qt::DashDotDotLine);
 	return i;
 }
 
@@ -148,6 +172,19 @@ Shape* SvgRead::readPencil(QXmlStreamAttributes& attributes)
 	i->setDrawEnd(QPointF(right, bottom) - m_transform);
 	i->drawPointToPhysicalPoint(0);
 	dynamic_cast<Pencil*>(i)->setDrawPoint(point);
+
+	i->getPen().setColor(attributes.value("stroke").toString().replace("#", "").toInt(NULL, 16));
+	i->getPen().setWidthF(attributes.value("stroke-width").toString().toDouble());
+
+	QString strokeStyle = attributes.value("stroke-dasharray").toString();
+	if (strokeStyle == "null")
+		i->getPen().setStyle(Qt::SolidLine);
+	else if (strokeStyle == "2,2")
+		i->getPen().setStyle(Qt::DotLine);
+	else if (strokeStyle == "5,2,2,2")
+		i->getPen().setStyle(Qt::DashDotLine);
+	else if (strokeStyle == "5,2,2,2,2,2")
+		i->getPen().setStyle(Qt::DashDotDotLine);
 	return i;
 }
 
@@ -163,6 +200,19 @@ Shape* SvgRead::readCircle(QXmlStreamAttributes& attributes)
 	i->setDrawEnd(QPointF(cx + width, cy + height));
 	i->drawPointToPhysicalPoint(0);
 
+	i->getBrush().setColor(attributes.value("fill").toString().replace("#", "").toInt(NULL, 16));
+	i->getPen().setColor(attributes.value("stroke").toString().replace("#", "").toInt(NULL, 16));
+	i->getPen().setWidthF(attributes.value("stroke-width").toString().toDouble());
+
+	QString strokeStyle = attributes.value("stroke-dasharray").toString();
+	if (strokeStyle == "null")
+		i->getPen().setStyle(Qt::SolidLine);
+	else if (strokeStyle == "2,2")
+		i->getPen().setStyle(Qt::DotLine);
+	else if (strokeStyle == "5,2,2,2")
+		i->getPen().setStyle(Qt::DashDotLine);
+	else if (strokeStyle == "5,2,2,2,2,2")
+		i->getPen().setStyle(Qt::DashDotDotLine);
 	return i;
 }
 
@@ -207,6 +257,21 @@ Shape* SvgRead::readHexagon(QXmlStreamAttributes& attributes)
 	i->setDrawEnd(QPointF(right, bottom) - m_transform);
 	i->drawPointToPhysicalPoint(0);
 	dynamic_cast<Hexagon*>(i)->setVertex(point);
+
+	i->getBrush().setColor(attributes.value("fill").toString().replace("#", "").toInt(NULL, 16));
+	i->getPen().setColor(attributes.value("stroke").toString().replace("#", "").toInt(NULL, 16));
+	i->getPen().setWidthF(attributes.value("stroke-width").toString().toDouble());
+
+	QString strokeStyle = attributes.value("stroke-dasharray").toString();
+	if (strokeStyle == "null")
+		i->getPen().setStyle(Qt::SolidLine);
+	else if (strokeStyle == "2,2")
+		i->getPen().setStyle(Qt::DotLine);
+	else if (strokeStyle == "5,2,2,2")
+		i->getPen().setStyle(Qt::DashDotLine);
+	else if (strokeStyle == "5,2,2,2,2,2")
+		i->getPen().setStyle(Qt::DashDotDotLine);
+
 	return i;
 }
 
