@@ -716,5 +716,22 @@ void KxDropDownButton::getPenStyle(int index)
 void KxDropDownButton::setPen(Qt::PenStyle style)
 {
 	m_pen.setStyle(style);
+	switch (style)
+	{
+	case Qt::SolidLine:
+		setCurrentIndex(0);
+		break;
+	case Qt::DotLine:
+		setCurrentIndex(1);
+		break;
+	case Qt::DashDotLine:
+		setCurrentIndex(2);
+		break;
+	case Qt::DashDotDotLine:
+		setCurrentIndex(3);
+		break;
+	default:
+		break;
+	}
 	update();
 }
