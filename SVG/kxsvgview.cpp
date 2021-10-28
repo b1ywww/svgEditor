@@ -81,8 +81,6 @@ void KxLeftToolBarBtn::paintEvent(QPaintEvent* event)
 	{
 		m_pSvg->render(&pain, QRect(0, 0, 32, 32));
 	}
-
-	
 }
 
 void KxLeftToolBarBtn::setImageDir()
