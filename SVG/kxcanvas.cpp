@@ -644,7 +644,7 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 	if (event->delta() > 0)
 	{
 		m_offset += 0.05;
-		setGeometry(0, 0, m_canvasWidth * (1 + m_offset), m_canvasHeight * (1 + m_offset));
+		resize(m_canvasWidth * (1 + m_offset), m_canvasHeight * (1 + m_offset));
 		transfromOffset = QPoint((m_canvasWidth * (1 + m_offset)) / 2, (m_canvasHeight * (1 + m_offset)) / 2);
 		for each (Shape * i in m_shapeList)
 		{
@@ -659,7 +659,7 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 		m_offset -= 0.05;
 		if (qAbs(m_offset + 1.0) < 0.1)
 			m_offset = -0.95;
-		setGeometry(0, 0, m_canvasWidth * (1 + m_offset), m_canvasWidth * (1 + m_offset));
+		resize(m_canvasWidth * (1 + m_offset), m_canvasHeight * (1 + m_offset));
 		transfromOffset = QPoint((m_canvasWidth * (1 + m_offset)) / 2, (m_canvasHeight * (1 + m_offset)) / 2);
 		for each (Shape * i in m_shapeList)
 		{
