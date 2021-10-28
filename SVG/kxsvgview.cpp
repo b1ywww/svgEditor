@@ -145,6 +145,8 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	m_pMainHoriLayout->addWidget(m_pCanvasScroll);
 
 	m_pCanvasScroll->setWidget(m_pSvgCanvas);
+
+	connect(m_pSvgCanvas, SIGNAL(setCanvasChooseSize(int, int)), this, SLOT(setCanvasChooseSize(int, int)));
 	//设置右边的设置面板
 	setSettingPane();
 
@@ -252,6 +254,12 @@ void SVGMainWIndow::setCanvasChooseColor(QRgb rgb)
 	QString s = QString("background: #%1;border:none").arg(QString::number(rgb, 16));
 	if (m_pCanvasColorChoose)
 		m_pCanvasColorChoose->setStyleSheet(s);
+}
+
+void SVGMainWIndow::setCanvasChooseSize(int w, int h)
+{
+	m_pWidthLineEdit->setText(QString("%1").arg(w));
+	m_pHeightLineEdit->setText(QString("%1").arg(h));
 }
 
 void SVGMainWIndow::setShapeChooseColor(QRgb rgb)

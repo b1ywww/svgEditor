@@ -51,10 +51,10 @@ void SvgWrite::writeBackGround(int canvasW, int canvasH, QRgb rgb)
 	QDomElement rect = m_doc.createElement("rect");
 	rect.setAttribute("fill", QString("#%1").arg((QString::number(rgb, 16)).mid(2)));
 	rect.setAttribute("id", "canvas_background");
-	rect.setAttribute("height", 502);
-	rect.setAttribute("width", 502);
-	rect.setAttribute("y", -1);
-	rect.setAttribute("x", -1);
+	rect.setAttribute("height", canvasH);
+	rect.setAttribute("width", canvasW);
+	rect.setAttribute("y", 0);
+	rect.setAttribute("x", 0);
 	background.appendChild(rect);
 
 	m_svg.appendChild(background);

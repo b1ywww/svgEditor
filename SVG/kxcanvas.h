@@ -64,6 +64,7 @@ signals:
 	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth, Qt::PenStyle);
 	void paneIndex(int);
 	void setCanvasChooseColor(QRgb);
+	void setCanvasChooseSize(int w, int h);
 
 private:
 	Shape* getClickShape(QPoint point);

@@ -11,7 +11,7 @@ SvgRead* SvgRead::svgRead()
 	return pSvgRead;
 }
 
-bool SvgRead::read(QString dir, QList<Shape*>& shapelist)
+bool SvgRead::read(QString dir, QList<Shape*>& shapelist, int& width, int& height)
 {
 	if (dir.isEmpty())
 		return false;
@@ -81,6 +81,9 @@ bool SvgRead::read(QString dir, QList<Shape*>& shapelist)
 			shapelist << readText(attributes, reader);
 		reader.readNext();
 	}
+
+	width = m_transform.x() * 2;
+	height = m_transform.y() * 2;
 	return true;
 }
 
@@ -297,7 +300,7 @@ void SvgRead::readCanvas(QXmlStreamReader& reader)
 	reader.readNext();
 	reader.readNext();
 	QXmlStreamAttributes attributes = reader.attributes();
-	m_transform = QPointF(attributes.value("width").toString().toDouble() - 2, attributes.value("height").toString().toDouble() - 2) / 2;
+	m_transform = QPointF(attributes.value("width").toString().toDouble(), attributes.value("height").toString().toDouble()) / 2;
 }
 
 SvgRead::SvgRead()
