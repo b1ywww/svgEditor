@@ -250,6 +250,7 @@ public:
 private:
 	QString m_text;
 	int m_fontSize = 20;
+	QPainterPath m_path;
 
 };
 

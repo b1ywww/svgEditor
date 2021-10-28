@@ -852,6 +852,7 @@ TextEdit::TextEdit()
 {
 	m_type = ShapeType::TypeText;
 	m_pen.setStyle(Qt::SolidLine);
+	m_brush.setColor(Qt::black);
 }
 
 TextEdit::~TextEdit()
@@ -861,9 +862,11 @@ TextEdit::~TextEdit()
 void TextEdit::drawShape(QPainter& painter)
 {
 	painter.setPen(m_pen);
-	painter.setFont(QFont("Microsoft YaHei", m_fontSize));
+	//painter.setFont(QFont("Microsoft YaHei", 20));
 
-	painter.drawText(QRect(m_drawStart.toPoint(), m_drawEnd.toPoint()), m_text);
+	//painter.drawText(QRect(m_drawStart.toPoint(), m_drawEnd.toPoint()), m_text);
+	painter.fillPath(m_path, m_brush.color());
+	painter.drawPath(m_path);
 	painter.setPen(Qt::NoPen);
 }
 
@@ -926,6 +929,11 @@ void TextEdit::move(QPointF offset)
 {
 	m_drawStart = m_drawStart + offset;
 	m_drawEnd = m_drawEnd + offset;
+
+	for (int i = 0; i < m_path.elementCount(); i++)
+	{
+		m_path.setElementPositionAt(i, m_path.elementAt(i).x + offset.x(), m_path.elementAt(i).y + offset.y());
+	}
 }
 
 void TextEdit::moveTop(QPointF offset)
@@ -973,6 +981,7 @@ void TextEdit::moveLowerRight(QPointF offset)
 void TextEdit::setText(QString text)
 {
 	m_text = text;
+	m_path.addText(m_drawStart.x(), m_drawEnd.y(), QFont("Microsoft YaHei", 30), m_text);
 }
 
 const QString TextEdit::getText()
