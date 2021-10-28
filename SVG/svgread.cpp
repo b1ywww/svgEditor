@@ -11,7 +11,7 @@ SvgRead* SvgRead::svgRead()
 	return pSvgRead;
 }
 
-bool SvgRead::read(QString dir, QList<Shape*>& shapelist, int& width, int& height)
+bool SvgRead::read(QString dir, QList<Shape*>& shapelist, int& width, int& height, QRgb& rgb)
 {
 	if (dir.isEmpty())
 		return false;
@@ -55,8 +55,8 @@ bool SvgRead::read(QString dir, QList<Shape*>& shapelist, int& width, int& heigh
 		return false;
 	}
 
-	readCanvas(reader);
-
+	QColor c = readCanvas(reader);
+	rgb = qRgb(c.red(), c.green(), c.blue());
 	//¶ÁÈ¡Í¼Ïñ
 	reader.readNext();
 	while (!reader.atEnd())
@@ -295,12 +295,13 @@ Shape* SvgRead::readText(QXmlStreamAttributes& attributes, QXmlStreamReader& rea
 	return i;
 }
 
-void SvgRead::readCanvas(QXmlStreamReader& reader)
+QColor SvgRead::readCanvas(QXmlStreamReader& reader)
 {
 	reader.readNext();
 	reader.readNext();
 	QXmlStreamAttributes attributes = reader.attributes();
 	m_transform = QPointF(attributes.value("width").toString().toDouble(), attributes.value("height").toString().toDouble()) / 2;
+	return attributes.value("fill").toString().replace("#", "").toInt(NULL, 16);
 }
 
 SvgRead::SvgRead()

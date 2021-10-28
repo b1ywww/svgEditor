@@ -352,7 +352,7 @@ void KxSvgCanvas::openSvg()
 		return;
 	}
 	init();
-	if (!SvgRead::svgRead()->read(file_path, m_shapeList, m_canvasWidth, m_canvasHeight))
+	if (!SvgRead::svgRead()->read(file_path, m_shapeList, m_canvasWidth, m_canvasHeight, m_rgb))
 	{
 		m_transfrom = QPoint(0, 0);
 		loadSvgRenderer(file_path);
@@ -361,6 +361,7 @@ void KxSvgCanvas::openSvg()
 	}
 	m_transfrom = QPoint(m_canvasWidth / 2, m_canvasHeight / 2);
 	setCanvasSize();
+	setCanvasColor(m_rgb);
 	m_isCloseEvent = false;
 }
 

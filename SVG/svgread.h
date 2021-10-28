@@ -2,6 +2,7 @@
 #include <QXmlStreamReader>
 #include <QFile>
 #include <QDebug>
+#include <QRgb>
 
 class Shape;
 class SvgRead
@@ -9,7 +10,7 @@ class SvgRead
 public:
 	static SvgRead* svgRead();
 
-	bool read(QString dir, QList<Shape*>& shapelist, int& width, int& height);
+	bool read(QString dir, QList<Shape*>& shapelist, int& width, int& height, QRgb& rgb);
 
 	Shape* readLine(QXmlStreamAttributes& attributes);
 
@@ -23,7 +24,7 @@ public:
 
 	Shape* readText(QXmlStreamAttributes& attributes, QXmlStreamReader& reader);
 
-	void readCanvas(QXmlStreamReader& reader);
+	QColor readCanvas(QXmlStreamReader& reader);
 private:
 	SvgRead();
 	~SvgRead();
