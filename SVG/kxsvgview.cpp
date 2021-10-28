@@ -151,7 +151,9 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	m_pMainHoriLayout->addWidget(m_pages);
 	m_pCentralLayout->addLayout(m_pMainHoriLayout);
 
-	this->setCentralWidget(m_pCentralWidget);
+	setCentralWidget(m_pCentralWidget);
+
+	connect(m_pSvgCanvas, SIGNAL(setCanvasChooseColor(QRgb)), this, SLOT(setCanvasChooseColor(QRgb)));
 
 	//设置上边工具栏
 	m_pToolBarTop = new QToolBar(this);
@@ -192,9 +194,8 @@ void SVGMainWIndow::setCanvasColor()
 		return;
 
 	QRgb mRgb = qRgb(c.red(), c.green(), c.blue());
-	QString s = QString("background: #%1;border:none").arg(QString::number(mRgb, 16));
-	if (m_pCanvasColorChoose)
-		m_pCanvasColorChoose->setStyleSheet(s);
+
+	setCanvasChooseColor(mRgb);
 
 	if (m_pSvgCanvas)
 		m_pSvgCanvas->setCanvasColor(mRgb);
@@ -244,6 +245,13 @@ void SVGMainWIndow::setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth,
 void SVGMainWIndow::paneIndex(int index /*= 0*/)
 {
 	index > 1? m_pages->setCurrentIndex(0): m_pages->setCurrentIndex(index);
+}
+
+void SVGMainWIndow::setCanvasChooseColor(QRgb rgb)
+{
+	QString s = QString("background: #%1;border:none").arg(QString::number(rgb, 16));
+	if (m_pCanvasColorChoose)
+		m_pCanvasColorChoose->setStyleSheet(s);
 }
 
 void SVGMainWIndow::setShapeChooseColor(QRgb rgb)

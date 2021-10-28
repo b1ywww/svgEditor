@@ -79,6 +79,7 @@ public slots:
 	void setPenColor();
 	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth, Qt::PenStyle style);
 	void paneIndex(int index = 0);
+	void setCanvasChooseColor(QRgb rgb);
 
 private:
 	void setToolBar();

@@ -376,36 +376,41 @@ void KxSvgCanvas::saveSvg()
 
 void KxSvgCanvas::init()
 {
-	if (getShapeCount() > 0 || isSvgValid())
+	QMessageBox msg(this);
+	msg.setStyleSheet("background: #ffffff;");
+	msg.setText("是否保存画布");
+	msg.setIcon(QMessageBox::Warning);
+	msg.setStandardButtons(QMessageBox::Ok | QMessageBox::No | QMessageBox::Cancel);
+
+	int res = msg.exec();
+	switch (res)
 	{
-		QMessageBox msg(this);
-		msg.setText("是否保存画布");
-		msg.setIcon(QMessageBox::Warning);
-		msg.setStandardButtons(QMessageBox::Ok | QMessageBox::No | QMessageBox::Cancel);
-
-		int res = msg.exec();
-		switch (res)
-		{
-		case QMessageBox::Ok:
-		{
-			saveSvg();
-			deleteShapeList();
-			unloadSvgRenderer();
-			m_isCloseEvent = false;
-			break;
-		}
-		case QMessageBox::No:
-		{
-			deleteShapeList();
-			unloadSvgRenderer();
-			m_isCloseEvent = false;
-			break;
-		}
-		default:
-			break;
-		}
+	case QMessageBox::Ok:
+	{
+		saveSvg();
+		deleteShapeList();
+		unloadSvgRenderer();
+		m_canvasWidth = 500;
+		m_canvasHeight = 500;
+		setCanvasSize();
+		setCanvasColor(qRgb(255, 255, 255));
+		m_isCloseEvent = false;
+		break;
 	}
-
+	case QMessageBox::No:
+	{
+		deleteShapeList();
+		unloadSvgRenderer();
+		m_canvasWidth = 500;
+		m_canvasHeight = 500;
+		setCanvasSize();
+		setCanvasColor(qRgb(255, 255, 255));
+		m_isCloseEvent = false;
+		break;
+	}
+	default:
+		break;
+	}
 	update();
 }
 
@@ -414,6 +419,8 @@ void KxSvgCanvas::setCanvasColor(QRgb rgb)
 	m_rgb = rgb;
 	QString s = QString("background: #%1;").arg(QString::number(m_rgb, 16));
 	setStyleSheet(s);
+
+	emit setCanvasChooseColor(rgb);
 }
 
 void KxSvgCanvas::changeText(QString text)

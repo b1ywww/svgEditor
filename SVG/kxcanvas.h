@@ -63,6 +63,7 @@ public slots:
 signals:
 	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth, Qt::PenStyle);
 	void paneIndex(int);
+	void setCanvasChooseColor(QRgb);
 
 private:
 	Shape* getClickShape(QPoint point);
