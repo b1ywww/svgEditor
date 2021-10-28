@@ -170,8 +170,12 @@ Shape* SvgRead::readPencil(QXmlStreamAttributes& attributes)
 	}
 	i->setDrawStart(QPointF(left, top) - m_transform);
 	i->setDrawEnd(QPointF(right, bottom) - m_transform);
-	i->drawPointToPhysicalPoint(0);
-	dynamic_cast<Pencil*>(i)->setDrawPoint(point);
+	Pencil* pencil = dynamic_cast<Pencil*>(i);
+	if(pencil)
+	{
+		pencil->setDrawPoint(point);
+		pencil->drawPointToPhysicalPoint(0);
+	}
 
 	i->getPen().setColor(attributes.value("stroke").toString().replace("#", "").toInt(NULL, 16));
 	i->getPen().setWidthF(attributes.value("stroke-width").toString().toDouble());

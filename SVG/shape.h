@@ -150,6 +150,7 @@ public:
 	void updateEdgeValue();
 	const QList<QPointF>& getPhysicalPoint();
 	void setDrawPoint(QList<QPointF>& list);
+	void setEndPoint();
 
 	void copyDate(Shape* shape);
 

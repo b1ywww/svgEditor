@@ -438,6 +438,11 @@ const QList<QPointF>& Pencil::getPhysicalPoint()
 void Pencil::setDrawPoint(QList<QPointF>& list)
 {
 	m_drawPoint = std::move(list);
+	m_PhysicalPoint.clear();
+	for (auto i : m_drawPoint)
+	{
+		m_PhysicalPoint.append(i);
+	}
 }
 
 void Pencil::copyDate(Shape* shape)
