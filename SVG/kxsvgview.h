@@ -12,6 +12,7 @@
 #include <QStackedWidget>
 #include <QList>
 #include <QScrollArea>
+#include <QComboBox>
 
 class Line;
 class Shape;
@@ -42,6 +43,27 @@ private:
 	ShapeType m_shapeType;
 };
 
+class KxDropDownButton : public QComboBox
+{
+	Q_OBJECT
+
+public:
+	KxDropDownButton(QWidget* parent);
+	~KxDropDownButton();
+	void paintEvent(QPaintEvent* event);
+	void setPen(Qt::PenStyle);
+
+signals:
+	void setShapePen(Qt::PenStyle);
+
+public slots:
+	void getPenStyle(int index);
+
+private:
+	QPen m_pen;
+
+};
+
 class SVGMainWIndow : public QMainWindow
 {
 	Q_OBJECT
@@ -55,7 +77,7 @@ public slots:
 	void setCanvasColor();
 	void setShapeColor();
 	void setPenColor();
-	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth);
+	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth, Qt::PenStyle style);
 	void paneIndex(int index = 0);
 
 private:
@@ -88,6 +110,7 @@ private:
 	QLineEdit* m_pWidthLineEdit = nullptr;		 //设置面板的编辑工具
 	QLineEdit* m_pHeightLineEdit = nullptr;
 	QLineEdit* m_pStrokeWidthLineEdit = nullptr;
+	KxDropDownButton* m_pStrokeStyle = nullptr;
 	QPushButton* m_pCanvasColorChoose = nullptr;
 	QPushButton* m_pShapeColorChoose = nullptr;
 	QPushButton* m_pPenColorChoose = nullptr;

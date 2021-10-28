@@ -1,4 +1,5 @@
 #include "kxsvgview.h"
+#pragma execution_character_set("utf-8")
 
 #include <qgraphicsview.h>
 #include <QtWidgets/QToolBar>
@@ -14,6 +15,7 @@
 #include <QRegExpValidator>
 #include <QColorDialog>
 #include <QPainter>
+#include <QListWidget>
 
 const int MAINWINDOW_WIDTH = 1000;
 const int MAINWINDOW_HETGHT = 800;
@@ -44,7 +46,6 @@ KxLeftToolBarBtn::KxLeftToolBarBtn(QWidget* parent, ShapeType type /*= shapeType
 
 KxLeftToolBarBtn::~KxLeftToolBarBtn()
 {
-
 }
 
 void KxLeftToolBarBtn::enterEvent(QEvent* event)
@@ -227,7 +228,7 @@ void SVGMainWIndow::setPenColor()
 		m_pSvgCanvas->setPenColor(mRgb);
 }
 
-void SVGMainWIndow::setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth)
+void SVGMainWIndow::setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth, Qt::PenStyle style)
 {
 	QRgb rgb = qRgb(shapeRgb.red(), shapeRgb.green(), shapeRgb.blue());
 	setShapeChooseColor(rgb);
@@ -235,7 +236,11 @@ void SVGMainWIndow::setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth)
 	rgb = qRgb(penRgb.red(), penRgb.green(), penRgb.blue());
 	setPenChooseColor(rgb);
 
-	m_pStrokeWidthLineEdit->setText(QString("%1").arg(penWidth));
+	if(m_pStrokeWidthLineEdit)
+		m_pStrokeWidthLineEdit->setText(QString("%1").arg(penWidth));
+
+	if(m_pStrokeStyle)
+		m_pStrokeStyle->setPen(style);
 }
 
 void SVGMainWIndow::paneIndex(int index /*= 0*/)
@@ -596,11 +601,30 @@ void SVGMainWIndow::setSettingSquare(QString x, QString y)
 	connect(m_pStrokeWidthLineEdit, SIGNAL(textChanged(QString)), m_pSvgCanvas, SLOT(setStrokeWidth(QString)));
 	connect(m_pStrokeWidthLineEdit, SIGNAL(editingFinished()), m_pSvgCanvas, SLOT(setStroke()));
 
+	QWidget* pEditStrokeStyle = new QWidget(m_pSettingSquareWidget);
+	pEditStrokeStyle->setObjectName(QStringLiteral("widget_4"));
+	pEditStrokeStyle->setMinimumSize(QSize(60, 60));
+	pEditStrokeStyle->setMaximumSize(QSize(60, 60));
+	pEditStrokeStyle->setStyleSheet(QStringLiteral("background-color: rgb(63, 63, 60);"));
+	QLabel* pStrokeStyleLabel = new QLabel(pEditStrokeStyle);
+	pStrokeStyleLabel->setObjectName(QStringLiteral("strokeStyle"));
+	pStrokeStyleLabel->setGeometry(QRect(0, 5, 60, 12));
+	pStrokeStyleLabel->setMinimumSize(QSize(60, 0));
+	pStrokeStyleLabel->setMaximumSize(QSize(60, 16777215));
+	pStrokeStyleLabel->setStyleSheet(QStringLiteral("color:rgb(204, 204, 204);"));
+	pStrokeStyleLabel->setAlignment(Qt::AlignCenter);
+	pStrokeStyleLabel->setText("�潴�劔塀");
+	m_pStrokeStyle = new KxDropDownButton(pEditStrokeStyle);
+	m_pStrokeStyle->setGeometry(QRect(0, 20, 60, 40));
+
+	connect(m_pStrokeStyle, SIGNAL(setShapePen(Qt::PenStyle)), m_pSvgCanvas, SLOT(setStrokeStyle(Qt::PenStyle)));
+
 	m_pSettingSquareLayout->addWidget(pEditShapeColor, 0, 1, 1, 1);
 	m_pSettingSquareLayout->addWidget(pEditPenColor, 0, 2, 1, 1);
 	m_pSettingSquareLayout->addWidget(pEditStrokeWidth, 1, 1, 1, 1);
+	m_pSettingSquareLayout->addWidget(pEditStrokeStyle, 1, 2, 1, 1);
 
-	connect(m_pSvgCanvas, SIGNAL(setShapePane(QColor, QColor, qreal)), this, SLOT(setShapePane(QColor, QColor, qreal)));
+	connect(m_pSvgCanvas, SIGNAL(setShapePane(QColor, QColor, qreal, Qt::PenStyle)), this, SLOT(setShapePane(QColor, QColor, qreal, Qt::PenStyle)));
 	connect(m_pSvgCanvas, SIGNAL(paneIndex(int)), this, SLOT(paneIndex(int)));
 }
 
@@ -622,4 +646,69 @@ bool SVGMainWIndow::eventFilter(QObject* watched, QEvent* event)
 	}
 
 	return false;
+}
+
+KxDropDownButton::KxDropDownButton(QWidget* parent)
+	:QComboBox(parent)
+{
+	setStyleSheet("QComboBox QAbstractItemView{border: 0px;outline:0px;selection-background-color: blue;height:50px;background: rgb(255,255,255);font:15px;}");
+	QStringList items;
+	items << "！！" << "，，，，，，，" << "-，-，-，" << "-，，-，，-";
+
+	QListWidget* listWidget = new QListWidget(this);
+	for (int i = 0; i < items.count(); i++)
+	{
+		QListWidgetItem* item = new QListWidgetItem(items.at(i));
+		item->setTextAlignment(Qt::AlignCenter);
+		listWidget->addItem(item);
+	}
+
+	setModel(listWidget->model());
+	setView(listWidget);
+
+	m_pen.setColor(QColor(200, 200, 200));
+	m_pen.setWidthF(2.0);
+
+	connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(getPenStyle(int)));
+}
+
+KxDropDownButton::~KxDropDownButton()
+{
+}
+
+void KxDropDownButton::paintEvent(QPaintEvent* event)
+{
+	QPainter painter(this);
+	painter.setPen(m_pen);
+	painter.drawLine(QPoint(15, 20), QPoint(45, 20));
+}
+
+void KxDropDownButton::getPenStyle(int index)
+{
+	switch (index)
+	{
+	case 0:
+		setPen(Qt::SolidLine);
+		emit setShapePen(Qt::SolidLine);
+		break;
+	case 1:
+		setPen(Qt::DotLine);
+		emit setShapePen(Qt::DotLine);
+		break;
+	case 2:
+		setPen(Qt::DashDotLine);
+		emit setShapePen(Qt::DashDotLine);
+		break;
+	case 3:
+		setPen(Qt::DashDotDotLine);
+		emit setShapePen(Qt::DashDotDotLine);
+	default:
+		break;
+	}
+}
+
+void KxDropDownButton::setPen(Qt::PenStyle style)
+{
+	m_pen.setStyle(style);
+	update();
 }

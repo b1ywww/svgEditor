@@ -49,6 +49,7 @@ public slots:
 
 	void setStrokeWidth(QString width);
 	void setStroke();
+	void setStrokeStyle(Qt::PenStyle style);
 
 	void shear();
 	void copy();
@@ -60,7 +61,7 @@ public slots:
 	void shapeToBottom();
 
 signals:
-	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth);
+	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth, Qt::PenStyle);
 	void paneIndex(int);
 
 private:
