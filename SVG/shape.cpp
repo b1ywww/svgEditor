@@ -907,6 +907,9 @@ void TextEdit::scale(qreal width, qreal height)
 
 	while (true)
 	{
+		if(m_drawEnd.x() - m_drawStart.x() == 0)
+			break;
+
 		QFontMetricsF textLength(QFont("Microsoft YaHei", m_fontSize));
 		qreal widthText = textLength.width(m_text);
 		if (widthText < m_drawEnd.x() - m_drawStart.x())
