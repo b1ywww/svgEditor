@@ -475,7 +475,7 @@ void Pencil::scale(qreal ratioW, qreal ratioH)
 	m_drawEnd.setX((m_end.x()) * (1 + ratioW));
 
 	m_drawStart.setY((m_start.y()) * (1 + ratioH));
-	m_drawEnd.setY((m_end.y()) * (1 + ratioH));\
+	m_drawEnd.setY((m_end.y()) * (1 + ratioH));
 	updateEdgeValue();
 }
 

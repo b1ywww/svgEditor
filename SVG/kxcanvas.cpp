@@ -135,7 +135,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 			{
 				m_shapeList.append(tmpShape);
 				m_pCurrentShape = tmpShape;
-				m_pCurrentShape->setDrawStart(transformPoint / (1 + m_offset));
+				m_pCurrentShape->setDrawStart(transformPoint);
 			}
 		}
 
@@ -216,8 +216,7 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 	QPoint transformPoint = event->pos() - m_transfrom;
 	if (m_pCurrentShape)
 	{
-		m_pCurrentShape->setDrawEnd(transformPoint / (1 + m_offset));
-		m_pCurrentShape->scale(m_offset, m_offset); //¸üÐÂdrawPoint×ø±ê
+		m_pCurrentShape->setDrawEnd(transformPoint);
 	}
 
 	if (!m_pClickRect->getDrawStart().isNull())
@@ -263,6 +262,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 				m_clickShapeList.removeOne(i);
 			}
 			m_clickShapeList.append(m_pClickShape);
+			m_pClickShape->drawPointToPhysicalPoint(m_offset);
 			m_pClickShape->setClickState(true);
 		}
 	}
