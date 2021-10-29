@@ -130,6 +130,8 @@ private:
 	QAction* m_pActionNew = nullptr;
 	QAction* m_pActionOpen = nullptr;
 	QAction* m_pActionSave = nullptr;
+	QAction* m_pActionUndo = nullptr;
+	QAction* m_pActionRedo = nullptr;
 
 	QToolBar* m_pToolBarTop = nullptr;
 

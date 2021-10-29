@@ -201,6 +201,7 @@
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="svgread.cpp" />
     <ClCompile Include="svgwrite.cpp" />
+    <ClCompile Include="transaction.cpp" />
     <QtRcc Include="SVG.qrc" />
     <QtUic Include="SVG.ui" />
     <ClCompile Include="kxsvgview.cpp" />

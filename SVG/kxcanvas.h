@@ -1,8 +1,11 @@
 #pragma once
 #pragma execution_character_set("utf-8")
+
+#include "shape.h"
+#include "transaction.h"
+
 #include <QtSvg/qsvgrenderer.h>
 #include <QtWidgets/QMenuBar>
-#include "shape.h"
 #include <QLineEdit>
 
 class KxSvgCanvas :public QWidget
@@ -35,6 +38,7 @@ public:
 	void clearCopyList();
 	void copyListToShapeList();
 
+	const QUndoStack* getUndoStack();
 public slots:
 	void setCurrentType(ShapeType);
 	void setCanvasSize();
@@ -80,6 +84,8 @@ private:
 	QSvgRenderer* m_pSvgRenderer = nullptr; //通用svg图片加载器
 	QPoint m_transfrom;						//坐标变换量
 	QPoint m_lastPoint;						//鼠标的前一个坐标点
+	QPointF m_shapeLastStartPointF;			//对象移动前的当前点
+	QPointF m_shapeLastEndPointF;			//对象移动前的当前点
 	Shape* m_pCurrentShape = nullptr;		//新增对象
 	Shape* m_pClickShape = nullptr;			//点击对象
 	Shape* m_pClickRect = nullptr;			//拖拉的选择框
@@ -92,6 +98,8 @@ private:
 	int m_canvasWidth = 500;
 	int m_canvasHeight = 500;
 	bool m_isCloseEvent = false;
+
+	QUndoStack* m_undoStack = nullptr;
 
 	enum class mousePosition
 	{

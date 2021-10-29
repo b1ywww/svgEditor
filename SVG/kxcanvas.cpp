@@ -31,7 +31,6 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	setAttribute(Qt::WA_StyledBackground, true);
 	setStyleSheet(QStringLiteral("background-color: rgb(255, 255, 255);"));
 	setFocusPolicy(Qt::ClickFocus);
-	//setAttribute(Qt::WA_TransparentForMouseEvents, true);
 	setCanvasSize();
 
 	installEventFilter(this);
@@ -54,6 +53,8 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 
 	connect(m_pTextEditWidget, SIGNAL(textChanged(QString)), this, SLOT(changeText(QString)));
 	connect(m_pTextEditWidget, SIGNAL(editingFinished()), this, SLOT(setText()));
+
+	m_undoStack = new QUndoStack(this);
 }
 
 KxSvgCanvas::KxSvgCanvas(QWidget* parent, qreal x, qreal y, qreal w, qreal h)
@@ -175,7 +176,12 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 				m_pClickShape->setClickState(true);
 			}
 
-			isMove = true;
+			if (m_pClickShape != nullptr)
+			{
+				m_shapeLastStartPointF = m_pClickShape->getDrawStart();
+				m_shapeLastEndPointF = m_pClickShape->getDrawEnd();
+				isMove = true;
+			}
 		}
 		else
 		{
@@ -270,6 +276,15 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 			m_pClickShape->setClickState(true);
 		}
 	}
+
+	//移动command
+	if (isMove)
+	{
+		QUndoCommand* moveCommand = new MoveCommand(this, m_clickShapeList, m_pClickShape->getDrawStart() - m_shapeLastStartPointF);
+		m_undoStack->push(moveCommand);
+		isMove = false;
+	}
+
 	//多选框的选中处理
 	if (!m_pClickRect->getDrawEnd().isNull())
 	{
@@ -286,6 +301,10 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 				i->setClickState(true);
 			}
 		}
+		if (false == m_clickShapeList.isEmpty())
+		{
+			m_pClickShape = m_clickShapeList.first();
+		}
 	}
 
 	m_pClickRect->setDrawStart(QPoint(0, 0));
@@ -301,7 +320,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 	}
 
 	updatePhysicalPoint();
-	isMove = false;
+
 	m_pCurrentShape = nullptr;
 	update();
 }
@@ -637,6 +656,8 @@ void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 	default:
 		break;
 	}
+
+
 	update();
 }
 
@@ -822,6 +843,11 @@ void KxSvgCanvas::copyListToShapeList()
 		shape->copyDate(i);
 		m_copyShapeList.append(shape);
 	}
+}
+
+const QUndoStack* KxSvgCanvas::getUndoStack()
+{
+	return m_undoStack;
 }
 
 Shape* KxSvgCanvas::getClickShape(QPoint point)

@@ -177,6 +177,13 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	m_pToolBarTop->addAction(m_pActionSave);
 	connect(m_pActionSave, SIGNAL(triggered()), m_pSvgCanvas, SLOT(saveSvg()));
 
+	m_pActionUndo = m_pSvgCanvas->getUndoStack()->createUndoAction(this, "撤销");
+	m_pActionUndo->setShortcut(QKeySequence::Undo);
+	m_pToolBarTop->addAction(m_pActionUndo);
+
+	m_pActionRedo = m_pSvgCanvas->getUndoStack()->createRedoAction(this, "回退");
+	m_pActionRedo->setShortcut(QKeySequence::Redo);
+	m_pToolBarTop->addAction(m_pActionRedo);
 	//设置左边工具栏布局
 	setToolBar();
 }
