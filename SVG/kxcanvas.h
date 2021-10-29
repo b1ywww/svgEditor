@@ -8,6 +8,20 @@
 #include <QtWidgets/QMenuBar>
 #include <QLineEdit>
 
+enum class mousePosition
+{
+	move = 0,
+	top,
+	left,
+	right,
+	bottom,
+	upperLeft,
+	lowerLeft,
+	upperRight,
+	lowerRight,
+	noClick
+};
+
 class KxSvgCanvas :public QWidget
 {
 	Q_OBJECT
@@ -101,19 +115,6 @@ private:
 
 	QUndoStack* m_undoStack = nullptr;
 
-	enum class mousePosition
-	{
-		move = 0,
-		top,
-		left,
-		right,
-		bottom,
-		upperLeft,
-		lowerLeft,
-		upperRight,
-		lowerRight,
-		noClick
-	};
 	mousePosition m_positionType = mousePosition::noClick;
 
 	void editShape(QPoint transformPoint);

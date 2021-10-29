@@ -280,7 +280,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 	//ÒÆ¶¯command
 	if (isMove)
 	{
-		QUndoCommand* moveCommand = new MoveCommand(this, m_clickShapeList, m_pClickShape->getDrawStart() - m_shapeLastStartPointF);
+		QUndoCommand* moveCommand = new MoveCommand(this, m_clickShapeList, m_pClickShape->getDrawStart() - m_shapeLastStartPointF, m_positionType);
 		m_undoStack->push(moveCommand);
 		isMove = false;
 	}
@@ -971,52 +971,52 @@ void KxSvgCanvas::editShape(QPoint transformPoint)
 	{
 		switch (m_positionType)
 		{
-		case KxSvgCanvas::mousePosition::move:
+		case mousePosition::move:
 		{
 			i->move((transformPoint - m_lastPoint));
 			break;
 		}
-		case KxSvgCanvas::mousePosition::noClick:
+		case mousePosition::noClick:
 		{
 			i->move((transformPoint - m_lastPoint));
 			break;
 		}
-		case KxSvgCanvas::mousePosition::top:
+		case mousePosition::top:
 		{
 			i->moveTop(QPoint(0, transformPoint.y() - m_lastPoint.y()));
 			break;
 		}
-		case KxSvgCanvas::mousePosition::left:
+		case mousePosition::left:
 		{
 			i->moveLeft(QPoint(transformPoint.x() - m_lastPoint.x(), 0));
 			break;
 		}
-		case KxSvgCanvas::mousePosition::right:
+		case mousePosition::right:
 		{
 			i->moveRight(QPoint(transformPoint.x() - m_lastPoint.x(), 0));
 			break;
 		}
-		case KxSvgCanvas::mousePosition::bottom:
+		case mousePosition::bottom:
 		{
 			i->moveBottom(QPoint(0, transformPoint.y() - m_lastPoint.y()));
 			break;
 		}
-		case KxSvgCanvas::mousePosition::upperLeft:
+		case mousePosition::upperLeft:
 		{
 			i->moveUpperLeft(transformPoint - m_lastPoint);
 			break;
 		}
-		case KxSvgCanvas::mousePosition::lowerLeft:
+		case mousePosition::lowerLeft:
 		{
 			i->moveLowerLeft(transformPoint - m_lastPoint);
 			break;
 		}
-		case KxSvgCanvas::mousePosition::upperRight:
+		case mousePosition::upperRight:
 		{
 			i->moveUpperRight(transformPoint - m_lastPoint);
 			break;
 		}
-		case KxSvgCanvas::mousePosition::lowerRight:
+		case mousePosition::lowerRight:
 		{
 			i->moveLowerRight(transformPoint - m_lastPoint);
 			break;
