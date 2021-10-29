@@ -21,11 +21,25 @@ void SvgCommand::update()
 		m_svgCanvas->update();
 }
 
+const qreal SvgCommand::getRadio()
+{
+	return m_svgCanvas->getRadio();
+}
+
+void SvgCommand::updatePhysicalPoint(QList<Shape*> list)
+{
+	for (auto i : list)
+	{
+		i->drawPointToPhysicalPoint(getRadio());
+	}
+}
+
 MoveCommand::MoveCommand(KxSvgCanvas* canvas, QList<Shape*> items, QPointF offset, mousePosition type)
 	:SvgCommand(canvas), m_items(items), m_offset(offset), m_moveType(type)
 {
-	for(auto i : m_items)
-		i->move(-m_offset);
+	//for(auto i : m_items)
+	//	i->move(-m_offset);
+	editShape(-m_offset);
 }
 
 MoveCommand::~MoveCommand()
@@ -34,15 +48,15 @@ MoveCommand::~MoveCommand()
 
 void MoveCommand::undo()
 {
-	for (auto i : m_items)
-		i->move(-m_offset);
+	editShape(-m_offset * (1 + getRadio()));
+	updatePhysicalPoint(m_items);
 	update();
 }
 
 void MoveCommand::redo()
 {
-	for (auto i : m_items)
-		i->move(m_offset);
+	editShape(m_offset * (1 + getRadio()));
+	updatePhysicalPoint(m_items);
 	update();
 }
 
@@ -107,24 +121,3 @@ void MoveCommand::editShape(QPointF offset)
 		}
 	}
 }
-
-//MoveTopCommand::MoveTopCommand(KxSvgCanvas* canvas, Shape* item, QPointF offset)
-//	:SvgCommand(canvas), m_item(item), m_offset(offset)
-//{
-//
-//}
-//
-//MoveTopCommand::~MoveTopCommand()
-//{
-//
-//}
-//
-//void MoveTopCommand::undo()
-//{
-//
-//}
-//
-//void MoveTopCommand::redo()
-//{
-//
-//}

@@ -272,7 +272,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 				m_clickShapeList.removeOne(i);
 			}
 			m_clickShapeList.append(m_pClickShape);
-			m_pClickShape->drawPointToPhysicalPoint(m_offset);
+			m_pClickShape->drawPointToPhysicalPoint(m_radio);
 			m_pClickShape->setClickState(true);
 		}
 	}
@@ -280,8 +280,12 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 	//ÒÆ¶¯command
 	if (isMove)
 	{
-		QUndoCommand* moveCommand = new MoveCommand(this, m_clickShapeList, m_pClickShape->getDrawStart() - m_shapeLastStartPointF, m_positionType);
-		m_undoStack->push(moveCommand);
+		QPointF offset = editoffset(m_shapeLastStartPointF, m_shapeLastEndPointF);
+		if(!offset.isNull())
+		{
+			QUndoCommand* moveCommand = new MoveCommand(this, m_clickShapeList, offset, m_positionType);
+			m_undoStack->push(moveCommand);
+		}
 		isMove = false;
 	}
 
@@ -456,7 +460,7 @@ void KxSvgCanvas::changeText(QString text)
 	{
 		length < 10 ? m_clickShapeList.first()->getDrawEnd().setX(m_clickShapeList.first()->getDrawStart().x() + 10)
 			: m_clickShapeList.first()->getDrawEnd().setX(m_clickShapeList.first()->getDrawStart().x() + length);
-		m_clickShapeList.first()->drawPointToPhysicalPoint(m_offset);
+		m_clickShapeList.first()->drawPointToPhysicalPoint(m_radio);
 
 		length < 10 ? m_pTextEditWidget->resize(10, m_clickShapeList.first()->getDrawEnd().y() - m_clickShapeList.first()->getDrawStart().y()) : m_pTextEditWidget->resize(length + 10, m_clickShapeList.first()->getDrawEnd().y() - m_clickShapeList.first()->getDrawStart().y());
 		update();
@@ -492,7 +496,7 @@ void KxSvgCanvas::setText()
 	i->setDrawStart(m_pTextEditWidget->pos() - m_transfrom);
 	i->setDrawEnd(m_pTextEditWidget->pos() + QPointF(m_pTextEditWidget->width(), m_pTextEditWidget->height()) - m_transfrom);
 	dynamic_cast<TextEdit*>(i)->setText(m_text);
-	i->drawPointToPhysicalPoint(m_offset);
+	i->drawPointToPhysicalPoint(m_radio);
 	m_shapeList.append(i);
 	m_pClickShape = i;
 	m_text = "";
@@ -665,34 +669,34 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 {
 	setFocus();
 	QPoint transfromOffset;
+
 	if (event->delta() > 0)
 	{
-		m_offset += 0.05;
-		resize(m_canvasWidth * (1 + m_offset), m_canvasHeight * (1 + m_offset));
-		transfromOffset = QPoint((m_canvasWidth * (1 + m_offset)) / 2, (m_canvasHeight * (1 + m_offset)) / 2);
-		for each (Shape * i in m_shapeList)
+		m_radio += 0.05;
+		resize(m_canvasWidth * (1 + m_radio), m_canvasHeight * (1 + m_radio));
+		transfromOffset = QPoint((m_canvasWidth * (1 + m_radio)) / 2, (m_canvasHeight * (1 + m_radio)) / 2);
+		for (Shape * i : m_shapeList)
 		{
 			if (i != nullptr)
 			{
-				i->scale(m_offset, m_offset);
+				i->scale(m_radio, m_radio);
 			}
 		}
 	}
 	else if (event->delta() < 0)
 	{
-		m_offset -= 0.05;
-		if (qAbs(m_offset + 1.0) < 0.1)
-			m_offset = -0.95;
-		resize(m_canvasWidth * (1 + m_offset), m_canvasHeight * (1 + m_offset));
-		transfromOffset = QPoint((m_canvasWidth * (1 + m_offset)) / 2, (m_canvasHeight * (1 + m_offset)) / 2);
-		for each (Shape * i in m_shapeList)
+		m_radio -= 0.05;
+		if (qAbs(m_radio + 1.0) < 0.1)
+			m_radio = -0.95;
+		resize(m_canvasWidth * (1 + m_radio), m_canvasHeight * (1 + m_radio));
+		transfromOffset = QPoint((m_canvasWidth * (1 + m_radio)) / 2, (m_canvasHeight * (1 + m_radio)) / 2);
+		for (Shape * i : m_shapeList)
 		{
 			if (i != nullptr)
 			{
-				i->scale(m_offset, m_offset);
+				i->scale(m_radio, m_radio);
 			}
 		}
-
 	}
 	m_transfrom = transfromOffset;
 	update();
@@ -848,6 +852,11 @@ void KxSvgCanvas::copyListToShapeList()
 const QUndoStack* KxSvgCanvas::getUndoStack()
 {
 	return m_undoStack;
+}
+
+const qreal KxSvgCanvas::getRadio()
+{
+	return m_radio;
 }
 
 Shape* KxSvgCanvas::getClickShape(QPoint point)
@@ -1027,10 +1036,23 @@ void KxSvgCanvas::editShape(QPoint transformPoint)
 	}
 }
 
+QPointF KxSvgCanvas::editoffset(QPointF start, QPointF end)
+{
+	QPointF res;
+	res = m_pClickShape->getDrawStart() - start;
+	if (qAbs(res.x()) < 0.0001)
+		res.setX(m_pClickShape->getDrawEnd().x() - end.x());
+
+	if (qAbs(res.y()) < 0.0001)
+		res.setY(m_pClickShape->getDrawEnd().y() - end.y());
+	
+	return res;
+}
+
 void KxSvgCanvas::updatePhysicalPoint()
 {
 	if (m_pClickShape)
 	{
-		m_pClickShape->drawPointToPhysicalPoint(m_offset);
+		m_pClickShape->drawPointToPhysicalPoint(m_radio);
 	}
 }

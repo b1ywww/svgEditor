@@ -11,6 +11,8 @@ public:
 	SvgCommand(KxSvgCanvas* canvas);
 	~SvgCommand();
 	void update();
+	const qreal getRadio();
+	void updatePhysicalPoint(QList<Shape*> list);
 
 private:
 	static KxSvgCanvas* m_svgCanvas;
@@ -33,17 +35,3 @@ private:
 	QPointF m_offset;
 	mousePosition m_moveType;
 };
-
-//class MoveTopCommand : public SvgCommand
-//{
-//public:
-//	MoveTopCommand(KxSvgCanvas* canvas, Shape* item, QPointF offset);
-//	~MoveTopCommand();
-//
-//	void undo() override;
-//	void redo() override;
-//
-//private:
-//	Shape* m_item;
-//	QPointF m_offset;
-//};

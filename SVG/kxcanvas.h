@@ -53,6 +53,8 @@ public:
 	void copyListToShapeList();
 
 	const QUndoStack* getUndoStack();
+	const qreal getRadio();
+
 public slots:
 	void setCurrentType(ShapeType);
 	void setCanvasSize();
@@ -103,7 +105,7 @@ private:
 	Shape* m_pCurrentShape = nullptr;		//新增对象
 	Shape* m_pClickShape = nullptr;			//点击对象
 	Shape* m_pClickRect = nullptr;			//拖拉的选择框
-	qreal m_offset = 0.0;					//放大缩小的比率
+	qreal m_radio = 0.0;					//放大缩小的比率
 	qreal m_penWidth = 1.0;					//线条宽度
 	Qt::PenStyle m_penStyle = Qt::SolidLine;//线条样式
 	QRgb m_rgb;
@@ -118,5 +120,6 @@ private:
 	mousePosition m_positionType = mousePosition::noClick;
 
 	void editShape(QPoint transformPoint);
+	QPointF editoffset(QPointF start, QPointF end);
 	void updatePhysicalPoint();
 };
