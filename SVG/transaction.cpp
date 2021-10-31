@@ -47,9 +47,8 @@ void SvgCommand::clickListRemoveOne(Shape* item)
 MoveCommand::MoveCommand(KxSvgCanvas* canvas, QList<Shape*> items, QPointF offset, mousePosition type)
 	:SvgCommand(canvas), m_items(items), m_offset(offset), m_moveType(type)
 {
-	//for(auto i : m_items)
-	//	i->move(-m_offset);
-	editShape(-m_offset);
+	editShape(-m_offset * (1 + getRadio()));
+	updatePhysicalPoint(m_items);
 }
 
 MoveCommand::~MoveCommand()

@@ -190,8 +190,8 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 
 			if (m_pClickShape != nullptr)
 			{
-				m_shapeLastStartPointF = m_pClickShape->getDrawStart();
-				m_shapeLastEndPointF = m_pClickShape->getDrawEnd();
+				m_shapeLastStartPointF = m_pClickShape->getPhysicalStart();
+				m_shapeLastEndPointF = m_pClickShape->getPhysicalEnd();
 				isMove = true;
 			}
 		}
@@ -292,6 +292,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 		}
 	}
 
+	updatePhysicalPoint();
 	//ÒÆ¶¯command
 	if (isMove)
 	{
@@ -340,8 +341,6 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 	else {
 		emit paneIndex(0);
 	}
-
-	updatePhysicalPoint();
 
 	m_pCurrentShape = nullptr;
 	update();
@@ -1062,12 +1061,12 @@ void KxSvgCanvas::editShape(QPoint transformPoint)
 QPointF KxSvgCanvas::editoffset(QPointF start, QPointF end)
 {
 	QPointF res;
-	res = m_pClickShape->getDrawStart() - start;
+	res = m_pClickShape->getPhysicalStart() - start;
 	if (qAbs(res.x()) < 0.0001)
-		res.setX(m_pClickShape->getDrawEnd().x() - end.x());
+		res.setX(m_pClickShape->getPhysicalEnd().x() - end.x());
 
 	if (qAbs(res.y()) < 0.0001)
-		res.setY(m_pClickShape->getDrawEnd().y() - end.y());
+		res.setY(m_pClickShape->getPhysicalEnd().y() - end.y());
 	
 	return res;
 }
