@@ -46,6 +46,8 @@ public:
 	virtual void moveLowerRight(QPointF offset) = 0;
 
 	void setClickRectOffset(qreal x, qreal y);
+	void setClickRect();
+	const QRectF getClickRect();
 	ShapeType getShapeType();
 	bool getClickState();
 	void setClickState(bool click);
@@ -71,6 +73,7 @@ private:
 	int m_offsetStartY = -4;
 	int m_offsetWidth = 8;
 	int m_offsetHeight = 8;
+	QRectF m_clickRect;
 	bool m_isClick = false;
 	bool m_isPaint = true;
 };

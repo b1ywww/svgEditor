@@ -19,15 +19,13 @@ void Shape::drawClickRect(QPainter& painter)
 		return;
 
 	setClickRectOffset(m_drawEnd.x() - m_drawStart.x(), m_drawEnd.y() - m_drawStart.y());
+	setClickRect();
 	QPen pen(Qt::DashLine);
 	pen.setColor(QColor(255, 192, 203));
 	QPainterPath path;
 
 	painter.setPen(pen);
-	path.addRect(m_drawStart.x() + m_offsetStartX + 0.5 * m_pen.widthF() * (m_offsetStartX/qAbs(m_offsetStartX))
-		, m_drawStart.y() + m_offsetStartY + 0.5 * m_pen.widthF() * (m_offsetStartY / qAbs(m_offsetStartY))
-		, m_drawEnd.x() - m_drawStart.x() + m_offsetWidth + m_pen.widthF() * (m_offsetWidth / qAbs(m_offsetWidth))
-		, m_drawEnd.y() - m_drawStart.y() + m_offsetHeight + m_pen.widthF() * (m_offsetHeight / qAbs(m_offsetHeight)));
+	path.addRect(m_clickRect);
 
 	painter.drawPath(path);
 	painter.setPen(Qt::NoPen);
@@ -124,6 +122,19 @@ void Shape::setClickRectOffset(qreal x, qreal y)
 			m_offsetHeight *= -1;
 		}
 	}
+}
+
+void Shape::setClickRect()
+{
+	m_clickRect = QRectF(m_drawStart.x() + m_offsetStartX + 0.5 * m_pen.widthF() * (m_offsetStartX / qAbs(m_offsetStartX))
+						, m_drawStart.y() + m_offsetStartY + 0.5 * m_pen.widthF() * (m_offsetStartY / qAbs(m_offsetStartY))
+						, m_drawEnd.x() - m_drawStart.x() + m_offsetWidth + m_pen.widthF() * (m_offsetWidth / qAbs(m_offsetWidth))
+						, m_drawEnd.y() - m_drawStart.y() + m_offsetHeight + m_pen.widthF() * (m_offsetHeight / qAbs(m_offsetHeight)));
+}
+
+const QRectF Shape::getClickRect()
+{
+	return m_clickRect;
 }
 
 ShapeType Shape::getShapeType()

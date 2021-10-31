@@ -1,4 +1,10 @@
 #include "canvastool.h"
+#include <QRectF>
+
+bool tool::pointInRect(QPointF point, QRectF rect)
+{
+	return rect.contains(point);
+}
 
 bool tool::ponitInRect(QPointF point, Shape* shape)
 {

@@ -894,32 +894,33 @@ Shape* KxSvgCanvas::getClickShape(QPoint point)
 
 void KxSvgCanvas::setPositionType(QPoint point)
 {
-	int flag = 0;
-	if (false == tool::ponitInRect(point, m_pClickShape) || m_clickShapeList.size() > 1)
+	int positionType = 0;  //鼠标位于图形边缘编辑时的类型（向右拉，向左拉 之类的）
+	QRectF clickRect = m_pClickShape->getClickRect();
+	if (false == tool::pointInRect(point, clickRect) || m_clickShapeList.size() > 1)
 	{
 		setCursor(Qt::ArrowCursor);
 		m_positionType = mousePosition::noClick;
 		return;
 	}
 
-	if (qAbs(point.x() - m_pClickShape->getDrawStart().x()) < 5)
+	if (qAbs(point.x() - clickRect.x()) < 5)
 	{
-		flag = flag ^ 1;
+		positionType = positionType ^ 1;
 	}
-	if (qAbs(point.y() - m_pClickShape->getDrawStart().y()) < 5)
+	if (qAbs(point.y() - clickRect.y()) < 5)
 	{
-		flag = flag ^ 2;
+		positionType = positionType ^ 2;
 	}
-	if (qAbs(point.x() - m_pClickShape->getDrawEnd().x()) < 5)
+	if (qAbs(point.x() - (clickRect.x() + clickRect.width())) < 5)
 	{
-		flag = flag ^ 4;
+		positionType = positionType ^ 4;
 	}
-	if (qAbs(point.y() - m_pClickShape->getDrawEnd().y()) < 5)
+	if (qAbs(point.y() - (clickRect.y() + clickRect.height())) < 5)
 	{
-		flag = flag ^ 8;
+		positionType = positionType ^ 8;
 	}
 
-	switch (flag)
+	switch (positionType)
 	{
 	case POSITION_DEFAULT:setCursor(Qt::ArrowCursor); m_positionType = mousePosition::move; break;
 	case POSITION_LEFT:setCursor(Qt::SizeHorCursor); m_positionType = mousePosition::left; break;
@@ -933,7 +934,7 @@ void KxSvgCanvas::setPositionType(QPoint point)
 	/*下面这么写的原因是对角线存在两种情况，加个if else 来区分，没有其他好点的办法QAQ*/
 	if ((m_pClickShape->getDrawEnd().x() - m_pClickShape->getDrawStart().x()) * (m_pClickShape->getDrawEnd().y() - m_pClickShape->getDrawStart().y()) >= 0)
 	{
-		switch (flag)
+		switch (positionType)
 		{
 		case POSITION_UPPER_RIGHT:setCursor(Qt::SizeBDiagCursor); m_positionType = mousePosition::upperRight; break;
 		case POSITION_UPPER_LEFT:setCursor(Qt::SizeFDiagCursor); m_positionType = mousePosition::upperLeft; break;
@@ -943,7 +944,7 @@ void KxSvgCanvas::setPositionType(QPoint point)
 	}
 	else
 	{
-		switch (flag)
+		switch (positionType)
 		{
 		case POSITION_UPPER_RIGHT:setCursor(Qt::SizeFDiagCursor); m_positionType = mousePosition::upperRight; break;
 		case POSITION_UPPER_LEFT:setCursor(Qt::SizeBDiagCursor); m_positionType = mousePosition::upperLeft; break;
