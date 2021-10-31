@@ -885,6 +885,8 @@ Shape* KxSvgCanvas::getClickShape(QPoint point)
 	//逆序遍历，深度值越小 在链表的位置越靠前
 	for (QList<Shape*>::iterator i = --m_shapeList.end(); i != --m_shapeList.begin(); --i)
 	{
+		if(false == (*i)->isPaint())
+			continue;
 		if (tool::ponitInRect(point, *i))
 			return *i;
 	}
