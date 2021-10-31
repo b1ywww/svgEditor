@@ -34,6 +34,16 @@ void SvgCommand::updatePhysicalPoint(QList<Shape*> list)
 	}
 }
 
+void SvgCommand::shapeListRemoveOne(Shape* item)
+{
+	m_svgCanvas->shapeListRemoveOne(item);
+}
+
+void SvgCommand::clickListRemoveOne(Shape* item)
+{
+	m_svgCanvas->clickListRemoveOne(item);
+}
+
 MoveCommand::MoveCommand(KxSvgCanvas* canvas, QList<Shape*> items, QPointF offset, mousePosition type)
 	:SvgCommand(canvas), m_items(items), m_offset(offset), m_moveType(type)
 {
@@ -120,4 +130,78 @@ void MoveCommand::editShape(QPointF offset)
 			break;
 		}
 	}
+}
+
+AddCommand::AddCommand(KxSvgCanvas* canvas, QList<Shape*> items)
+	:SvgCommand(canvas), m_items(items)
+{
+
+}
+
+AddCommand::AddCommand(KxSvgCanvas* canvas, Shape* items)
+	: SvgCommand(canvas)
+{
+	m_items.append(items);
+}
+
+AddCommand::~AddCommand()
+{
+	for(auto i : m_items)
+	{
+		shapeListRemoveOne(i);
+		delete i;
+	}
+}
+
+void AddCommand::undo()
+{
+	for(auto i : m_items)
+	{
+		i->setIsPaint(false);
+		clickListRemoveOne(i);
+	}
+	update();
+}
+
+void AddCommand::redo()
+{
+	for(auto i : m_items)
+	{
+		i->setIsPaint(true);
+	}
+	update();
+}
+
+DeleteCommand::DeleteCommand(KxSvgCanvas* canvas, QList<Shape*> items)
+	:SvgCommand(canvas), m_items(items)
+{
+
+}
+
+DeleteCommand::~DeleteCommand()
+{
+	for (auto i : m_items)
+	{
+		shapeListRemoveOne(i);
+		i->setClickState(false);
+	}
+}
+
+void DeleteCommand::undo()
+{
+	for (auto i : m_items)
+	{
+		i->setIsPaint(true);
+	}
+	update();
+}
+
+void DeleteCommand::redo()
+{
+	for (auto i : m_items)
+	{
+		i->setIsPaint(false);
+		clickListRemoveOne(i);
+	}
+	update();
 }

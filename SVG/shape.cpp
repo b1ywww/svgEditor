@@ -15,6 +15,9 @@ Shape::~Shape()
 
 void Shape::drawClickRect(QPainter& painter)
 {
+	if (false == m_isPaint)
+		return;
+
 	setClickRectOffset(m_drawEnd.x() - m_drawStart.x(), m_drawEnd.y() - m_drawStart.y());
 	QPen pen(Qt::DashLine);
 	pen.setColor(QColor(255, 192, 203));
@@ -153,6 +156,16 @@ QBrush& Shape::getBrush()
 	return m_brush;
 }
 
+void Shape::setIsPaint(bool isPaint)
+{
+	m_isPaint = isPaint;
+}
+
+bool Shape::isPaint()
+{
+	return m_isPaint;
+}
+
 Line::Line()
 {
 	m_type = ShapeType::TypeLine;
@@ -178,6 +191,9 @@ void Line::setDrawEnd(QPointF end)
 
 void Line::drawShape(QPainter& painter)
 {
+	if (false == isPaint())
+		return;
+
 	if (m_drawStart.isNull() || m_drawEnd.isNull())
 		return;
 	QPainterPath path;
@@ -282,6 +298,9 @@ void Square::setDrawEnd(QPointF end)
 
 void Square::drawShape(QPainter& painter)
 {
+	if (false == isPaint())
+		return;
+
 	if (m_drawStart.isNull() || m_drawEnd.isNull())
 		return;
 
@@ -375,6 +394,9 @@ Pencil::~Pencil()
 
 void Pencil::drawShape(QPainter& painter)
 {
+	if (false == isPaint())
+		return;
+
 	if (m_drawPoint.size() < 2)
 		return;
 
@@ -632,6 +654,9 @@ void Circle::setDrawEnd(QPointF end)
 
 void Circle::drawShape(QPainter& painter)
 {
+	if (false == isPaint())
+		return;
+
 	if (m_drawStart.isNull() || m_drawEnd.isNull())
 		return;
 	painter.setBrush(m_brush);
@@ -723,6 +748,9 @@ Hexagon::~Hexagon()
 
 void Hexagon::drawShape(QPainter& painter)
 {
+	if (false == isPaint())
+		return;
+
 	painter.setBrush(m_brush);
 	painter.setPen(m_pen);
 	QPolygonF myPolygon(m_vertex);
@@ -860,6 +888,9 @@ TextEdit::~TextEdit()
 
 void TextEdit::drawShape(QPainter& painter)
 {
+	if (false == isPaint())
+		return;
+
 	painter.setPen(m_pen);
 	painter.setFont(QFont("Microsoft YaHei", m_fontSize));
 

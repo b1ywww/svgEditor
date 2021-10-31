@@ -181,7 +181,7 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 	m_pActionUndo->setShortcut(QKeySequence::Undo);
 	m_pToolBarTop->addAction(m_pActionUndo);
 
-	m_pActionRedo = m_pSvgCanvas->getUndoStack()->createRedoAction(this, "回退");
+	m_pActionRedo = m_pSvgCanvas->getUndoStack()->createRedoAction(this, "重做");
 	m_pActionRedo->setShortcut(QKeySequence::Redo);
 	m_pToolBarTop->addAction(m_pActionRedo);
 	//设置左边工具栏布局

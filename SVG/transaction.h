@@ -13,6 +13,8 @@ public:
 	void update();
 	const qreal getRadio();
 	void updatePhysicalPoint(QList<Shape*> list);
+	void shapeListRemoveOne(Shape* item);
+	void clickListRemoveOne(Shape* item);
 
 private:
 	static KxSvgCanvas* m_svgCanvas;
@@ -34,4 +36,31 @@ private:
 	QList<Shape*> m_items;
 	QPointF m_offset;
 	mousePosition m_moveType;
+};
+
+class AddCommand : public SvgCommand
+{
+public:
+	AddCommand(KxSvgCanvas* canvas, QList<Shape*> items);
+	AddCommand(KxSvgCanvas* canvas, Shape* items);
+	~AddCommand();
+
+	void undo() override;
+	void redo() override;
+
+private:
+	QList<Shape*> m_items;
+};
+
+class DeleteCommand : public SvgCommand
+{
+public:
+	DeleteCommand(KxSvgCanvas* canvas, QList<Shape*> item);
+	~DeleteCommand();
+
+	void undo() override;
+	void redo() override;
+
+private:
+	QList<Shape*> m_items;
 };

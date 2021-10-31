@@ -55,6 +55,9 @@ public:
 	const QUndoStack* getUndoStack();
 	const qreal getRadio();
 
+	void shapeListRemoveOne(Shape* item);
+	void clickListRemoveOne(Shape* item);
+
 public slots:
 	void setCurrentType(ShapeType);
 	void setCanvasSize();

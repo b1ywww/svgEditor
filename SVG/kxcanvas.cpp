@@ -66,7 +66,6 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent, qreal x, qreal y, qreal w, qreal h)
 KxSvgCanvas::~KxSvgCanvas()
 {
 	delete m_pClickRect;
-	deleteShapeList();
 	clearCopyList();
 	ShapeFactory::getShapeFactory()->deleteShapeFactory();
 }
@@ -93,7 +92,15 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 	if (m_clickShapeList.size() > 0)
 	{
 		for(auto i : m_clickShapeList)
+		{
+			if (false == i->isPaint())
+			{
+				m_clickShapeList.removeOne(i);
+				i->setClickState(false);
+				continue;
+			}
 			i->drawClickRect(painter);
+		}
 	}
 	else
 	{
@@ -154,6 +161,8 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 			if(m_positionType == mousePosition::noClick || m_positionType == mousePosition::move)
 			{
 				m_pClickShape = getClickShape(transformPoint);
+				if (m_pClickShape && false == m_pClickShape->isPaint())
+					m_pClickShape = nullptr;
 			}
 
 			if (nullptr == m_pClickShape)
@@ -172,8 +181,11 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 
 			if (nullptr != m_pClickShape && false == m_pClickShape->getClickState())
 			{
-				m_clickShapeList.append(m_pClickShape);
-				m_pClickShape->setClickState(true);
+				if(m_pClickShape->isPaint())
+				{
+					m_clickShapeList.append(m_pClickShape);
+					m_pClickShape->setClickState(true);
+				}
 			}
 
 			if (m_pClickShape != nullptr)
@@ -274,6 +286,9 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 			m_clickShapeList.append(m_pClickShape);
 			m_pClickShape->drawPointToPhysicalPoint(m_radio);
 			m_pClickShape->setClickState(true);
+
+			QUndoCommand* addcommand = new AddCommand(this, m_pClickShape);
+			m_undoStack->push(addcommand);
 		}
 	}
 
@@ -301,8 +316,11 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 		{
 			if (tool::isShapeIntersect(i, m_pClickRect))
 			{
-				m_clickShapeList.append(i);
-				i->setClickState(true);
+				if(i->isPaint())
+				{
+					m_clickShapeList.append(i);
+					i->setClickState(true);
+				}
 			}
 		}
 		if (false == m_clickShapeList.isEmpty())
@@ -613,20 +631,13 @@ void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 	{
 	case Qt::Key_Delete:
 	{
-		for (Shape* j : m_clickShapeList)
+		if(false == m_clickShapeList.isEmpty())
 		{
-			for each (Shape * i in m_shapeList)
-			{
-				if (i == j)
-				{
-					m_shapeList.removeOne(i);
-					delete j;
-					j = nullptr;
-				}
-			}
+			QUndoCommand* deleteCommand = new DeleteCommand(this, m_clickShapeList);
+			m_undoStack->push(deleteCommand);
+			m_clickShapeList.clear();
+			m_pClickShape = nullptr;
 		}
-		m_clickShapeList.clear();
-		m_pClickShape = nullptr;
 	}
 	case  Qt::Key_A:
 	{
@@ -660,8 +671,6 @@ void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 	default:
 		break;
 	}
-
-
 	update();
 }
 
@@ -711,18 +720,19 @@ bool KxSvgCanvas::eventFilter(QObject* watched, QEvent* event)
 
 bool KxSvgCanvas::deleteShapeList()
 {
-	m_pClickShape = nullptr;
-	m_clickShapeList.clear();
-	if (false == m_shapeList.isEmpty())
-	{
-		for each (Shape * i in m_shapeList)
-		{
-			m_shapeList.removeOne(i);
-			delete i;
-		}
-		return true;
-	}
+	//m_pClickShape = nullptr;
+	//m_clickShapeList.clear();
+	//if (false == m_shapeList.isEmpty())
+	//{
+	//	for each (Shape * i in m_shapeList)
+	//	{
+	//		m_shapeList.removeOne(i);
+	//		delete i;
+	//	}
+	//	return true;
+	//}
 
+	//return false;
 	return false;
 }
 
@@ -832,6 +842,8 @@ void KxSvgCanvas::copyListToShapeList()
 		return;
 
 	m_shapeList.append(m_copyShapeList);
+	QUndoCommand* addCommand = new AddCommand(this, m_copyShapeList);
+	m_undoStack->push(addCommand);
 	for (auto i : m_clickShapeList)
 	{
 		i->setClickState(false);
@@ -857,6 +869,16 @@ const QUndoStack* KxSvgCanvas::getUndoStack()
 const qreal KxSvgCanvas::getRadio()
 {
 	return m_radio;
+}
+
+void KxSvgCanvas::shapeListRemoveOne(Shape* item)
+{
+	m_shapeList.removeOne(item);
+}
+
+void KxSvgCanvas::clickListRemoveOne(Shape* item)
+{
+	m_copyShapeList.removeOne(item);
 }
 
 Shape* KxSvgCanvas::getClickShape(QPoint point)

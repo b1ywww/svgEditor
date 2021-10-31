@@ -53,6 +53,9 @@ public:
 	QPen& getPen();
 	QBrush& getBrush();
 
+	void setIsPaint(bool isPaint);
+	bool isPaint();
+
 protected:
 	QPointF m_start;      //ÎïÀí×ø±ê
 	QPointF m_end;
@@ -69,6 +72,7 @@ private:
 	int m_offsetWidth = 8;
 	int m_offsetHeight = 8;
 	bool m_isClick = false;
+	bool m_isPaint = true;
 };
 
 class Line : public Shape
