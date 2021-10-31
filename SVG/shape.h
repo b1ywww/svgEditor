@@ -71,7 +71,7 @@ protected:
 private:
 	int m_offsetStartX = -4;
 	int m_offsetStartY = -4;
-	int m_offsetWidth = 8;
+	int m_offsetWidth = 8; 
 	int m_offsetHeight = 8;
 	QRectF m_clickRect;
 	bool m_isClick = false;

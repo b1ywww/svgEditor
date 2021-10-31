@@ -263,7 +263,9 @@ Shape* SvgRead::readHexagon(QXmlStreamAttributes& attributes)
 	i->setDrawStart(QPointF(left, top) - m_transform);
 	i->setDrawEnd(QPointF(right, bottom) - m_transform);
 	i->drawPointToPhysicalPoint(0);
-	dynamic_cast<Hexagon*>(i)->setVertex(point);
+	Hexagon* hexagon = dynamic_cast<Hexagon*>(i);
+	if(hexagon)
+		hexagon->setVertex(point);
 
 	i->getBrush().setColor(attributes.value("fill").toString().replace("#", "").toInt(NULL, 16));
 	i->getPen().setColor(attributes.value("stroke").toString().replace("#", "").toInt(NULL, 16));
@@ -290,7 +292,9 @@ Shape* SvgRead::readText(QXmlStreamAttributes& attributes, QXmlStreamReader& rea
 	int length = textLength.width(text);
 	i->setDrawStart(QPointF(attributes.value("x").toString().toDouble(), attributes.value("y").toString().toDouble()) - m_transform);
 	i->setDrawEnd(QPointF(length, 40) + i->getDrawStart());
-	dynamic_cast<TextEdit*>(i)->setText(text);
+	TextEdit* textEdit = dynamic_cast<TextEdit*>(i);
+	if(textEdit)
+		textEdit->setText(text);
 
 	return i;
 }

@@ -353,9 +353,12 @@ void KxSvgCanvas::mouseDoubleClickEvent(QMouseEvent* event)
 		Shape* shapeText = m_clickShapeList.first();
 		m_pTextEditWidget->move(shapeText->getDrawStart().toPoint() + m_transfrom);
 		m_pTextEditWidget->resize(shapeText->getDrawEnd().toPoint().x() - m_clickShapeList.first()->getDrawStart().toPoint().x() + 10, m_clickShapeList.first()->getDrawEnd().y() - m_clickShapeList.first()->getDrawStart().y());
-		m_text = dynamic_cast<TextEdit*>(shapeText)->getText();
+		TextEdit* textEdit = dynamic_cast<TextEdit*>(shapeText);
+		if (nullptr == textEdit)
+			return;
+		m_text = textEdit->getText();
 		m_pTextEditWidget->setText(m_text);
-		m_pTextEditWidget->setFont(QFont("Microsoft YaHei", dynamic_cast<TextEdit*>(shapeText)->getFontSize()));
+		m_pTextEditWidget->setFont(QFont("Microsoft YaHei", textEdit->getFontSize()));
 		m_pTextEditWidget->setFocus();
 		m_pTextEditWidget->show();
 	}
@@ -501,8 +504,10 @@ void KxSvgCanvas::setText()
 			delete shape;
 			return;
 		}
-
-		dynamic_cast<TextEdit*>(shape)->setText(m_text);
+		TextEdit* textEdit = dynamic_cast<TextEdit*>(shape);
+		if (nullptr == textEdit)
+			return;
+		textEdit->setText(m_text);
 		m_text = "";
 	}
 
@@ -512,7 +517,10 @@ void KxSvgCanvas::setText()
 	Shape* i = ShapeFactory::getShapeFactory()->getShape(ShapeType::TypeText);
 	i->setDrawStart(m_pTextEditWidget->pos() - m_transfrom);
 	i->setDrawEnd(m_pTextEditWidget->pos() + QPointF(m_pTextEditWidget->width(), m_pTextEditWidget->height()) - m_transfrom);
-	dynamic_cast<TextEdit*>(i)->setText(m_text);
+	TextEdit* textEdit = dynamic_cast<TextEdit*>(i);
+	if (nullptr == textEdit)
+		return;
+	textEdit->setText(m_text);
 	i->drawPointToPhysicalPoint(m_radio);
 	m_shapeList.append(i);
 	m_pClickShape = i;
@@ -896,6 +904,8 @@ Shape* KxSvgCanvas::getClickShape(QPoint point)
 void KxSvgCanvas::setPositionType(QPoint point)
 {
 	int positionType = 0;  //鼠标位于图形边缘编辑时的类型（向右拉，向左拉 之类的）
+	if (nullptr == m_pClickShape)
+		return;
 	QRectF clickRect = m_pClickShape->getClickRect();
 	if (false == tool::pointInRect(point, clickRect) || m_clickShapeList.size() > 1)
 	{

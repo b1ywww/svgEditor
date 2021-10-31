@@ -204,7 +204,8 @@ void SvgWrite::writePencil(Shape* shape)
 
 	QString d = "";
 
-	QList<QPointF> point = dynamic_cast<Pencil*>(shape)->getPhysicalPoint();
+	Pencil* pPencil = dynamic_cast<Pencil*>(shape);
+	QList<QPointF> point = pPencil->getPhysicalPoint();
 	QString M = "M%1 %2";
 	QString L = ",L%1 %2";
 	d = d + M.arg((*point.begin()).x() + m_transfrom.x()).arg((*point.begin()).y() + m_transfrom.y());
@@ -288,7 +289,10 @@ void SvgWrite::writeHexagon(Shape* shape)
 
 	QString d = "M%1 %2,L%3 %4,L%5 %6,L%7 %8,L%9 %10,L%11 %12,L%13 %14";
 
-	for each (QPointF i in dynamic_cast<Hexagon*>(shape)->getVertex())
+	Hexagon* pHexagon = dynamic_cast<Hexagon*>(shape);
+	if (nullptr == pHexagon)
+		return;
+	for each (QPointF i in pHexagon->getVertex())
 	{
 		d = d.arg(i.x() + m_transfrom.x()).arg(i.y() + m_transfrom.y());
 	}
@@ -356,7 +360,10 @@ void SvgWrite::writeText(Shape* shape)
 		break;
 	}
 
-	QDomNode node = m_doc.createTextNode(dynamic_cast<TextEdit*>(shape)->getText());
+	TextEdit* pTextEdit = dynamic_cast<TextEdit*>(shape);
+	if (nullptr == pTextEdit)
+		return;
+	QDomNode node = m_doc.createTextNode(pTextEdit->getText());
 	text.appendChild(node);
 	m_shapeG.appendChild(text);
 }

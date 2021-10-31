@@ -480,12 +480,15 @@ void Pencil::setDrawPoint(QList<QPointF>& list)
 
 void Pencil::copyDate(Shape* shape)
 {
-	for (auto i : dynamic_cast<Pencil*>(shape)->m_drawPoint)
+	Pencil* pencil = dynamic_cast<Pencil*>(shape);
+	if (nullptr == pencil)
+		return;
+	for (auto i : pencil->m_drawPoint)
 	{
 		m_drawPoint.append(i + QPointF(10, 10));
 	}
 
-	for (auto i : dynamic_cast<Pencil*>(shape)->m_PhysicalPoint)
+	for (auto i : pencil->m_PhysicalPoint)
 	{
 		m_PhysicalPoint.append(i + QPointF(10, 10));
 	}
@@ -1029,8 +1032,10 @@ const int TextEdit::getFontSize()
 
 void TextEdit::copyDate(Shape* shape)
 {
-	m_text = dynamic_cast<TextEdit*>(shape)->m_text;
-	
+	TextEdit* textEdit = dynamic_cast<TextEdit*>(shape);
+	if (nullptr == textEdit)
+		return;
+	m_text = textEdit->m_text;
 	Shape::copyDate(shape);
 }
 
