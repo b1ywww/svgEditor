@@ -260,6 +260,7 @@ private:
 	QString m_text;
 	int m_fontSize = 20;
 	QPainterPath m_path;
+	QPainterPath m_drawPath;
 	qreal m_Left = 10000.0;  //让画笔抽象出一个矩形，这个矩形包含了整个画笔内容
 	qreal m_right = -10000.0;
 	qreal m_top = 10000.0;

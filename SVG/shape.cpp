@@ -907,8 +907,8 @@ void TextEdit::drawShape(QPainter& painter)
 
 	painter.setPen(m_pen);
 
-	painter.fillPath(m_path, m_brush.color());
-	painter.drawPath(m_path);
+	painter.fillPath(m_drawPath, m_brush.color());
+	painter.drawPath(m_drawPath);
 	painter.setPen(Qt::NoPen);
 }
 
@@ -929,42 +929,12 @@ void TextEdit::setDepth(qreal depth)
 
 void TextEdit::scale(qreal width, qreal height)
 {
-	m_drawStart.setX((m_start.x()) * (1 + width));
-	m_drawEnd.setX((m_end.x()) * (1 + width));
-
-	m_drawStart.setY((m_start.y()) * (1 + height));
-	m_drawEnd.setY((m_end.y()) * (1 + height));
-
-	if (m_text.isEmpty())
-		return;
-
-	//简陋版本的文字放大缩小
-	while (true)
+	int length = m_path.elementCount();
+	for (int i = 0; i < length; i++)
 	{
-		QFontMetricsF textLength(QFont("Microsoft YaHei", m_fontSize));
-		qreal widthText = textLength.width(m_text);
-		if(widthText > m_drawEnd.x() - m_drawStart.x())
-			break;
-
-		m_fontSize++;
-		textLength;
+		m_drawPath.setElementPositionAt(i, m_path.elementAt(i).x * (1 + width), m_path.elementAt(i).y * (1 + height));
 	}
-
-	while (true)
-	{
-		if(m_drawEnd.x() - m_drawStart.x() == 0)
-			break;
-
-		QFontMetricsF textLength(QFont("Microsoft YaHei", m_fontSize));
-		qreal widthText = textLength.width(m_text);
-		if (widthText < m_drawEnd.x() - m_drawStart.x())
-			break;
-
-		m_fontSize--;
-		textLength;
-	}
-
-	drawPointToPhysicalPoint(width);
+	updateClickRect();
 }
 
 void TextEdit::move(QPointF offset)
@@ -973,6 +943,7 @@ void TextEdit::move(QPointF offset)
 	m_drawEnd = m_drawEnd + offset;
 
 	m_path.translate(offset);
+	m_drawPath = m_path;
 	updateClickRect();
 }
 
@@ -991,6 +962,7 @@ void TextEdit::moveTop(QPointF offset)
 		m_path.setElementPositionAt(i, m_path.elementAt(i).x, m_path.elementAt(i).y + offsetY);
 	}
 
+	m_drawPath = m_path;
 	m_top = m_drawStart.y() + offset.y();
 	m_drawStart.setY(m_top);
 }
@@ -1007,6 +979,8 @@ void TextEdit::moveBottom(QPointF offset)
 		qreal offsetY = offset.y() * ratio;
 		m_path.setElementPositionAt(i, m_path.elementAt(i).x, m_path.elementAt(i).y + offsetY);
 	}
+
+	m_drawPath = m_path;
 	m_bottom = m_drawEnd.y() + offset.y();
 	m_drawEnd.setY(m_bottom);
 }
@@ -1023,6 +997,8 @@ void TextEdit::moveLeft(QPointF offset)
 		qreal offsetX = offset.x() * ratio;
 		m_path.setElementPositionAt(i, m_path.elementAt(i).x + offsetX, m_path.elementAt(i).y);
 	}
+
+	m_drawPath = m_path;
 	m_Left = m_drawStart.x() + offset.x();
 	m_drawStart.setX(m_Left);
 }
@@ -1039,6 +1015,8 @@ void TextEdit::moveRight(QPointF offset)
 		qreal offsetX = offset.x() * ratio;
 		m_path.setElementPositionAt(i, m_path.elementAt(i).x + offsetX, m_path.elementAt(i).y);
 	}
+
+	m_drawPath = m_path;
 	m_right = m_drawEnd.x() + offset.x();
 	m_drawEnd.setX(m_right);
 }
@@ -1071,6 +1049,7 @@ void TextEdit::setText(QString text)
 {
 	m_text = text;
 	m_path.addText(m_drawStart.x(), m_drawEnd.y(), QFont("Microsoft YaHei", 30), m_text);
+	m_drawPath = m_path;
 	updateClickRect();
 }
 
@@ -1086,9 +1065,7 @@ const int TextEdit::getFontSize()
 
 void TextEdit::updateClickRect()
 {
-	QRectF rect = m_path.controlPointRect();
-
-	qDebug() << rect;
+	QRectF rect = m_drawPath.controlPointRect();
 
 	m_drawStart = QPointF(rect.x(), rect.y());
 	m_drawEnd = m_drawStart + QPointF(rect.width(), rect.height());
