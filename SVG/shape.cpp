@@ -566,7 +566,6 @@ void Pencil::moveBottom(QPointF offset)
 	}
 	m_bottom = m_drawEnd.y() + offset.y();
 	m_drawEnd.setY(m_bottom);
-
 }
 
 void Pencil::moveLeft(QPointF offset)
@@ -894,6 +893,7 @@ TextEdit::TextEdit()
 {
 	m_type = ShapeType::TypeText;
 	m_pen.setStyle(Qt::SolidLine);
+	m_brush.setColor(Qt::black);
 }
 
 TextEdit::~TextEdit()
@@ -906,9 +906,9 @@ void TextEdit::drawShape(QPainter& painter)
 		return;
 
 	painter.setPen(m_pen);
-	painter.setFont(QFont("Microsoft YaHei", m_fontSize));
 
-	painter.drawText(QRect(m_drawStart.toPoint(), m_drawEnd.toPoint()), m_text);
+	painter.fillPath(m_path, m_brush.color());
+	painter.drawPath(m_path);
 	painter.setPen(Qt::NoPen);
 }
 
@@ -971,53 +971,107 @@ void TextEdit::move(QPointF offset)
 {
 	m_drawStart = m_drawStart + offset;
 	m_drawEnd = m_drawEnd + offset;
+
+	m_path.translate(offset);
+	updateClickRect();
 }
 
 void TextEdit::moveTop(QPointF offset)
 {
-	//m_drawStar.setY(m_drawStar.y() + offset.y());
+	qDebug() << m_path.controlPointRect();
+
+	if (qAbs(m_top + offset.y() - m_bottom) < 0.0001)
+		return;
+
+	int length = m_path.elementCount();
+	for (int i = 0; i < length; i++)
+	{
+		qreal ratio = (m_path.elementAt(i).y - m_bottom) / (m_top - m_bottom);
+		qreal offsetY = offset.y() * ratio;
+		m_path.setElementPositionAt(i, m_path.elementAt(i).x, m_path.elementAt(i).y + offsetY);
+	}
+
+	m_top = m_drawStart.y() + offset.y();
+	m_drawStart.setY(m_top);
 }
 
 void TextEdit::moveBottom(QPointF offset)
 {
-	//m_drawEnd.setY(m_drawEnd.y() + offset.y());
+	if (qAbs(m_bottom + offset.y() - m_top) < 0.0001)
+		return;
+
+	int length = m_path.elementCount();
+	for (int i = 0; i < length; i++)
+	{
+		qreal ratio = (m_path.elementAt(i).y - m_top) / (m_bottom - m_top);
+		qreal offsetY = offset.y() * ratio;
+		m_path.setElementPositionAt(i, m_path.elementAt(i).x, m_path.elementAt(i).y + offsetY);
+	}
+	m_bottom = m_drawEnd.y() + offset.y();
+	m_drawEnd.setY(m_bottom);
 }
 
 void TextEdit::moveLeft(QPointF offset)
 {
-	//m_drawStar.setX(m_drawStar.x() + offset.x());
+	if (qAbs(m_Left + offset.x() - m_right) < 0.0001)
+		return;
+
+	int length = m_path.elementCount();
+	for (int i = 0; i < length; i++)
+	{
+		qreal ratio = (m_path.elementAt(i).x - m_right) / (m_Left - m_right);
+		qreal offsetX = offset.x() * ratio;
+		m_path.setElementPositionAt(i, m_path.elementAt(i).x + offsetX, m_path.elementAt(i).y);
+	}
+	m_Left = m_drawStart.x() + offset.x();
+	m_drawStart.setX(m_Left);
 }
 
 void TextEdit::moveRight(QPointF offset)
 {
-	//m_drawEnd.setX(m_drawEnd.x() + offset.x());
+	if (qAbs(m_right + offset.x() - m_Left) < 0.0001)
+		return;
+
+	int length = m_path.elementCount();
+	for (int i = 0; i < length; i++)
+	{
+		qreal ratio = (m_path.elementAt(i).x - m_Left) / (m_right - m_Left);
+		qreal offsetX = offset.x() * ratio;
+		m_path.setElementPositionAt(i, m_path.elementAt(i).x + offsetX, m_path.elementAt(i).y);
+	}
+	m_right = m_drawEnd.x() + offset.x();
+	m_drawEnd.setX(m_right);
 }
 
 void TextEdit::moveUpperLeft(QPointF offset)
 {
-	//m_drawStar = m_drawStar + offset;
+	moveLeft(offset);
+	moveTop(offset);
 }
 
 void TextEdit::moveUpperRight(QPointF offset)
 {
-	//m_drawStar.setY(m_drawStar.y() + offset.y());
-	//m_drawEnd.setX(m_drawEnd.x() + offset.x());
+	moveRight(offset);
+	moveTop(offset);
 }
 
 void TextEdit::moveLowerLeft(QPointF offset)
 {
-	//m_drawStar.setX(m_drawStar.x() + offset.x());
-	//m_drawEnd.setY(m_drawEnd.y() + offset.y());
+	moveLeft(offset);
+	moveBottom(offset);
 }
 
 void TextEdit::moveLowerRight(QPointF offset)
 {
-	//m_drawEnd = m_drawEnd + offset;
+	moveRight(offset);
+	moveBottom(offset);
 }
 
 void TextEdit::setText(QString text)
 {
 	m_text = text;
+	m_path.addText(m_drawStart.x(), m_drawEnd.y(), QFont("Microsoft YaHei", 30), m_text);
+	updateClickRect();
 }
 
 const QString TextEdit::getText()
@@ -1028,6 +1082,24 @@ const QString TextEdit::getText()
 const int TextEdit::getFontSize()
 {
 	return m_fontSize;
+}
+
+void TextEdit::updateClickRect()
+{
+	QRectF rect = m_path.controlPointRect();
+
+	qDebug() << rect;
+
+	m_drawStart = QPointF(rect.x(), rect.y());
+	m_drawEnd = m_drawStart + QPointF(rect.width(), rect.height());
+
+	m_start = m_drawStart;
+	m_end = m_drawEnd;
+
+	m_top = m_drawStart.y();
+	m_bottom = m_drawEnd.y();
+	m_Left = m_drawStart.x();
+	m_right = m_drawEnd.x();
 }
 
 void TextEdit::copyDate(Shape* shape)
