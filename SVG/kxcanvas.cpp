@@ -348,6 +348,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 
 void KxSvgCanvas::mouseDoubleClickEvent(QMouseEvent* event)
 {
+	return;//ÆÁ±ÎµôÎÄ×Ö±à¼­ÄÚÈÝ¹¦ÄÜ
 	if (m_clickShapeList.size() == 1 && m_clickShapeList.first()->getShapeType() == ShapeType::TypeText)
 	{
 		Shape* shapeText = m_clickShapeList.first();
