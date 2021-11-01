@@ -523,6 +523,8 @@ void KxSvgCanvas::setText()
 	textEdit->setText(m_text);
 	i->drawPointToPhysicalPoint(m_radio);
 	m_shapeList.append(i);
+	QUndoCommand* addcommand = new AddCommand(this, i);
+	m_undoStack->push(addcommand);
 	m_pClickShape = i;
 	m_text = "";
 	m_pTextEditWidget->clear();
