@@ -229,7 +229,7 @@ public:
 	void setDrawStart(QPointF star) override;
 	void setDrawEnd(QPointF end) override;
 	void setDepth(qreal depth) override;
-	void scale(qreal width, qreal height) override;
+	void scale(qreal ratioW, qreal ratioH) override;
 
 	void move(QPointF offset) override;
 	void moveTop(QPointF offset) override;
@@ -245,13 +245,18 @@ public:
 	const QString getText();
 	const int getFontSize();
 
+	void updateClickRect();
+
 	void copyDate(Shape* shape);
 
 private:
 	QString m_text;
 	int m_fontSize = 20;
 	QPainterPath m_path;
-
+	qreal m_Left = 10000.0;  //让画笔抽象出一个矩形，这个矩形包含了整个画笔内容
+	qreal m_right = -10000.0;
+	qreal m_top = 10000.0;
+	qreal m_bottom = -10000.0;
 };
 
 class ShapeFactory
