@@ -587,6 +587,17 @@ void KxSvgCanvas::paste()
 	update();
 }
 
+void KxSvgCanvas::deleteShape()
+{
+	if (false == m_clickShapeList.isEmpty())
+	{
+		QUndoCommand* deleteCommand = new DeleteCommand(this, m_clickShapeList);
+		m_undoStack->push(deleteCommand);
+		m_clickShapeList.clear();
+		m_pClickShape = nullptr;
+	}
+}
+
 void KxSvgCanvas::shapeToUpper()
 {
 	if (m_clickShapeList.size() != 1)
@@ -641,13 +652,7 @@ void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 	{
 	case Qt::Key_Delete:
 	{
-		if(false == m_clickShapeList.isEmpty())
-		{
-			QUndoCommand* deleteCommand = new DeleteCommand(this, m_clickShapeList);
-			m_undoStack->push(deleteCommand);
-			m_clickShapeList.clear();
-			m_pClickShape = nullptr;
-		}
+		deleteShape();
 	}
 	case  Qt::Key_A:
 	{
@@ -987,6 +992,13 @@ void KxSvgCanvas::setRightClickMenu()
 
 	m_pRightClickMenu->addSeparator();
 	
+	QAction* pActionDelete = new QAction("…æ≥˝", this);
+	connect(pActionDelete, SIGNAL(triggered()), this, SLOT(deleteShape()));
+
+	m_pRightClickMenu->addAction(pActionDelete);
+
+	m_pRightClickMenu->addSeparator();
+
 	QAction* pActionUpper = new QAction("÷√”⁄…œ“ª≤„", this);
 	connect(pActionUpper, SIGNAL(triggered()), this, SLOT(shapeToUpper()));
 

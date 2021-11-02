@@ -77,6 +77,7 @@ public slots:
 	void shear();
 	void copy();
 	void paste();
+	void deleteShape();
 
 	void shapeToUpper();
 	void shapeToLower();
