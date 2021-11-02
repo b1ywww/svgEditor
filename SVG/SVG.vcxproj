@@ -105,11 +105,11 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Visual Leak Detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\wps\Desktop\gtest\include;C:\Program Files %28x86%29\Visual Leak Detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>C:\Program Files (x86)\Visual Leak Detector\lib\Win64\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files (x86)\Visual Leak Detector\lib\Win64\vld.lib;C:\Users\wps\Desktop\gtest\gtest_maind.lib;C:\Users\wps\Desktop\gtest\gtestd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
@@ -125,11 +125,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Visual Leak Detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\wps\Desktop\gtest\include;C:\Program Files %28x86%29\Visual Leak Detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>C:\Program Files (x86)\Visual Leak Detector\lib\Win64\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files (x86)\Visual Leak Detector\lib\Win64\vld.lib;C:\Users\wps\Desktop\gtest\gtest_maind.lib;C:\Users\wps\Desktop\gtest\gtestd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
@@ -199,6 +199,7 @@
     <ClCompile Include="canvastool.cpp" />
     <ClCompile Include="kxcanvas.cpp" />
     <ClCompile Include="shape.cpp" />
+    <ClCompile Include="ShapeTest.cpp" />
     <ClCompile Include="svgread.cpp" />
     <ClCompile Include="svgwrite.cpp" />
     <ClCompile Include="transaction.cpp" />

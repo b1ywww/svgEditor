@@ -21,6 +21,9 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
+    <Filter Include="unit_test">
+      <UniqueIdentifier>{0b53d3c1-ae92-4b3a-9534-7a746ff15122}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="SVG.qrc">
@@ -54,6 +57,9 @@
     </ClCompile>
     <ClCompile Include="transaction.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShapeTest.cpp">
+      <Filter>unit_test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
