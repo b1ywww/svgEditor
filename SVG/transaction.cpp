@@ -184,7 +184,6 @@ DeleteCommand::~DeleteCommand()
 {
 	for (auto i : m_items)
 	{
-		shapeListRemoveOne(i);
 		i->setClickState(false);
 	}
 }
@@ -203,6 +202,7 @@ void DeleteCommand::redo()
 	for (auto i : m_items)
 	{
 		i->setIsPaint(false);
+		i->setClickState(false);
 		clickListRemoveOne(i);
 	}
 	update();

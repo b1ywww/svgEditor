@@ -16,9 +16,6 @@ bool SvgRead::read(QString dir, QList<Shape*>& shapelist, int& width, int& heigh
 	if (dir.isEmpty())
 		return false;
 
-	if (shapelist.isEmpty())
-		return false;
-
 	QFile file(dir);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return false;

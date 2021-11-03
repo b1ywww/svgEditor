@@ -66,6 +66,8 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent, qreal x, qreal y, qreal w, qreal h)
 KxSvgCanvas::~KxSvgCanvas()
 {
 	delete m_pClickRect;
+	delete m_undoStack;
+	deleteShapeList();
 	clearCopyList();
 	ShapeFactory::getShapeFactory()->deleteShapeFactory();
 }
@@ -653,6 +655,7 @@ void KxSvgCanvas::keyPressEvent(QKeyEvent* event)
 	case Qt::Key_Delete:
 	{
 		deleteShape();
+		break;
 	}
 	case  Qt::Key_A:
 	{
