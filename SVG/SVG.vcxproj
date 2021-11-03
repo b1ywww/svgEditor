@@ -152,7 +152,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -173,7 +173,7 @@
     <ClCompile>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
@@ -199,10 +199,15 @@
     <ClCompile Include="canvastool.cpp" />
     <ClCompile Include="kxcanvas.cpp" />
     <ClCompile Include="shape.cpp" />
-    <ClCompile Include="ShapeTest.cpp" />
     <ClCompile Include="svgread.cpp" />
     <ClCompile Include="svgwrite.cpp" />
     <ClCompile Include="transaction.cpp" />
+    <ClCompile Include="unit_test\shape_circle_test.cpp" />
+    <ClCompile Include="unit_test\shape_hexagon_test.cpp" />
+    <ClCompile Include="unit_test\shape_line_test.cpp" />
+    <ClCompile Include="unit_test\shape_pencil_test.cpp" />
+    <ClCompile Include="unit_test\shape_square_test.cpp" />
+    <ClCompile Include="unit_test\shape_textedit_test.cpp" />
     <QtRcc Include="SVG.qrc" />
     <QtUic Include="SVG.ui" />
     <ClCompile Include="kxsvgview.cpp" />
@@ -214,6 +219,7 @@
   <ItemGroup>
     <QtMoc Include="kxcanvas.h" />
     <ClInclude Include="canvastool.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="transaction.h" />
     <ClInclude Include="svgread.h" />

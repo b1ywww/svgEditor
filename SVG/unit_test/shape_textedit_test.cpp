@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "../pch.h"
 
 /* 文字的单测有问题，
 error: ASSERT failure in QGuiApplication::font(): "no QGuiApplication instance", file kernel\qguiapplication.cpp, line 2994    QMutex: destroying locked mutex

@@ -21,8 +21,8 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
-    <Filter Include="unit_test">
-      <UniqueIdentifier>{0b53d3c1-ae92-4b3a-9534-7a746ff15122}</UniqueIdentifier>
+    <Filter Include="unity_build">
+      <UniqueIdentifier>{a38f6a49-711d-4899-8280-b3dbdfb81ab0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -58,8 +58,23 @@
     <ClCompile Include="transaction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShapeTest.cpp">
-      <Filter>unit_test</Filter>
+    <ClCompile Include="unit_test\shape_textedit_test.cpp">
+      <Filter>unity_build</Filter>
+    </ClCompile>
+    <ClCompile Include="unit_test\shape_square_test.cpp">
+      <Filter>unity_build</Filter>
+    </ClCompile>
+    <ClCompile Include="unit_test\shape_pencil_test.cpp">
+      <Filter>unity_build</Filter>
+    </ClCompile>
+    <ClCompile Include="unit_test\shape_line_test.cpp">
+      <Filter>unity_build</Filter>
+    </ClCompile>
+    <ClCompile Include="unit_test\shape_hexagon_test.cpp">
+      <Filter>unity_build</Filter>
+    </ClCompile>
+    <ClCompile Include="unit_test\shape_circle_test.cpp">
+      <Filter>unity_build</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="canvastool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
