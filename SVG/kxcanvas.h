@@ -7,6 +7,7 @@
 #include <QtSvg/qsvgrenderer.h>
 #include <QtWidgets/QMenuBar>
 #include <QLineEdit>
+#include <QPixmap>
 
 enum class mousePosition
 {
@@ -51,6 +52,9 @@ public:
 	void copyClickShape();
 	void clearCopyList();
 	void copyListToShapeList();
+
+	void updatePixmap(Shape* shape);
+	void updatePixmap(QList<Shape*>& list);
 
 	const QUndoStack* getUndoStack();
 	const qreal getRadio();
@@ -97,6 +101,8 @@ private:
 	void setPositionType(QPoint point);
 	void setRightClickMenu();
 
+	QPixmap* m_pixmap = nullptr;
+
 	QMenu* m_pRightClickMenu = nullptr;			 //右键菜单栏
 	QLineEdit* m_pTextEditWidget = nullptr;
 	ShapeType m_currentType;				//新增对象的类型
@@ -120,7 +126,7 @@ private:
 	int m_canvasWidth = 500;
 	int m_canvasHeight = 500;
 	bool m_isCloseEvent = false;
-
+	bool m_isRepaint = true;
 	QUndoStack* m_undoStack = nullptr;
 
 	mousePosition m_positionType = mousePosition::noClick;

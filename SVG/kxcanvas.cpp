@@ -25,6 +25,10 @@ const int POSITION_LOWER_RIGHT = 12;
 KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	:QWidget(parent)
 {
+
+	m_pixmap = new QPixmap(m_canvasWidth, m_canvasHeight);
+	m_pixmap->fill(Qt::white);
+
 	m_currentType = ShapeType::TypeSelect;
 	setMouseTracking(true);
 	setObjectName(QStringLiteral("svgCanvas"));
@@ -69,30 +73,23 @@ KxSvgCanvas::~KxSvgCanvas()
 	delete m_undoStack;
 	clearCopyList();
 	ShapeFactory::getShapeFactory()->deleteShapeFactory();
+	delete m_pixmap;
 }
 
 void KxSvgCanvas::paintEvent(QPaintEvent* event)
 {
-	QPainter painter(this);
+	QPainter painter;
 	painter.setRenderHint(QPainter::Antialiasing);
-	//坐标变换
+
+	painter.begin(this);
+	painter.drawPixmap(0, 0, *m_pixmap);
 	QTransform transform;
 	transform.translate(m_transfrom.x(), m_transfrom.y());
 	painter.setTransform(transform);
-
-	//绘制所有图像
-	for (Shape* i : m_shapeList)
-	{
-		if (i != nullptr)
-		{
-			i->drawShape(painter);
-		}
-	}
-
 	//绘制选中框
 	if (m_clickShapeList.size() > 0)
 	{
-		for(auto i : m_clickShapeList)
+		for (auto i : m_clickShapeList)
 		{
 			if (false == i->isPaint())
 			{
@@ -119,6 +116,10 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 	//加载通用的svg图片
 	if (m_pSvgRenderer && m_pSvgRenderer->isValid())
 		m_pSvgRenderer->render(&painter);
+	m_isRepaint = false;
+
+	painter.end();
+	
 }
 
 void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
@@ -240,6 +241,8 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 	if (m_pCurrentShape)
 	{
 		m_pCurrentShape->setDrawEnd(transformPoint);
+
+		updatePixmap(m_pCurrentShape);
 	}
 
 	if (!m_pClickRect->getDrawStart().isNull())
@@ -249,6 +252,7 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 
 	if (m_clickShapeList.isEmpty())
 	{		
+		m_isRepaint = true;
 		update();
 		return;
 	}
@@ -257,17 +261,19 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 	{
 		editShape(transformPoint);
 		m_lastPoint = transformPoint;
+		m_isRepaint = true;
+		updatePixmap(m_clickShapeList);
+		update();
 	}
 	else if (m_currentType == ShapeType::TypeSelect)
 	{
 		setPositionType(transformPoint);
 	}
-
-	update();
 }
 
 void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 {
+	m_isRepaint = true;
 	if (m_pCurrentShape)
 	{
 		if (m_pCurrentShape->getDrawEnd().isNull() && m_currentType != ShapeType::TypePencil)
@@ -414,6 +420,7 @@ void KxSvgCanvas::openSvg()
 	setCanvasColor(m_rgb);
 	m_isCloseEvent = false;
 	readAddCommand();
+	updatePixmap(m_shapeList);
 }
 
 void KxSvgCanvas::saveSvg()
@@ -874,6 +881,35 @@ void KxSvgCanvas::copyListToShapeList()
 		shape->copyDate(i);
 		m_copyShapeList.append(shape);
 	}
+}
+
+void KxSvgCanvas::updatePixmap(Shape* shape)
+{
+	//坐标变换
+	QPainter painter;
+	painter.begin(m_pixmap);
+	QTransform transform;
+	transform.translate(m_transfrom.x(), m_transfrom.y());
+	painter.setTransform(transform);
+	//绘制图形
+	shape->drawShape(painter);
+	painter.end();
+}
+
+void KxSvgCanvas::updatePixmap(QList<Shape*>& list)
+{
+	//坐标变换
+	QPainter painter;
+	painter.begin(m_pixmap);
+	QTransform transform;
+	transform.translate(m_transfrom.x(), m_transfrom.y());
+	painter.setTransform(transform);
+	//绘制图形
+	for (auto i : list)
+	{
+		i->drawShape(painter);
+	}
+	painter.end();
 }
 
 const QUndoStack* KxSvgCanvas::getUndoStack()
