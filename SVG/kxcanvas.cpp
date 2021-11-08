@@ -81,7 +81,7 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 	painter.setTransform(transform);
 
 	//»æÖÆËùÓÐÍ¼Ïñ
-	for (Shape * i : m_shapeList)
+	for (Shape* i : m_shapeList)
 	{
 		if (i != nullptr)
 		{
@@ -377,6 +377,11 @@ void KxSvgCanvas::setCanvasSize()
 	m_transfrom.setX(m_canvasWidth / 2);
 	m_transfrom.setY(m_canvasHeight / 2);
 	emit setCanvasChooseSize(m_canvasWidth, m_canvasHeight);
+	m_radio = 0.0;
+	for (auto i : m_shapeList)
+	{
+		i->scale(m_radio, m_radio);
+	}
 }
 
 void KxSvgCanvas::setCanvasWidth(QString width)
