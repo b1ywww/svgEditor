@@ -57,6 +57,8 @@ public:
 
 	void shapeListRemoveOne(Shape* item);
 	void clickListRemoveOne(Shape* item);
+	
+	void readAddCommand();
 
 public slots:
 	void setCurrentType(ShapeType);

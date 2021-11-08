@@ -67,7 +67,6 @@ KxSvgCanvas::~KxSvgCanvas()
 {
 	delete m_pClickRect;
 	delete m_undoStack;
-	deleteShapeList();
 	clearCopyList();
 	ShapeFactory::getShapeFactory()->deleteShapeFactory();
 }
@@ -110,7 +109,7 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 	}
 
 	//»æÖÆÑ¡È¡¿ò
-	if (!m_pClickRect->getDrawEnd().isNull())
+	if (m_pClickRect && !m_pClickRect->getDrawEnd().isNull())
 	{
 		m_pClickRect->getPen().setStyle(Qt::DashLine);
 		m_pClickRect->getPen().setColor(QColor(67, 142, 419));
@@ -409,6 +408,7 @@ void KxSvgCanvas::openSvg()
 	setCanvasSize();
 	setCanvasColor(m_rgb);
 	m_isCloseEvent = false;
+	readAddCommand();
 }
 
 void KxSvgCanvas::saveSvg()
@@ -437,29 +437,25 @@ void KxSvgCanvas::init()
 	case QMessageBox::Ok:
 	{
 		saveSvg();
-		deleteShapeList();
-		unloadSvgRenderer();
-		m_canvasWidth = 500;
-		m_canvasHeight = 500;
-		setCanvasSize();
-		setCanvasColor(qRgb(255, 255, 255));
-		m_isCloseEvent = false;
 		break;
 	}
-	case QMessageBox::No:
+	case QMessageBox::Cancel:
 	{
-		deleteShapeList();
-		unloadSvgRenderer();
-		m_canvasWidth = 500;
-		m_canvasHeight = 500;
-		setCanvasSize();
-		setCanvasColor(qRgb(255, 255, 255));
-		m_isCloseEvent = false;
+		return;
 		break;
 	}
 	default:
 		break;
 	}
+
+	m_undoStack->clear();
+	deleteShapeList();
+	unloadSvgRenderer();
+	m_canvasWidth = 500;
+	m_canvasHeight = 500;
+	setCanvasSize();
+	setCanvasColor(qRgb(255, 255, 255));
+	m_isCloseEvent = false;
 	update();
 }
 
@@ -482,10 +478,11 @@ void KxSvgCanvas::changeText(QString text)
 	if (m_clickShapeList.size() == 1)
 	{
 		length < 10 ? m_clickShapeList.first()->getDrawEnd().setX(m_clickShapeList.first()->getDrawStart().x() + 10)
-			: m_clickShapeList.first()->getDrawEnd().setX(m_clickShapeList.first()->getDrawStart().x() + length);
+					: m_clickShapeList.first()->getDrawEnd().setX(m_clickShapeList.first()->getDrawStart().x() + length);
 		m_clickShapeList.first()->drawPointToPhysicalPoint(m_radio);
 
-		length < 10 ? m_pTextEditWidget->resize(10, m_clickShapeList.first()->getDrawEnd().y() - m_clickShapeList.first()->getDrawStart().y()) : m_pTextEditWidget->resize(length + 10, m_clickShapeList.first()->getDrawEnd().y() - m_clickShapeList.first()->getDrawStart().y());
+		length < 10 ? m_pTextEditWidget->resize(10, m_clickShapeList.first()->getDrawEnd().y() - m_clickShapeList.first()->getDrawStart().y()) 
+					: m_pTextEditWidget->resize(length + 10, m_clickShapeList.first()->getDrawEnd().y() - m_clickShapeList.first()->getDrawStart().y());
 		update();
 	}
 }
@@ -564,16 +561,8 @@ void KxSvgCanvas::setStrokeStyle(Qt::PenStyle style)
 
 void KxSvgCanvas::shear()
 {
-	if (m_clickShapeList.isEmpty())
-		return;
-
-	m_copyShapeList.clear();
-	for (auto i : m_clickShapeList)
-	{
-		m_shapeList.removeOne(i);
-		m_copyShapeList.append(i);
-	}
-	m_clickShapeList.clear();
+	copyClickShape();
+	deleteShape();
 	update();
 }
 
@@ -750,7 +739,6 @@ bool KxSvgCanvas::deleteShapeList()
 	//	return true;
 	//}
 
-	//return false;
 	return false;
 }
 
@@ -833,7 +821,11 @@ void KxSvgCanvas::copyClickShape()
 	if (m_clickShapeList.isEmpty())
 		return;
 
-	clearCopyList();
+	for (auto i : m_copyShapeList)
+	{
+		m_copyShapeList.removeOne(i);
+	}
+
 	for (auto i : m_clickShapeList)
 	{
 		Shape* shape = ShapeFactory::getShapeFactory()->getShape(i->getShapeType());
@@ -897,6 +889,15 @@ void KxSvgCanvas::shapeListRemoveOne(Shape* item)
 void KxSvgCanvas::clickListRemoveOne(Shape* item)
 {
 	m_copyShapeList.removeOne(item);
+}
+
+void KxSvgCanvas::readAddCommand()
+{
+	if (m_shapeList.isEmpty())
+		return;
+
+	QUndoCommand* addCommand = new AddCommand(this, m_shapeList);
+	m_undoStack->push(addCommand);
 }
 
 Shape* KxSvgCanvas::getClickShape(QPoint point)
@@ -1091,6 +1092,8 @@ void KxSvgCanvas::editShape(QPoint transformPoint)
 QPointF KxSvgCanvas::editoffset(QPointF start, QPointF end)
 {
 	QPointF res;
+	if (nullptr == m_pClickShape)
+		return res;
 	res = m_pClickShape->getPhysicalStart() - start;
 	if (qAbs(res.x()) < 0.0001)
 		res.setX(m_pClickShape->getPhysicalEnd().x() - end.x());

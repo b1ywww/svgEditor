@@ -5,7 +5,6 @@
 
 Shape::Shape()
 {
-
 }
 
 Shape::~Shape()
@@ -860,7 +859,7 @@ void Hexagon::moveLowerRight(QPointF offset)
 	setVertex();
 }
 
-void Hexagon::setVertex(QVector<QPointF>& vector)
+void Hexagon::setVertex(QVector<QPointF> vector)
 {
 	if(vector.isEmpty())
 	{

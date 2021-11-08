@@ -4,7 +4,7 @@
 #include <QUndoCommand>
 
 class KxSvgCanvas;
-extern enum class mousePosition;
+enum class mousePosition;
 class SvgCommand : public QUndoCommand
 {
 public:

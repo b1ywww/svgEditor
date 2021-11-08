@@ -81,7 +81,7 @@ bool SvgRead::read(QString dir, QList<Shape*>& shapelist, int& width, int& heigh
 			shapelist << readText(attributes, reader);
 		reader.readNext();
 	}
-
+	
 	width = m_transform.x() * 2;
 	height = m_transform.y() * 2;
 	return true;

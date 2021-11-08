@@ -100,8 +100,8 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
+	void copyDate(Shape* shape) override;
 
-	void copyDate(Shape* shape);
 };
 
 class Square : public Shape
@@ -126,8 +126,7 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
-
-	void copyDate(Shape* shape);
+	void copyDate(Shape* shape) override;
 };
 
 class Pencil : public Shape
@@ -152,14 +151,13 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
+	void copyDate(Shape* shape) override;
 
 	void updateClickRect(QPointF point);
 	void updateEdgeValue();
 	const QList<QPointF>& getPhysicalPoint();
 	void setDrawPoint(QList<QPointF>& list);
 	void setEndPoint();
-
-	void copyDate(Shape* shape);
 
 private:
 	QList<QPointF> m_drawPoint;
@@ -191,8 +189,7 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
-
-	void copyDate(Shape* shape);
+	void copyDate(Shape* shape) override;
 };
 
 class Hexagon : public Shape
@@ -216,11 +213,10 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
+	void copyDate(Shape* shape) override;
 
-	void setVertex(QVector<QPointF>& vector = QVector<QPointF>());
+	void setVertex(QVector<QPointF> vector = QVector<QPointF>());
 	const QVector<QPointF>& getVertex();
-
-	void copyDate(Shape* shape);
 
 private:
 	QVector<QPointF> m_vertex;
@@ -247,14 +243,13 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
+	void copyDate(Shape* shape) override;
 
 	void setText(QString text);
 	const QString getText();
 	const int getFontSize();
 
 	void updateClickRect();
-
-	void copyDate(Shape* shape);
 
 private:
 	QString m_text;
