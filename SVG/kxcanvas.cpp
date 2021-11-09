@@ -113,10 +113,22 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 		m_pClickRect->drawShape(painter);
 	}
 
+	//绘制移动时候的缓存
+	if (isMove)
+	{
+		painter.save();
+		painter.setPen(Qt::DotLine);
+		painter.setOpacity(0.3);
+		for (auto i : m_clickShapeList)
+		{
+			i->drawShape(painter);
+		}
+		painter.restore();
+	}
+
 	//加载通用的svg图片
 	if (m_pSvgRenderer && m_pSvgRenderer->isValid())
 		m_pSvgRenderer->render(&painter);
-	m_isRepaint = false;
 
 	painter.end();
 	
@@ -252,7 +264,6 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 
 	if (m_clickShapeList.isEmpty())
 	{		
-		m_isRepaint = true;
 		update();
 		return;
 	}
@@ -261,19 +272,17 @@ void KxSvgCanvas::mouseMoveEvent(QMouseEvent* event)
 	{
 		editShape(transformPoint);
 		m_lastPoint = transformPoint;
-		m_isRepaint = true;
-		updatePixmap(m_clickShapeList);
 		update();
 	}
 	else if (m_currentType == ShapeType::TypeSelect)
 	{
 		setPositionType(transformPoint);
 	}
+	update();
 }
 
 void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 {
-	m_isRepaint = true;
 	if (m_pCurrentShape)
 	{
 		if (m_pCurrentShape->getDrawEnd().isNull() && m_currentType != ShapeType::TypePencil)
@@ -309,6 +318,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 			QUndoCommand* moveCommand = new MoveCommand(this, m_clickShapeList, offset, m_positionType);
 			m_undoStack->push(moveCommand);
 		}
+		updatePixmap();
 		isMove = false;
 	}
 
@@ -420,7 +430,7 @@ void KxSvgCanvas::openSvg()
 	setCanvasColor(m_rgb);
 	m_isCloseEvent = false;
 	readAddCommand();
-	updatePixmap(m_shapeList);
+	updatePixmap();
 }
 
 void KxSvgCanvas::saveSvg()
@@ -815,6 +825,7 @@ void KxSvgCanvas::setShapeColor(QRgb rgb)
 	{
 		i->getBrush().setColor(rgb);
 	}
+	updatePixmap();
 }
 
 void KxSvgCanvas::setPenColor(QRgb rgb)
@@ -826,6 +837,7 @@ void KxSvgCanvas::setPenColor(QRgb rgb)
 	{
 		i->getPen().setColor(rgb);
 	}
+	updatePixmap();
 }
 
 void KxSvgCanvas::copyClickShape()
@@ -833,10 +845,7 @@ void KxSvgCanvas::copyClickShape()
 	if (m_clickShapeList.isEmpty())
 		return;
 
-	for (auto i : m_copyShapeList)
-	{
-		m_copyShapeList.removeOne(i);
-	}
+	clearCopyList();
 
 	for (auto i : m_clickShapeList)
 	{
@@ -883,8 +892,9 @@ void KxSvgCanvas::copyListToShapeList()
 	}
 }
 
-void KxSvgCanvas::updatePixmap(Shape* shape)
+void KxSvgCanvas::updatePixmap(Shape* shape /*nullptr*/)
 {
+	m_pixmap->fill(Qt::white);
 	//坐标变换
 	QPainter painter;
 	painter.begin(m_pixmap);
@@ -892,23 +902,12 @@ void KxSvgCanvas::updatePixmap(Shape* shape)
 	transform.translate(m_transfrom.x(), m_transfrom.y());
 	painter.setTransform(transform);
 	//绘制图形
-	shape->drawShape(painter);
-	painter.end();
-}
-
-void KxSvgCanvas::updatePixmap(QList<Shape*>& list)
-{
-	//坐标变换
-	QPainter painter;
-	painter.begin(m_pixmap);
-	QTransform transform;
-	transform.translate(m_transfrom.x(), m_transfrom.y());
-	painter.setTransform(transform);
-	//绘制图形
-	for (auto i : list)
+	for (auto i : m_shapeList)
 	{
 		i->drawShape(painter);
 	}
+	if (shape)
+		shape->drawShape(painter);
 	painter.end();
 }
 

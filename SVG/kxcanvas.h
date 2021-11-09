@@ -53,8 +53,7 @@ public:
 	void clearCopyList();
 	void copyListToShapeList();
 
-	void updatePixmap(Shape* shape);
-	void updatePixmap(QList<Shape*>& list);
+	void updatePixmap(Shape* shape = nullptr);
 
 	const QUndoStack* getUndoStack();
 	const qreal getRadio();
@@ -126,7 +125,6 @@ private:
 	int m_canvasWidth = 500;
 	int m_canvasHeight = 500;
 	bool m_isCloseEvent = false;
-	bool m_isRepaint = true;
 	QUndoStack* m_undoStack = nullptr;
 
 	mousePosition m_positionType = mousePosition::noClick;

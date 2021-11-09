@@ -18,7 +18,10 @@ SvgCommand::~SvgCommand()
 void SvgCommand::update()
 {
 	if (m_svgCanvas)
+	{
+		m_svgCanvas->updatePixmap();
 		m_svgCanvas->update();
+	}
 }
 
 const qreal SvgCommand::getRadio()
