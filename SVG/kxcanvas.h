@@ -41,17 +41,8 @@ public:
 	void wheelEvent(QWheelEvent* event) override;
 	bool eventFilter(QObject* watched, QEvent* event) override;
 
-	bool deleteShapeList();
-	void loadSvgRenderer(QString);
-	void unloadSvgRenderer();
-	bool isSvgValid();
-	int getShapeCount();
-	void shapeInClickRect();
 	void setShapeColor(QRgb);         //设置选中对象的填充
 	void setPenColor(QRgb);			  //设置选中对象线条的颜色
-	void copyClickShape();
-	void clearCopyList();
-	void copyListToShapeList();
 
 	void updatePixmap(Shape* shape = nullptr);
 
@@ -100,6 +91,21 @@ private:
 	void setPositionType(QPoint point);
 	void setRightClickMenu();
 
+	bool deleteShapeList();
+	void loadSvgRenderer(QString);
+	void unloadSvgRenderer();
+	bool isSvgValid();
+	int getShapeCount();
+	void shapeInClickRect();
+
+	void editShape(QPoint transformPoint);
+	QPointF editoffset(QPointF start, QPointF end);
+	void updatePhysicalPoint();
+
+	void copyClickShape();
+	void clearCopyList();
+	void copyListToShapeList();
+private:
 	QPixmap* m_pixmap = nullptr;
 
 	QMenu* m_pRightClickMenu = nullptr;			 //右键菜单栏
@@ -128,8 +134,4 @@ private:
 	QUndoStack* m_undoStack = nullptr;
 
 	mousePosition m_positionType = mousePosition::noClick;
-
-	void editShape(QPoint transformPoint);
-	QPointF editoffset(QPointF start, QPointF end);
-	void updatePhysicalPoint();
 };
