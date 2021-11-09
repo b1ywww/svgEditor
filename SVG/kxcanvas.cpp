@@ -568,6 +568,7 @@ void KxSvgCanvas::setStroke()
 	{
 		i->getPen().setWidthF(m_penWidth);
 	}
+	updatePixmap();
 	update();
 }
 
