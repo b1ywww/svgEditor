@@ -79,7 +79,7 @@ KxSvgCanvas::~KxSvgCanvas()
 void KxSvgCanvas::paintEvent(QPaintEvent* event)
 {
 	QPainter painter;
-	painter.setRenderHint(QPainter::Antialiasing);
+	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
 	painter.begin(this);
 	painter.drawPixmap(0, 0, *m_pixmap);
@@ -487,6 +487,8 @@ void KxSvgCanvas::setCanvasColor(QRgb rgb)
 	QString s = QString("background: #%1;").arg(QString::number(m_rgb, 16));
 	setStyleSheet(s);
 
+	m_pixmap->fill(m_rgb);
+	updatePixmap();
 	emit setCanvasChooseColor(rgb);
 }
 
@@ -712,6 +714,8 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 	{
 		m_radio += 0.05;
 		resize(m_canvasWidth * (1 + m_radio), m_canvasHeight * (1 + m_radio));
+		delete m_pixmap;
+		m_pixmap = new QPixmap(m_canvasWidth * (1 + m_radio), m_canvasHeight * (1 + m_radio));
 		transfromOffset = QPoint((m_canvasWidth * (1 + m_radio)) / 2, (m_canvasHeight * (1 + m_radio)) / 2);
 		for (Shape * i : m_shapeList)
 		{
@@ -727,6 +731,8 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 		if (qAbs(m_radio + 1.0) < 0.1)
 			m_radio = -0.95;
 		resize(m_canvasWidth * (1 + m_radio), m_canvasHeight * (1 + m_radio));
+		delete m_pixmap;
+		m_pixmap = new QPixmap(m_canvasWidth * (1 + m_radio), m_canvasHeight * (1 + m_radio));
 		transfromOffset = QPoint((m_canvasWidth * (1 + m_radio)) / 2, (m_canvasHeight * (1 + m_radio)) / 2);
 		for (Shape * i : m_shapeList)
 		{
@@ -737,6 +743,7 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 		}
 	}
 	m_transfrom = transfromOffset;
+	updatePixmap();
 	update();
 }
 
@@ -894,7 +901,7 @@ void KxSvgCanvas::copyListToShapeList()
 
 void KxSvgCanvas::updatePixmap(Shape* shape /*nullptr*/)
 {
-	m_pixmap->fill(Qt::white);
+	m_pixmap->fill(m_rgb);
 	//×ø±ê±ä»»
 	QPainter painter;
 	painter.begin(m_pixmap);
