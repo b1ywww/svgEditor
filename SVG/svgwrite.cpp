@@ -65,6 +65,8 @@ void SvgWrite::writeShape(QList<Shape*> list)
 	ShapeType shape;
 	for each (Shape * i in list)
 	{
+		if (false == i->isPaint())
+			continue;
 		shape = i->getShapeType();
 		switch (shape)
 		{
