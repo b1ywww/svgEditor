@@ -1078,6 +1078,20 @@ void TextEdit::updateClickRect()
 	m_right = m_drawEnd.x();
 }
 
+QMatrix& TextEdit::getMatrix()
+{
+	QPainterPath path;
+	path.addText(m_start.x(), m_end.y(), QFont("Microsoft YaHei", 30), m_text);
+	QRectF rect = path.controlPointRect();
+	qreal m11 = m_path.controlPointRect().width() / rect.width();
+	qreal m22 = m_path.controlPointRect().height() / rect.height();
+	qreal dx = (m11 - 1);
+	qreal dy = (m22 - 1);
+	QMatrix matrix(m11, 0, 0, m22, -dx, -dy);
+
+	return matrix;
+}
+
 void TextEdit::copyDate(Shape* shape)
 {
 	TextEdit* textEdit = dynamic_cast<TextEdit*>(shape);

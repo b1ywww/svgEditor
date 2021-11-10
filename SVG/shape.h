@@ -251,6 +251,8 @@ public:
 
 	void updateClickRect();
 
+	QMatrix& getMatrix();
+
 private:
 	QString m_text;
 	int m_fontSize = 20;

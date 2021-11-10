@@ -443,7 +443,7 @@ void SVGMainWIndow::setSettingCanvas()
 	//限制只能输入数字
 	QValidator* validatorHeight = new QRegExpValidator(regx, m_pHeightLineEdit);
 	m_pHeightLineEdit->setValidator(validatorHeight);
-
+	
 	connect(m_pHeightLineEdit, &QLineEdit::textChanged, m_pSvgCanvas, &KxSvgCanvas::setCanvasHeight);
 	connect(m_pHeightLineEdit, &QLineEdit::editingFinished, m_pSvgCanvas, &KxSvgCanvas::setCanvasSize);
 

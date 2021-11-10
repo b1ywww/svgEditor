@@ -471,7 +471,7 @@ void KxSvgCanvas::init()
 	}
 
 	m_undoStack->clear();
-	deleteShapeList();
+	m_clickShapeList.clear();
 	unloadSvgRenderer();
 	m_canvasWidth = 500;
 	m_canvasHeight = 500;

@@ -333,14 +333,23 @@ void SvgWrite::writeText(Shape* shape)
 	text.setAttribute("white-space", "preserve");
 	text.setAttribute("text-anchor", "start");
 	text.setAttribute("font-family", "Microsoft YaHei");
-	text.setAttribute("font-size", "20");
-	text.setAttribute("x", shape->getPhysicalStart().x() + m_transfrom.x() + 10);
-	text.setAttribute("y", shape->getPhysicalStart().y() + m_transfrom.y() + 20);
+	text.setAttribute("font-size", "30");
+	text.setAttribute("x", shape->getPhysicalStart().x() + m_transfrom.x());
+	text.setAttribute("y", shape->getPhysicalEnd().y() + m_transfrom.y());
 	text.setAttribute("fill-opacity", "null");
 	text.setAttribute("stroke-opacity", "null");
 	text.setAttribute("stroke", "#000");
 	text.setAttribute("fill", "#000000");
+	text.setAttribute("xml:space", "preserve");
 	text.setAttribute("type", "text");
+
+	QMatrix matrix = dynamic_cast<TextEdit*>(shape)->getMatrix();
+	qreal m0, m3, m4, m5;
+	m0 = matrix.m11();
+	m3 = matrix.m22();
+	m4 = matrix.dx() * (shape->getPhysicalStart().x() + m_transfrom.x());
+	m5 = matrix.dy() * (shape->getPhysicalEnd().y() + m_transfrom.y());
+	text.setAttribute("transform", QString("matrix(%1,0,0,%2,%3,%4)").arg(m0).arg(m3).arg(m4).arg(m5));
 
 	switch (shape->getPen().style())
 	{
