@@ -624,6 +624,7 @@ void KxSvgCanvas::shapeToUpper()
 	int index = m_shapeList.indexOf(shape);
 	m_shapeList.removeOne(shape);
 	m_shapeList.insert(index + 1, shape);
+	updatePixmap();
 	update();
 }
 
@@ -637,6 +638,7 @@ void KxSvgCanvas::shapeToLower()
 	int index = m_shapeList.indexOf(shape);
 	m_shapeList.removeOne(shape);
 	m_shapeList.insert(index - 1, shape);
+	updatePixmap();
 	update();
 }
 
@@ -648,6 +650,7 @@ void KxSvgCanvas::shapeToTop()
 	Shape* shape = m_clickShapeList.first();
 	m_shapeList.removeOne(shape);
 	m_shapeList.insert(m_shapeList.size(), shape);
+	updatePixmap();
 	update();
 }
 
@@ -659,6 +662,7 @@ void KxSvgCanvas::shapeToBottom()
 	Shape* shape = m_clickShapeList.first();
 	m_shapeList.removeOne(shape);
 	m_shapeList.insert(-1, shape);
+	updatePixmap();
 	update();
 }
 
@@ -710,6 +714,9 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 {
 	setFocus();
 	QPoint transfromOffset;
+
+	if (event->modifiers() != Qt::ControlModifier)
+		return;
 
 	if (event->delta() > 0)
 	{
