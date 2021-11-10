@@ -146,7 +146,7 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 
 	m_pCanvasScroll->setWidget(m_pSvgCanvas);
 
-	connect(m_pSvgCanvas, SIGNAL(setCanvasChooseSize(int, int)), this, SLOT(setCanvasChooseSize(int, int)));
+	connect(m_pSvgCanvas, &KxSvgCanvas::setCanvasChooseSize, this, &SVGMainWIndow::setCanvasChooseSize);
 	//设置右边的设置面板
 	setSettingPane();
 
@@ -155,7 +155,7 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 
 	setCentralWidget(m_pCentralWidget);
 
-	connect(m_pSvgCanvas, SIGNAL(setCanvasChooseColor(QRgb)), this, SLOT(setCanvasChooseColor(QRgb)));
+	connect(m_pSvgCanvas, &KxSvgCanvas::setCanvasChooseColor, this, &SVGMainWIndow::setCanvasChooseColor);
 
 	//设置上边工具栏
 	m_pToolBarTop = new QToolBar(this);
@@ -167,15 +167,15 @@ SVGMainWIndow::SVGMainWIndow(QWidget* parent)
 
 	m_pActionNew = new QAction("新建");
 	m_pToolBarTop->addAction(m_pActionNew);
-	connect(m_pActionNew, SIGNAL(triggered()), m_pSvgCanvas, SLOT(init()));
+	connect(m_pActionNew, &QAction::triggered, m_pSvgCanvas, &KxSvgCanvas::init);
 
 	m_pActionOpen = new QAction("打开");
 	m_pToolBarTop->addAction(m_pActionOpen);
-	connect(m_pActionOpen, SIGNAL(triggered()), m_pSvgCanvas, SLOT(openSvg()));
+	connect(m_pActionOpen, &QAction::triggered, m_pSvgCanvas, &KxSvgCanvas::openSvg);
 
 	m_pActionSave = new QAction("保存");
 	m_pToolBarTop->addAction(m_pActionSave);
-	connect(m_pActionSave, SIGNAL(triggered()), m_pSvgCanvas, SLOT(saveSvg()));
+	connect(m_pActionSave, &QAction::triggered, m_pSvgCanvas, &KxSvgCanvas::saveSvg);
 
 	m_pActionUndo = m_pSvgCanvas->getUndoStack()->createUndoAction(this, "撤销");
 	m_pActionUndo->setShortcut(QKeySequence::Undo);
@@ -350,13 +350,13 @@ void SVGMainWIndow::setToolBar()
 	m_pToolBarLayout->addWidget(m_pPathButton);
 	m_pToolBarLayout->addWidget(m_pShapeButton);
 
-	connect(m_pSelectButton, SIGNAL(setShapeType(ShapeType)),m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
-	connect(m_pPencilButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
-	connect(m_pLineButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
-	connect(m_pRectButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
-	connect(m_pCircleButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
-	connect(m_pPathButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
-	connect(m_pShapeButton, SIGNAL(setShapeType(ShapeType)), m_pSvgCanvas, SLOT(setCurrentType(ShapeType)));
+	connect(m_pSelectButton, &KxLeftToolBarBtn::setShapeType,m_pSvgCanvas, &KxSvgCanvas::setCurrentType);
+	connect(m_pPencilButton, &KxLeftToolBarBtn::setShapeType, m_pSvgCanvas, &KxSvgCanvas::setCurrentType);
+	connect(m_pLineButton, &KxLeftToolBarBtn::setShapeType, m_pSvgCanvas, &KxSvgCanvas::setCurrentType);
+	connect(m_pRectButton, &KxLeftToolBarBtn::setShapeType, m_pSvgCanvas, &KxSvgCanvas::setCurrentType);
+	connect(m_pCircleButton, &KxLeftToolBarBtn::setShapeType, m_pSvgCanvas, &KxSvgCanvas::setCurrentType);
+	connect(m_pPathButton, &KxLeftToolBarBtn::setShapeType, m_pSvgCanvas, &KxSvgCanvas::setCurrentType);
+	connect(m_pShapeButton, &KxLeftToolBarBtn::setShapeType, m_pSvgCanvas, &KxSvgCanvas::setCurrentType);
 }
 
 void SVGMainWIndow::setSettingPane()
@@ -416,8 +416,8 @@ void SVGMainWIndow::setSettingCanvas()
 	QValidator* validatorWidth = new QRegExpValidator(regx, m_pWidthLineEdit);
 	m_pWidthLineEdit->setValidator(validatorWidth);
 
-	connect(m_pWidthLineEdit, SIGNAL(textChanged(QString)), m_pSvgCanvas, SLOT(setCanvasWidth(QString)));
-	connect(m_pWidthLineEdit, SIGNAL(editingFinished()), m_pSvgCanvas, SLOT(setCanvasSize()));
+	connect(m_pWidthLineEdit, &QLineEdit::textChanged, m_pSvgCanvas, &KxSvgCanvas::setCanvasWidth);
+	connect(m_pWidthLineEdit, &QLineEdit::editingFinished, m_pSvgCanvas, &KxSvgCanvas::setCanvasSize);
 
 	QWidget* pEditCanvasHeight = new QWidget(m_pSettingCanvasWidget);
 	pEditCanvasHeight->setObjectName(QStringLiteral("widget_5"));
@@ -444,8 +444,8 @@ void SVGMainWIndow::setSettingCanvas()
 	QValidator* validatorHeight = new QRegExpValidator(regx, m_pHeightLineEdit);
 	m_pHeightLineEdit->setValidator(validatorHeight);
 
-	connect(m_pHeightLineEdit, SIGNAL(textChanged(QString)), m_pSvgCanvas, SLOT(setCanvasHeight(QString)));
-	connect(m_pHeightLineEdit, SIGNAL(editingFinished()), m_pSvgCanvas, SLOT(setCanvasSize()));
+	connect(m_pHeightLineEdit, &QLineEdit::textChanged, m_pSvgCanvas, &KxSvgCanvas::setCanvasHeight);
+	connect(m_pHeightLineEdit, &QLineEdit::editingFinished, m_pSvgCanvas, &KxSvgCanvas::setCanvasSize);
 
 	QWidget* pEditCanvasColor = new QWidget(m_pSettingCanvasWidget);
 	pEditCanvasColor->setObjectName(QStringLiteral("widget_5"));
@@ -467,7 +467,7 @@ void SVGMainWIndow::setSettingCanvas()
 	m_pCanvasColorChoose->setMaximumSize(QSize(50, 25));
 	m_pCanvasColorChoose->setStyleSheet("background: rgb(255,255,255);border:none;");
 
-	connect(m_pCanvasColorChoose, SIGNAL(pressed()), this, SLOT(setCanvasColor()));
+	connect(m_pCanvasColorChoose, &QPushButton::pressed, this, &SVGMainWIndow::setCanvasColor);
 
 	m_pSettingCanvasLayout->addWidget(pEditCanvasWidth, 0, 1, 1, 1);
 	m_pSettingCanvasLayout->addWidget(pEditCanvasHeight, 0, 2, 1, 1);
@@ -568,7 +568,7 @@ void SVGMainWIndow::setSettingSquare(QString x, QString y)
 	pShapeColorChoose->setMaximumSize(QSize(50, 25));
 	pShapeColorChoose->setStyleSheet("background: rgb(255,255,255);border:none;");
 
-	connect(pShapeColorChoose, SIGNAL(pressed()), this, SLOT(setShapeColor()));
+	connect(pShapeColorChoose, &QPushButton::pressed, this, &SVGMainWIndow::setShapeColor);
 
 	QWidget* pEditPenColor = new QWidget(m_pSettingSquareWidget);
 	pEditPenColor->setObjectName(QStringLiteral("editPenColor"));
@@ -590,7 +590,7 @@ void SVGMainWIndow::setSettingSquare(QString x, QString y)
 	pPenColorChoose->setMaximumSize(QSize(50, 25));
 	pPenColorChoose->setStyleSheet("background: rgb(255,255,255);border:none;");
 
-	connect(pPenColorChoose, SIGNAL(pressed()), this, SLOT(setPenColor()));
+	connect(pPenColorChoose, &QPushButton::pressed, this, &SVGMainWIndow::setPenColor);
 
 	QWidget* pEditStrokeWidth = new QWidget(m_pSettingSquareWidget);
 	pEditStrokeWidth->setObjectName(QStringLiteral("widget_4"));
@@ -619,8 +619,8 @@ void SVGMainWIndow::setSettingSquare(QString x, QString y)
 	QValidator* validatorWidth = new QRegExpValidator(regx, pStrokeWidthLabel);
 	m_pWidthLineEdit->setValidator(validatorWidth);
 
-	connect(m_pStrokeWidthLineEdit, SIGNAL(textChanged(QString)), m_pSvgCanvas, SLOT(setStrokeWidth(QString)));
-	connect(m_pStrokeWidthLineEdit, SIGNAL(editingFinished()), m_pSvgCanvas, SLOT(setStroke()));
+	connect(m_pStrokeWidthLineEdit, &QLineEdit::textChanged, m_pSvgCanvas, &KxSvgCanvas::setStrokeWidth);
+	connect(m_pStrokeWidthLineEdit, &QLineEdit::editingFinished, m_pSvgCanvas, &KxSvgCanvas::setStroke);
 
 	QWidget* pEditStrokeStyle = new QWidget(m_pSettingSquareWidget);
 	pEditStrokeStyle->setObjectName(QStringLiteral("widget_4"));
@@ -638,15 +638,15 @@ void SVGMainWIndow::setSettingSquare(QString x, QString y)
 	m_pStrokeStyle = new KxDropDownButton(pEditStrokeStyle);
 	m_pStrokeStyle->setGeometry(QRect(0, 20, 60, 40));
 
-	connect(m_pStrokeStyle, SIGNAL(setShapePen(Qt::PenStyle)), m_pSvgCanvas, SLOT(setStrokeStyle(Qt::PenStyle)));
+	connect(m_pStrokeStyle, &KxDropDownButton::setShapePen, m_pSvgCanvas, &KxSvgCanvas::setStrokeStyle);
 
 	m_pSettingSquareLayout->addWidget(pEditShapeColor, 0, 1, 1, 1);
 	m_pSettingSquareLayout->addWidget(pEditPenColor, 0, 2, 1, 1);
 	m_pSettingSquareLayout->addWidget(pEditStrokeWidth, 1, 1, 1, 1);
 	m_pSettingSquareLayout->addWidget(pEditStrokeStyle, 1, 2, 1, 1);
 
-	connect(m_pSvgCanvas, SIGNAL(setShapePane(QColor, QColor, qreal, Qt::PenStyle)), this, SLOT(setShapePane(QColor, QColor, qreal, Qt::PenStyle)));
-	connect(m_pSvgCanvas, SIGNAL(paneIndex(int)), this, SLOT(paneIndex(int)));
+	connect(m_pSvgCanvas, &KxSvgCanvas::setShapePane, this, &SVGMainWIndow::setShapePane);
+	connect(m_pSvgCanvas, &KxSvgCanvas::paneIndex, this, &SVGMainWIndow::paneIndex);
 }
 
 bool SVGMainWIndow::eventFilter(QObject* watched, QEvent* event)
@@ -690,7 +690,7 @@ KxDropDownButton::KxDropDownButton(QWidget* parent)
 	m_pen.setColor(QColor(200, 200, 200));
 	m_pen.setWidthF(2.0);
 
-	connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(getPenStyle(int)));
+	connect(this, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &KxDropDownButton::getPenStyle);
 }
 
 KxDropDownButton::~KxDropDownButton()

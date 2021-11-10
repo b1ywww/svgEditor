@@ -55,8 +55,8 @@ KxSvgCanvas::KxSvgCanvas(QWidget* parent)
 	m_pTextEditWidget->setStyleSheet("border-style: outset;border-width:1px;border-color: blue; ");
 	m_pTextEditWidget->hide();
 
-	connect(m_pTextEditWidget, SIGNAL(textChanged(QString)), this, SLOT(changeText(QString)));
-	connect(m_pTextEditWidget, SIGNAL(editingFinished()), this, SLOT(setText()));
+	connect(m_pTextEditWidget, &QLineEdit::textChanged, this, &KxSvgCanvas::changeText);
+	connect(m_pTextEditWidget, &QLineEdit::editingFinished, this, &KxSvgCanvas::setText);
 
 	m_undoStack = new QUndoStack(this);
 }
@@ -1030,13 +1030,13 @@ void KxSvgCanvas::setRightClickMenu()
 	m_pRightClickMenu = new QMenu(this);
 
 	QAction* pActionShear = new QAction("¼ôÇÐ", this);
-	connect(pActionShear, SIGNAL(triggered()), this, SLOT(shear()));
+	connect(pActionShear, &QAction::triggered, this, &KxSvgCanvas::shear);
 
 	QAction* pActionCopy = new QAction("¸´ÖÆ", this);
-	connect(pActionCopy, SIGNAL(triggered()), this, SLOT(copy()));
+	connect(pActionCopy, &QAction::triggered, this, &KxSvgCanvas::copy);
 
 	QAction* pActionPaste = new QAction("Õ³Ìù", this);
-	connect(pActionPaste, SIGNAL(triggered()), this, SLOT(paste()));
+	connect(pActionPaste, &QAction::triggered, this, &KxSvgCanvas::paste);
 
 	m_pRightClickMenu->addAction(pActionShear);
 	m_pRightClickMenu->addAction(pActionCopy);
@@ -1045,23 +1045,23 @@ void KxSvgCanvas::setRightClickMenu()
 	m_pRightClickMenu->addSeparator();
 	
 	QAction* pActionDelete = new QAction("É¾³ý", this);
-	connect(pActionDelete, SIGNAL(triggered()), this, SLOT(deleteShape()));
+	connect(pActionDelete, &QAction::triggered, this, &KxSvgCanvas::deleteShape);
 
 	m_pRightClickMenu->addAction(pActionDelete);
 
 	m_pRightClickMenu->addSeparator();
 
 	QAction* pActionUpper = new QAction("ÖÃÓÚÉÏÒ»²ã", this);
-	connect(pActionUpper, SIGNAL(triggered()), this, SLOT(shapeToUpper()));
+	connect(pActionUpper, &QAction::triggered, this, &KxSvgCanvas::shapeToUpper);
 
 	QAction* pActionLower = new QAction("ÖÃÓÚÏÂÒ»²ã", this);
-	connect(pActionLower, SIGNAL(triggered()), this, SLOT(shapeToLower()));
+	connect(pActionLower, &QAction::triggered, this, &KxSvgCanvas::shapeToLower);
 
 	QAction* pActionTop = new QAction("ÖÃÓÚ¶¥²ã", this);
-	connect(pActionTop, SIGNAL(triggered()), this, SLOT(shapeToTop()));
+	connect(pActionTop, &QAction::triggered, this, &KxSvgCanvas::shapeToTop);
 
 	QAction* pActionBottom = new QAction("ÖÃÓÚµÍ²ã", this);
-	connect(pActionBottom, SIGNAL(triggered()), this, SLOT(shapeToBottom()));
+	connect(pActionBottom, &QAction::triggered, this, &KxSvgCanvas::shapeToBottom);
 
 	m_pRightClickMenu->addAction(pActionUpper);
 	m_pRightClickMenu->addAction(pActionLower);
