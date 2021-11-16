@@ -77,7 +77,7 @@ public slots:
 	void setCanvasColor();
 	void setShapeColor();
 	void setPenColor();
-	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth, Qt::PenStyle style);
+	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth, Qt::PenStyle style, QRectF shapeRect);
 	void paneIndex(int index = 0);
 	void setCanvasChooseColor(QRgb rgb);
 	void setCanvasChooseSize(int w, int h);
@@ -86,7 +86,7 @@ private:
 	void setToolBar();
 	void setSettingPane();
 	void setSettingCanvas();
-	void setSettingSquare(QString x = QString("0"), QString y = QString("0"));
+	void setSettingSquare();
 
 	void setShapeChooseColor(QRgb rgb);
 	void setPenChooseColor(QRgb rgb);

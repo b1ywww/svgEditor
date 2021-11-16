@@ -57,8 +57,8 @@ public:
 public slots:
 	void setCurrentType(ShapeType);
 	void setCanvasSize();
-	void setCanvasWidth(QString);
-	void setCanvasHeight(QString);
+	void setCanvasWidth(const QString);
+	void setCanvasHeight(const QString);
 	void openSvg();
 	void saveSvg();
 	void init();
@@ -66,8 +66,14 @@ public slots:
 	void changeText(QString);
 	void setText();
 
-	void setStrokeWidth(QString width);
+	void setStrokeWidth(const QString& width);
 	void setStroke();
+	void setShapeX(const QString& x);
+	void setShapeY(const QString& y);
+	void updateShapePos();
+	void setShapeWidth(const QString& width);
+	void setShapeHeight(const QString& height);
+	void updateShapeSize();
 	void setStrokeStyle(Qt::PenStyle style);
 
 	void shear();
@@ -81,7 +87,7 @@ public slots:
 	void shapeToBottom();
 
 signals:
-	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth, Qt::PenStyle);
+	void setShapePane(QColor shapeRgb, QColor penRgb, qreal penWidth, Qt::PenStyle, QRectF);
 	void paneIndex(int);
 	void setCanvasChooseColor(QRgb);
 	void setCanvasChooseSize(int w, int h);
@@ -125,7 +131,8 @@ private:
 	qreal m_radio = 0.0;					//放大缩小的比率
 	qreal m_penWidth = 1.0;					//线条宽度
 	Qt::PenStyle m_penStyle = Qt::SolidLine;//线条样式
-	QRgb m_rgb;
+	QRgb m_rgb;								//背景颜色
+	QRectF m_currentShapeRect;				//当前选中shape的位置的副本，主要用于右边属性编辑款编辑位置大小
 	QString m_text;							//文字控件的文字值
 	bool isMove = false;
 	int m_canvasWidth = 500;

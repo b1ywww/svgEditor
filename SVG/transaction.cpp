@@ -157,7 +157,6 @@ AddCommand::~AddCommand()
 
 void AddCommand::undo()
 {
-	qDebug() << "undo";
 	for(auto i : m_items)
 	{
 		i->setIsPaint(false);
@@ -169,7 +168,6 @@ void AddCommand::undo()
 
 void AddCommand::redo()
 {
-	qDebug() << "redo";
 	for(auto i : m_items)
 	{
 		i->setIsPaint(true);

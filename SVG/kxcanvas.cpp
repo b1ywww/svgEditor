@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QApplication>
 #include <QColorDialog>
+#include <QGraphicsView>
 
 const int POSITION_DEFAULT = 0;
 const int POSITION_LEFT = 1;
@@ -79,9 +80,9 @@ KxSvgCanvas::~KxSvgCanvas()
 void KxSvgCanvas::paintEvent(QPaintEvent* event)
 {
 	QPainter painter;
-	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
 	painter.begin(this);
+	painter.setRenderHint(QPainter::Antialiasing);
 	painter.drawPixmap(0, 0, *m_pixmap);
 	QTransform transform;
 	transform.translate(m_transfrom.x(), m_transfrom.y());
@@ -113,7 +114,7 @@ void KxSvgCanvas::paintEvent(QPaintEvent* event)
 		m_pClickRect->drawShape(painter);
 	}
 
-	//绘制移动时候的缓存
+	//绘制移动
 	if (isMove)
 	{
 		painter.save();
@@ -216,8 +217,7 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 
 		m_lastPoint = transformPoint;
 	}
-
-	if (Qt::RightButton == event->button())
+	if (Qt::RightButton == event->button() && !m_pCurrentShape)
 	{
 		if(m_clickShapeList.size() < 2)
 		{
@@ -235,11 +235,12 @@ void KxSvgCanvas::mousePressEvent(QMouseEvent* event)
 		}
 		m_pRightClickMenu->move(event->globalPos());
 		m_pRightClickMenu->show();
+		updatePixmap();
 	}
 
 	if (!m_clickShapeList.isEmpty())
 	{
-		emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color(), m_clickShapeList[0]->getPen().widthF(), m_clickShapeList[0]->getPen().style());
+		emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color(), m_clickShapeList[0]->getPen().widthF(), m_clickShapeList[0]->getPen().style(), m_currentShapeRect);
 		emit paneIndex(1);
 	}
 	else {
@@ -289,7 +290,6 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 		{
 			delete m_pCurrentShape;
 			m_shapeList.removeLast();
-			m_pCurrentShape = nullptr;
 		}
 		else
 		{
@@ -306,6 +306,7 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 			QUndoCommand* addcommand = new AddCommand(this, m_pClickShape);
 			m_undoStack->push(addcommand);
 		}
+		m_pCurrentShape = nullptr;
 	}
 
 	updatePhysicalPoint();
@@ -352,7 +353,11 @@ void KxSvgCanvas::mouseReleaseEvent(QMouseEvent* event)
 
 	if (!m_clickShapeList.isEmpty())
 	{
-		emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color(), m_clickShapeList[0]->getPen().widthF(), m_clickShapeList[0]->getPen().style());
+		QPointF clickPoint = m_clickShapeList[0]->getPhysicalEnd() - m_clickShapeList[0]->getPhysicalStart();
+		m_currentShapeRect = QRectF(QPointF(qMin(m_clickShapeList[0]->getPhysicalStart().x(), m_clickShapeList[0]->getPhysicalEnd().x()),
+			qMin(m_clickShapeList[0]->getPhysicalStart().y(), m_clickShapeList[0]->getPhysicalEnd().y())),
+			QSizeF(qAbs(clickPoint.x()), qAbs(clickPoint.y())));
+		emit setShapePane(m_clickShapeList[0]->getBrush().color(), m_clickShapeList[0]->getPen().color(), m_clickShapeList[0]->getPen().widthF(), m_clickShapeList[0]->getPen().style(), m_currentShapeRect);
 		emit paneIndex(1);
 	}
 	else {
@@ -400,12 +405,12 @@ void KxSvgCanvas::setCanvasSize()
 	}
 }
 
-void KxSvgCanvas::setCanvasWidth(QString width)
+void KxSvgCanvas::setCanvasWidth(const QString width)
 {
 	m_canvasWidth = width.toInt();
 }
 
-void KxSvgCanvas::setCanvasHeight(QString height)
+void KxSvgCanvas::setCanvasHeight(const QString height)
 {
 	m_canvasHeight = height.toInt();
 }
@@ -554,7 +559,7 @@ void KxSvgCanvas::setText()
 	m_pTextEditWidget->clear();
 }
 
-void KxSvgCanvas::setStrokeWidth(QString width)
+void KxSvgCanvas::setStrokeWidth(const QString& width)
 {
 	m_penWidth = width.toDouble();
 }
@@ -570,6 +575,83 @@ void KxSvgCanvas::setStroke()
 	}
 	updatePixmap();
 	update();
+}
+
+void KxSvgCanvas::setShapeX(const QString& x)
+{
+	m_currentShapeRect.setX(x.toDouble());
+}
+
+void KxSvgCanvas::setShapeY(const QString& y)
+{
+	m_currentShapeRect.setY(y.toDouble());
+}
+
+void KxSvgCanvas::updateShapePos()
+{
+	if (m_clickShapeList.isEmpty())
+		return;
+	QPointF offset = m_currentShapeRect.topLeft() - QPointF(qMin(m_clickShapeList[0]->getPhysicalStart().x(), m_clickShapeList[0]->getPhysicalEnd().x()),qMin(m_clickShapeList[0]->getPhysicalStart().y(), m_clickShapeList[0]->getPhysicalEnd().y()));
+	for(auto i : m_clickShapeList)
+	{
+		i->move(offset * (1 + m_radio));
+		i->drawPointToPhysicalPoint(m_radio);
+	}
+	MoveCommand* moveCommand = new MoveCommand(this, m_clickShapeList, offset * (1 + m_radio), mousePosition::move);
+	m_undoStack->push(moveCommand);
+	updatePixmap();
+	update();
+}
+
+void KxSvgCanvas::setShapeWidth(const QString& width)
+{
+	m_currentShapeRect.setWidth(width.toDouble());
+}
+
+void KxSvgCanvas::setShapeHeight(const QString& height)
+{
+	m_currentShapeRect.setHeight(height.toDouble());
+}
+
+void KxSvgCanvas::updateShapeSize()
+{
+	if (m_clickShapeList.size() != 1)
+		return;
+
+	qreal width = m_clickShapeList.first()->getDrawEnd().x() - m_clickShapeList.first()->getDrawStart().x();
+	qreal height = m_clickShapeList.first()->getDrawEnd().y() - m_clickShapeList.first()->getDrawStart().y();
+	QPointF offset = QPointF(m_currentShapeRect.width() - qAbs(width), m_currentShapeRect.height() - qAbs(height));
+
+	int moveFlag = 0;
+	if (width < 0)
+		moveFlag ^= 1;
+	if (height < 0)
+		moveFlag ^= 2;
+
+	const int LOWERRIGHT = 0;
+	const int LOWERLEFT = 1;
+	const int UPPERRIGHT = 2;
+	const int UPPERLEFT = 3;
+
+	switch (moveFlag)
+	{
+	case LOWERRIGHT:
+		m_clickShapeList.first()->moveLowerRight(offset * (1 + m_radio));
+		break;
+	case LOWERLEFT:
+		m_clickShapeList.first()->moveLowerLeft(offset * (1 + m_radio));
+		break;
+	case UPPERRIGHT:
+		m_clickShapeList.first()->moveUpperRight(offset * (1 + m_radio));
+		break;
+	case UPPERLEFT:
+		m_clickShapeList.first()->moveUpperLeft(offset * (1 + m_radio));
+		break;
+	default:
+		break;
+	}
+
+	updatePixmap();
 }
 
 void KxSvgCanvas::setStrokeStyle(Qt::PenStyle style)
@@ -714,9 +796,6 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 {
 	setFocus();
 	QPoint transfromOffset;
-
-	if (event->modifiers() != Qt::ControlModifier)
-		return;
 
 	if (event->delta() > 0)
 	{
@@ -1077,7 +1156,8 @@ void KxSvgCanvas::setRightClickMenu()
 
 	m_pRightClickMenu->setStyleSheet("QMenu::item:selected{background-color:#409CE1;}"\
 									 "QMenu::item{padding:5px 32px;color:rgba(51, 51, 51, 1);font-size:12px;}"\
-									 "QMenu{border: 1px solid rgb(125, 125, 125);border-radius: 5px; }");
+									 "QMenu{border: 1px solid rgb(125, 125, 125);border-radius: 5px; }"\
+									 "QMenu{background: #ffffff;}");
 
 	m_pRightClickMenu->hide();
 }
