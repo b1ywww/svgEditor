@@ -63,7 +63,7 @@ void SvgWrite::writeBackGround(int canvasW, int canvasH, QRgb rgb)
 void SvgWrite::writeShape(QList<Shape*> list)
 {
 	ShapeType shape;
-	for each (Shape * i in list)
+	for(Shape * i : list)
 	{
 		if (false == i->isPaint())
 			continue;
@@ -211,7 +211,7 @@ void SvgWrite::writePencil(Shape* shape)
 	QString M = "M%1 %2";
 	QString L = ",L%1 %2";
 	d = d + M.arg((*point.begin()).x() + m_transfrom.x()).arg((*point.begin()).y() + m_transfrom.y());
-	for each (QPointF i in point)
+	for (QPointF i : point)
 	{
 		d = d + L.arg(i.x() + m_transfrom.x()).arg(i.y() + m_transfrom.y());
 	}
@@ -294,7 +294,7 @@ void SvgWrite::writeHexagon(Shape* shape)
 	Hexagon* pHexagon = dynamic_cast<Hexagon*>(shape);
 	if (nullptr == pHexagon)
 		return;
-	for each (QPointF i in pHexagon->getVertex())
+	for (QPointF i : pHexagon->getVertex())
 	{
 		d = d.arg(i.x() + m_transfrom.x()).arg(i.y() + m_transfrom.y());
 	}

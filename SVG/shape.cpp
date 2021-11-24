@@ -50,16 +50,9 @@ QPointF& Shape::getDrawEnd()
 	return m_drawEnd;
 }
 
-void Shape::copyDate(Shape* shape)
+Shape* Shape::copyDate()
 {
-	m_start = shape->m_start + QPointF(10, 10);      //物理坐标
-	m_end = shape->m_end + QPointF(10, 10);
-	m_drawStart = shape->m_drawStart + QPointF(10, 10);  //逻辑坐标
-	m_drawEnd = shape->m_drawEnd + QPointF(10, 10);
-	m_depth = shape->m_depth;
-	m_pen = shape->m_pen;
-	m_brush = shape->m_brush;
-	m_type = shape->m_type;
+	return nullptr;
 }
 
 void Shape::drawPointToPhysicalPoint(qreal ratio)
@@ -276,9 +269,11 @@ void Line::moveLowerRight(QPointF offset)
 	m_drawEnd = m_drawEnd + offset;
 }
 
-void Line::copyDate(Shape* shape)
+Shape* Line::copyDate()
 {
-	Shape::copyDate(shape);
+	Line* tmp = new Line(*this);
+	tmp->move(QPointF(10, 10));
+	return tmp;
 }
 
 Square::Square()
@@ -385,9 +380,11 @@ void Square::moveLowerRight(QPointF offset)
 	m_drawEnd = m_drawEnd + offset;
 }
 
-void Square::copyDate(Shape* shape)
+Shape* Square::copyDate()
 {
-	Shape::copyDate(shape);
+	Square* tmp = new Square(*this);
+	tmp->move(QPointF(10, 10));
+	return tmp;
 }
 
 Pencil::Pencil()
@@ -477,21 +474,11 @@ void Pencil::setDrawPoint(QList<QPointF>& list)
 	}
 }
 
-void Pencil::copyDate(Shape* shape)
+Shape* Pencil::copyDate()
 {
-	Pencil* pencil = dynamic_cast<Pencil*>(shape);
-	if (nullptr == pencil)
-		return;
-	for (auto i : pencil->m_drawPoint)
-	{
-		m_drawPoint.append(i + QPointF(10, 10));
-	}
-
-	for (auto i : pencil->m_PhysicalPoint)
-	{
-		m_PhysicalPoint.append(i + QPointF(10, 10));
-	}
-	Shape::copyDate(shape);
+	Pencil* tmp = new Pencil(*this);
+	tmp->move(QPointF(10, 10));
+	return tmp;
 }
 
 void Pencil::setDepth(qreal depth)
@@ -740,9 +727,11 @@ void Circle::moveLowerRight(QPointF offset)
 	m_drawEnd = m_drawEnd + offset;
 }
 
-void Circle::copyDate(Shape* shape)
+Shape* Circle::copyDate()
 {
-	Shape::copyDate(shape);
+	Circle* tmp = new Circle(*this);
+	tmp->move(QPointF(10, 10));
+	return tmp;
 }
 
 Hexagon::Hexagon()
@@ -882,10 +871,11 @@ const QVector<QPointF>& Hexagon::getVertex()
 	return m_vertex;
 }
 
-void Hexagon::copyDate(Shape* shape)
+Shape* Hexagon::copyDate()
 {
-	Shape::copyDate(shape);
-	setVertex();
+	Hexagon* tmp = new Hexagon(*this);
+	tmp->move(QPointF(10, 10));
+	return tmp;
 }
 
 TextEdit::TextEdit()
@@ -936,32 +926,38 @@ void TextEdit::scale(qreal width, qreal height)
 	updateClickRect();
 }
 
+void TextEdit::drawPointToPhysicalPoint(qreal ratio)
+{
+	int length = m_drawPath.elementCount();
+	for (int i = 0; i < length; i++)
+	{
+		m_path.setElementPositionAt(i, m_drawPath.elementAt(i).x / (1 + ratio), m_drawPath.elementAt(i).y / (1 + ratio));
+	}
+	Shape::drawPointToPhysicalPoint(ratio);
+}
+
 void TextEdit::move(QPointF offset)
 {
 	m_drawStart = m_drawStart + offset;
 	m_drawEnd = m_drawEnd + offset;
 
-	m_path.translate(offset);
-	m_drawPath = m_path;
+	m_drawPath.translate(offset);
 	updateClickRect();
 }
 
 void TextEdit::moveTop(QPointF offset)
 {
-	qDebug() << m_path.controlPointRect();
-
 	if (qAbs(m_top + offset.y() - m_bottom) < 0.0001)
 		return;
 
-	int length = m_path.elementCount();
+	int length = m_drawPath.elementCount();
 	for (int i = 0; i < length; i++)
 	{
-		qreal ratio = (m_path.elementAt(i).y - m_bottom) / (m_top - m_bottom);
+		qreal ratio = (m_drawPath.elementAt(i).y - m_bottom) / (m_top - m_bottom);
 		qreal offsetY = offset.y() * ratio;
-		m_path.setElementPositionAt(i, m_path.elementAt(i).x, m_path.elementAt(i).y + offsetY);
+		m_drawPath.setElementPositionAt(i, m_drawPath.elementAt(i).x, m_drawPath.elementAt(i).y + offsetY);
 	}
 
-	m_drawPath = m_path;
 	m_top = m_drawStart.y() + offset.y();
 	m_drawStart.setY(m_top);
 }
@@ -971,15 +967,14 @@ void TextEdit::moveBottom(QPointF offset)
 	if (qAbs(m_bottom + offset.y() - m_top) < 0.0001)
 		return;
 
-	int length = m_path.elementCount();
+	int length = m_drawPath.elementCount();
 	for (int i = 0; i < length; i++)
 	{
-		qreal ratio = (m_path.elementAt(i).y - m_top) / (m_bottom - m_top);
+		qreal ratio = (m_drawPath.elementAt(i).y - m_top) / (m_bottom - m_top);
 		qreal offsetY = offset.y() * ratio;
-		m_path.setElementPositionAt(i, m_path.elementAt(i).x, m_path.elementAt(i).y + offsetY);
+		m_drawPath.setElementPositionAt(i, m_drawPath.elementAt(i).x, m_drawPath.elementAt(i).y + offsetY);
 	}
 
-	m_drawPath = m_path;
 	m_bottom = m_drawEnd.y() + offset.y();
 	m_drawEnd.setY(m_bottom);
 }
@@ -989,15 +984,14 @@ void TextEdit::moveLeft(QPointF offset)
 	if (qAbs(m_Left + offset.x() - m_right) < 0.0001)
 		return;
 
-	int length = m_path.elementCount();
+	int length = m_drawPath.elementCount();
 	for (int i = 0; i < length; i++)
 	{
-		qreal ratio = (m_path.elementAt(i).x - m_right) / (m_Left - m_right);
+		qreal ratio = (m_drawPath.elementAt(i).x - m_right) / (m_Left - m_right);
 		qreal offsetX = offset.x() * ratio;
-		m_path.setElementPositionAt(i, m_path.elementAt(i).x + offsetX, m_path.elementAt(i).y);
+		m_drawPath.setElementPositionAt(i, m_drawPath.elementAt(i).x + offsetX, m_drawPath.elementAt(i).y);
 	}
 
-	m_drawPath = m_path;
 	m_Left = m_drawStart.x() + offset.x();
 	m_drawStart.setX(m_Left);
 }
@@ -1007,15 +1001,14 @@ void TextEdit::moveRight(QPointF offset)
 	if (qAbs(m_right + offset.x() - m_Left) < 0.0001)
 		return;
 
-	int length = m_path.elementCount();
+	int length = m_drawPath.elementCount();
 	for (int i = 0; i < length; i++)
 	{
-		qreal ratio = (m_path.elementAt(i).x - m_Left) / (m_right - m_Left);
+		qreal ratio = (m_drawPath.elementAt(i).x - m_Left) / (m_right - m_Left);
 		qreal offsetX = offset.x() * ratio;
-		m_path.setElementPositionAt(i, m_path.elementAt(i).x + offsetX, m_path.elementAt(i).y);
+		m_drawPath.setElementPositionAt(i, m_drawPath.elementAt(i).x + offsetX, m_drawPath.elementAt(i).y);
 	}
 
-	m_drawPath = m_path;
 	m_right = m_drawEnd.x() + offset.x();
 	m_drawEnd.setX(m_right);
 }
@@ -1044,9 +1037,9 @@ void TextEdit::moveLowerRight(QPointF offset)
 	moveBottom(offset);
 }
 
-void TextEdit::setText(QString text)
+void TextEdit::setText(QString& text)
 {
-	m_text = text;
+	m_text = std::move(text);
 	m_path.addText(m_drawStart.x(), m_drawEnd.y(), QFont("Microsoft YaHei", 30), m_text);
 	m_drawPath = m_path;
 	updateClickRect();
@@ -1069,9 +1062,6 @@ void TextEdit::updateClickRect()
 	m_drawStart = QPointF(rect.x(), rect.y());
 	m_drawEnd = m_drawStart + QPointF(rect.width(), rect.height());
 
-	m_start = m_drawStart;
-	m_end = m_drawEnd;
-
 	m_top = m_drawStart.y();
 	m_bottom = m_drawEnd.y();
 	m_Left = m_drawStart.x();
@@ -1092,13 +1082,11 @@ QMatrix& TextEdit::getMatrix()
 	return matrix;
 }
 
-void TextEdit::copyDate(Shape* shape)
+Shape* TextEdit::copyDate()
 {
-	TextEdit* textEdit = dynamic_cast<TextEdit*>(shape);
-	if (nullptr == textEdit)
-		return;
-	m_text = textEdit->m_text;
-	Shape::copyDate(shape);
+	TextEdit* tmp = new TextEdit(*this);
+	tmp->move(QPointF(10, 10));
+	return tmp;
 }
 
 ShapeFactory* ShapeFactory::getShapeFactory()

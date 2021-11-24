@@ -579,11 +579,11 @@ void SVGMainWIndow::setSettingSquare()
 	pShapeWidthLineEdit->setAlignment(Qt::AlignCenter);
 	pShapeWidthLineEdit->setStyleSheet(QStringLiteral("color:rgb(79, 128, 255);border-width:0;border-style:outset"));
 	pShapeWidthLineEdit->setFont(QFont("宋体", 18, QFont::Bold));
-	pShapeWidthLineEdit->setMaxLength(4);
+	pShapeWidthLineEdit->setMaxLength(6);
 	pShapeWidthLineEdit->setFocusPolicy(Qt::ClickFocus);
 	//限制只能输入数字
-	QRegExp regShapeWidth("[1-9][0-9]+$");
-	QValidator* validatorShapeWidth = new QRegExpValidator(regShapeWidth, pShapeWidthLineEdit);
+	QRegExp regShapeWidth("[0-9]+[1-9]+[0-9]+[0-9]+{.[0-9]+[0-9]+}?");
+	QValidator* validatorShapeWidth = new QRegExpValidator(regx, pShapeWidthLineEdit);
 	pShapeWidthLineEdit->setValidator(validatorShapeWidth);
 
 	connect(pShapeWidthLineEdit, &QLineEdit::textChanged, m_pSvgCanvas, &KxSvgCanvas::setShapeWidth);
@@ -611,10 +611,10 @@ void SVGMainWIndow::setSettingSquare()
 	pShapeHeightLineEdit->setAlignment(Qt::AlignCenter);
 	pShapeHeightLineEdit->setStyleSheet(QStringLiteral("color:rgb(79, 128, 255);border-width:0;border-style:outset"));
 	pShapeHeightLineEdit->setFont(QFont("宋体", 18, QFont::Bold));
-	pShapeHeightLineEdit->setMaxLength(4);
+	pShapeHeightLineEdit->setMaxLength(6);
 	pShapeHeightLineEdit->setFocusPolicy(Qt::ClickFocus);
 	//限制只能输入数字
-	QRegExp regShapeHeight("[1-9][0-9]+$");
+	QRegExp regShapeHeight("[0-9]+[1-9]+[0-9]+[0-9]+{.[0-9]+[0-9]+}?");
 	QValidator* validatorHeight = new QRegExpValidator(regx, pShapeHeightLineEdit);
 	pShapeHeightLineEdit->setValidator(validatorHeight);
 
@@ -688,7 +688,7 @@ void SVGMainWIndow::setSettingSquare()
 	m_pStrokeWidthLineEdit->setAlignment(Qt::AlignCenter);
 	m_pStrokeWidthLineEdit->setStyleSheet(QStringLiteral("color:rgb(79, 128, 255);border-width:0;border-style:outset"));
 	m_pStrokeWidthLineEdit->setFont(QFont("宋体", 18, QFont::Bold));
-	m_pStrokeWidthLineEdit->setMaxLength(4);
+	m_pStrokeWidthLineEdit->setMaxLength(6);
 	m_pStrokeWidthLineEdit->setFocusPolicy(Qt::ClickFocus);
 	//限制只能输入数字
 	QRegExp regStrokeWidth("[0-9].*[0-9]*");

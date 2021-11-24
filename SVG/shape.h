@@ -32,7 +32,7 @@ public:
 	virtual QPointF& getPhysicalEnd();
 	virtual QPointF& getDrawStart();
 	virtual QPointF& getDrawEnd();
-	virtual void copyDate(Shape* shape);
+	virtual Shape* copyDate();
 	virtual void drawPointToPhysicalPoint(qreal ratio);
 
 	virtual void move(QPointF offset);
@@ -100,7 +100,7 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
-	void copyDate(Shape* shape) override;
+	Shape* copyDate() override;
 
 };
 
@@ -126,7 +126,7 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
-	void copyDate(Shape* shape) override;
+	Shape* copyDate() override;
 };
 
 class Pencil : public Shape
@@ -151,7 +151,7 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
-	void copyDate(Shape* shape) override;
+	Shape* copyDate() override;
 
 	void updateClickRect(QPointF point);
 	void updateEdgeValue();
@@ -189,7 +189,7 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
-	void copyDate(Shape* shape) override;
+	Shape* copyDate() override;
 };
 
 class Hexagon : public Shape
@@ -213,7 +213,7 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
-	void copyDate(Shape* shape) override;
+	Shape* copyDate() override;
 
 	void setVertex(QVector<QPointF> vector = QVector<QPointF>());
 	const QVector<QPointF>& getVertex();
@@ -233,6 +233,7 @@ public:
 	void setDrawEnd(QPointF end) override;
 	void setDepth(qreal depth) override;
 	void scale(qreal ratioW, qreal ratioH) override;
+	void drawPointToPhysicalPoint(qreal ratio) override;
 
 	void move(QPointF offset) override;
 	void moveTop(QPointF offset) override;
@@ -243,9 +244,9 @@ public:
 	void moveUpperRight(QPointF offset) override;
 	void moveLowerLeft(QPointF offset) override;
 	void moveLowerRight(QPointF offset) override;
-	void copyDate(Shape* shape) override;
+	Shape* copyDate() override;
 
-	void setText(QString text);
+	void setText(QString& text);
 	const QString getText();
 	const int getFontSize();
 

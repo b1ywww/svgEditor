@@ -457,6 +457,7 @@ void KxSvgCanvas::init()
 	msg.setText("ÊÇ·ñ±£´æ»­²¼");
 	msg.setIcon(QMessageBox::Warning);
 	msg.setStandardButtons(QMessageBox::Ok | QMessageBox::No | QMessageBox::Cancel);
+	msg.setDefaultButton(QMessageBox::Ok);
 
 	int res = msg.exec();
 	switch (res)
@@ -652,6 +653,7 @@ void KxSvgCanvas::updateShapeSize()
 	}
 
 	updatePixmap();
+	update();
 }
 
 void KxSvgCanvas::setStrokeStyle(Qt::PenStyle style)
@@ -663,6 +665,7 @@ void KxSvgCanvas::setStrokeStyle(Qt::PenStyle style)
 	{
 		i->getPen().setStyle(style);
 	}
+	updatePixmap();
 	update();
 }
 
@@ -836,8 +839,9 @@ void KxSvgCanvas::wheelEvent(QWheelEvent* event)
 
 bool KxSvgCanvas::eventFilter(QObject* watched, QEvent* event)
 {
-	if(m_isCloseEvent)
-		paintEvent(static_cast<QPaintEvent*>(event));
+
+	if (m_isCloseEvent)
+		paintEvent(dynamic_cast<QPaintEvent*>(event));
 	return m_isCloseEvent;
 }
 
@@ -943,8 +947,8 @@ void KxSvgCanvas::copyClickShape()
 
 	for (auto i : m_clickShapeList)
 	{
-		Shape* shape = ShapeFactory::getShapeFactory()->getShape(i->getShapeType());
-		shape->copyDate(i);
+		Shape* shape = i->copyDate();
+		shape->drawPointToPhysicalPoint(m_radio);
 		m_copyShapeList.append(shape);
 	}
 }
@@ -979,11 +983,13 @@ void KxSvgCanvas::copyListToShapeList()
 	for (auto i : m_clickShapeList)
 	{
 		i->setClickState(true);
+		i->scale(m_radio, m_radio);
 		m_copyShapeList.removeOne(i);
-		Shape* shape = ShapeFactory::getShapeFactory()->getShape(i->getShapeType());
-		shape->copyDate(i);
+		Shape* shape = i->copyDate();
+		shape->drawPointToPhysicalPoint(m_radio);
 		m_copyShapeList.append(shape);
 	}
+	updatePixmap();
 }
 
 void KxSvgCanvas::updatePixmap(Shape* shape /*nullptr*/)
