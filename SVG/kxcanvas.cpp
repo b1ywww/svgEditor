@@ -452,7 +452,7 @@ void KxSvgCanvas::saveSvg()
 
 void KxSvgCanvas::init()
 {
-	QMessageBox msg(this);
+	QMessageBox msg(nullptr);
 	msg.setStyleSheet("background: #ffffff;");
 	msg.setText("ÊÇ·ñ±£´æ»­²¼");
 	msg.setIcon(QMessageBox::Warning);
