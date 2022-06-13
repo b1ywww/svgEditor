@@ -1,6 +1,8 @@
 #include "kxsvgview.h"
 #include <QtWidgets/QApplication>
-#include "vld.h"
+
+// 内存泄漏检测工具
+// #include "vld.h"
 
 int main(int argc, char* argv[])
 {
